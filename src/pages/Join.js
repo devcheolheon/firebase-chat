@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import "../bootstrap/join.css";
+import styles from "../bootstrap/join.module.css";
 
 const Join = () => {
   return (
-    <main class="form-signin">
+    <main className={styles.join}>
       <form>
         <h1 class="h3 mb-3 fw-normal">가입하기</h1>
         <div class="form-floating">

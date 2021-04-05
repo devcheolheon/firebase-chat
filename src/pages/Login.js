@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import logo from "../logo.png";
-import "../bootstrap/login.css";
+import styles from "../bootstrap/login.module.css";
 
 const Login = () => {
   return (
-    <main class="form-signin">
+    <main className={styles.login}>
       <form>
         <img class="mb-4" src={logo}></img>
         <h1 class="h3 mb-5 fw-normal text-center">로그인 해주세요</h1>

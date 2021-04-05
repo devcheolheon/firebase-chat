@@ -1,22 +1,4 @@
-html,
-body {
-  height: 100%;
-  width: 100%;
-}
-
-
-#root {
-  height: 100%; 
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-top: 40px;
-  padding-bottom: 40px;
-  background-color: #f5f5f5;
-}
-
-.form-signin {
+.join {
   width: 100%;
   max-width: 330px;
   padding: 15px;
@@ -24,17 +6,17 @@ body {
 }
 
 
-.form-signin .form-floating:focus-within {
+.join .form-floating:focus-within {
   z-index: 2;
 }
 
-.form-signin input[type="email"] {
+.join input[type="email"] {
   margin-bottom: -1px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
 
-.form-signin input[type="password"] {
+.join input[type="password"] {
     margin-bottom: -1px;
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
@@ -42,7 +24,7 @@ body {
     border-top-right-radius: 0;
   }
 
-.form-signin input[type="text"] {
+.join input[type="text"] {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
