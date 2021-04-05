@@ -1,16 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useHistory } from "react-router-dom";
+import { authLogin, authLogout } from "../utils/libFirebase";
 import logo from "../logo.png";
 import styles from "../bootstrap/login.module.css";
 import Loading from "../components/common/Loading";
-
-const authLogin = () => {
-  return new Promise((resolve) => setTimeout(() => resolve(true), 4000));
-};
-
-const authLogout = () => {
-  Promise.resolve(true);
-};
 
 const Login = () => {
   const history = useHistory();
@@ -39,6 +32,7 @@ const Login = () => {
     } catch (e) {
       if (e.code == "auth/user-not-found") {
         alert("가입하세요");
+        return;
       }
     }
 
