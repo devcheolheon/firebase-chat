@@ -2,13 +2,7 @@ import React, { useState, useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import styles from "../bootstrap/join.module.css";
 import Loading from "../components/common/Loading";
-
-const authJoin = () => {
-  return new Promise((resolve) => setTimeout(() => resolve(true), 3000));
-};
-const authSaveUser = () => {
-  return new Promise((resolve) => setTimeout(() => resolve(true), 3000));
-};
+import { authJoin, authSaveUser } from "../utils/libFirebase";
 
 const Join = () => {
   const history = useHistory();
@@ -23,9 +17,7 @@ const Join = () => {
       let uid = await authJoin(body);
       await authSaveUser({ ...body, uid });
       history.push("/createChat");
-    } catch (e) {
-      alert("error");
-    }
+    } catch (e) {}
     setLoading(false);
   }, []);
 
