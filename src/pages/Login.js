@@ -1,8 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useHistory } from "react-router-dom";
 import logo from "../logo.png";
 import styles from "../bootstrap/login.module.css";
 
 const Login = () => {
+  const history = useHistory();
+
+  const linktoJoin = useCallback(() => {
+    history.push("/join");
+  }, []);
+
   return (
     <main className={styles.login}>
       <form>
@@ -30,6 +37,12 @@ const Login = () => {
         <button class="w-100 btn btn-lg btn-primary" type="submit">
           로그인
         </button>
+        <p
+          onClick={linktoJoin}
+          class="text-center text-muted w-100 mt-3 font-weight-light linktext"
+        >
+          가입하기
+        </p>
       </form>
     </main>
   );

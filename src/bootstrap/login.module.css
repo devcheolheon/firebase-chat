@@ -22,3 +22,12 @@
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+
+
+.login p {
+  cursor: pointer;
+}
+
+.login p:hover{
+  text-decoration:underline;
+}
