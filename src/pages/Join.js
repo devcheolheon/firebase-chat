@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import styles from "../bootstrap/join.module.css";
 import Loading from "../components/common/Loading";
 import { authJoin, authSaveUser } from "../utils/libFirebase";
+import useCheckLogin from "../hooks/useCheckLogin";
 
 const Join = () => {
   const history = useHistory();
@@ -11,12 +12,21 @@ const Join = () => {
   const [nickname, setNickname] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [loginStatus, setLoginStatus] = useCheckLogin(
+    {
+      setLoading,
+      successUrl: "/chatRooms",
+      failureUrl: "/join",
+    },
+    []
+  );
+
   const join = useCallback(async (body) => {
     setLoading(true);
     try {
       let uid = await authJoin(body);
       await authSaveUser({ ...body, uid });
-      history.push("/createChat");
+      setLoginStatus(true);
     } catch (e) {}
     setLoading(false);
   }, []);

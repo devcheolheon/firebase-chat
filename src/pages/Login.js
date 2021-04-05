@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useHistory } from "react-router-dom";
 import { authLogin, authLogout } from "../utils/libFirebase";
+import { useHistory } from "react-router-dom";
 import logo from "../logo.png";
 import styles from "../bootstrap/login.module.css";
 import Loading from "../components/common/Loading";
+import useCheckLogin from "../hooks/useCheckLogin";
 
 const Login = () => {
   const history = useHistory();
@@ -11,7 +12,14 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [loginStatus, setLoginStatus] = useState(false);
+  const [loginStatus, setLoginStatus] = useCheckLogin(
+    {
+      setLoading,
+      successUrl: "/chatRooms",
+      failureUrl: "/login",
+    },
+    []
+  );
 
   const linktoJoin = useCallback(() => {
     history.push("/join");
@@ -28,6 +36,7 @@ const Login = () => {
 
     try {
       await authLogin(email, password);
+      //
       setLoginStatus(true);
     } catch (e) {
       if (e.code == "auth/user-not-found") {
@@ -37,7 +46,6 @@ const Login = () => {
     }
 
     setLoading(false);
-    history.push("/createChat");
   }, []);
 
   return loading ? (
