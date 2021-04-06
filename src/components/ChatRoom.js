@@ -7,13 +7,26 @@ import Loading from "../components/common/Loading";
 import { addChatToRoom } from "../utils/libFirebase";
 import useCheckLogin from "../hooks/useCheckLogin";
 
-import { linkToChatList } from "../utils/libFirebase";
+import { linkToChatList, getUserNameById } from "../utils/libFirebase";
 
 const Chat = ({ userId, content }) => {
+  let [loading, setLoading] = useState(true);
+  let [nickname, setNickname] = useState("noname");
+  useEffect(() => {
+    if (!userId) return;
+    async function fetchNickname(userId) {
+      setLoading(true);
+      const name = await getUserNameById(userId);
+      setNickname(name);
+      setLoading(false);
+    }
+    fetchNickname(userId);
+  }, [userId]);
   return (
     <div>
       <div className={Styles.chats}>
-        <span>${userId} : </span> <span>{content}</span>
+        {loading ? <Loading></Loading> : <span>{nickname} : </span>}{" "}
+        <span>{content}</span>
       </div>
     </div>
   );
@@ -21,7 +34,7 @@ const Chat = ({ userId, content }) => {
 
 const ChatRoom = ({ id, name }) => {
   let [content, setContent] = useState("");
-  let [loading, setLoading] = useState(false);
+  let [loading, setLoading] = useState(true);
   let [chats, setChats] = useImmer([]);
 
   const [loginStatus, setLoginStatus] = useCheckLogin(
@@ -37,9 +50,7 @@ const ChatRoom = ({ id, name }) => {
     async ({ userId, content }) => {
       setContent("");
       if (userId == "") return;
-      setLoading(true);
       await addChatToRoom({ chatRoomId: id, userId, content });
-      setLoading(false);
     },
     [id]
   );
@@ -64,8 +75,10 @@ const ChatRoom = ({ id, name }) => {
   });
 
   useEffect(() => {
+    setLoading(true);
     setChats([]);
     linkToChatList({ roomId: id, onAdded, onRemoved, onModified });
+    setLoading(false);
   }, [id]);
 
   return loading ? (
@@ -74,7 +87,11 @@ const ChatRoom = ({ id, name }) => {
     <div className={Styles.chatRoom}>
       <header> 채팅방 이름 : {name} </header>
       <hr></hr>
-      <div className={Styles.chatsArea}>{chats.map(Chat)}</div>
+      <div className={Styles.chatsArea}>
+        {chats.map((props) => (
+          <Chat {...props}></Chat>
+        ))}
+      </div>
       <div className={Styles.messageBox}>
         <input
           type="text"

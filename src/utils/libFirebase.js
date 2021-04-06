@@ -1,10 +1,11 @@
 import { db, firebase, firebaseApp } from "../firebase";
 
-async function authSaveUser({ email, password, uid }) {
+async function authSaveUser({ email, password, uid, nickname }) {
   await db.collection("google").add({
     email,
     password,
     uid,
+    nickname,
     created: firebase.firestore.Timestamp.now().seconds,
   });
 }
@@ -91,4 +92,16 @@ export async function addChatToRoom({ chatRoomId, userId, content }) {
     created: firebase.firestore.Timestamp.now().seconds,
   });
 }
+
+export async function getUserNameById(id) {
+  const userRef = db.collection("google").where("uid", "==", id);
+  const snapshot = await userRef.get();
+  let user;
+  snapshot.forEach((doc) => (user = doc.data()));
+  if (user && user.nickname !== "") {
+    return user.nickname;
+  }
+  return "noname";
+}
+
 export { authLogin, authLogout, authJoin, authSaveUser };
