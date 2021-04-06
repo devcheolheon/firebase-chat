@@ -11,8 +11,10 @@ import { linkToChatList } from "../utils/libFirebase";
 
 const Chat = ({ userId, content }) => {
   return (
-    <div className={Styles.chats}>
-      <span>${userId} : </span> <span>{content}</span>
+    <div>
+      <div className={Styles.chats}>
+        <span>${userId} : </span> <span>{content}</span>
+      </div>
     </div>
   );
 };
