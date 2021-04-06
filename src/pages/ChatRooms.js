@@ -3,12 +3,12 @@ import { BsChat } from "react-icons/bs";
 import Popup from "../components/common/Popup";
 import Styles from "../bootstrap/chatrooms.module.css";
 import logo from "../logo.png";
+import { createRoom } from "../utils/libFirebase";
 
 const Content = ({ setClose }) => {
   const [name, setName] = useState("");
   const makeRoom = useCallback(async (name) => {
-    console.log(name);
-    setName("");
+    await createRoom(name);
     setClose(true);
   }, []);
 
