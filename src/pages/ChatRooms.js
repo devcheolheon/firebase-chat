@@ -1,22 +1,29 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { BsChat } from "react-icons/bs";
 import Popup from "../components/common/Popup";
+import ChatRoom from "../components/ChatRoom";
 import Styles from "../bootstrap/chatrooms.module.css";
 import logo from "../logo.png";
 import { linkToChatRoomList, createRoom } from "../utils/libFirebase";
 import { useImmer } from "use-immer";
 
-const ChatRoomLi = ({ id, name }) => {
+const ChatRoomLi = ({ id, name, selected, onClick }) => {
+  console.log(`${id} - selected: ${selected}`);
   return (
     <li class="nav-item" key={id}>
-      <a data-id={id} href="#" class="nav-link text-white">
+      <a
+        id={id}
+        href="#"
+        className={"nav-link " + (selected ? "active" : "text-white")}
+        onClick={onClick}
+      >
         <BsChat size={"1.4rem"} class="pb-1"></BsChat> {name}
       </a>
     </li>
   );
 };
 
-const Content = ({ setClose }) => {
+const Content = ({ setClose, select }) => {
   const [name, setName] = useState("");
 
   const makeRoom = useCallback(async (name) => {
@@ -44,6 +51,7 @@ const Content = ({ setClose }) => {
 const ChatRooms = () => {
   const [close, setClose] = useState(false);
   const [chatRooms, setChatRooms] = useImmer([]);
+  const [selectedChatRoom, setSelectedChatRoom] = useState("");
 
   const addChatRooms = useCallback((newRoom) => {
     setChatRooms((draft) => {
@@ -52,10 +60,17 @@ const ChatRooms = () => {
   }, []);
 
   const removeChatRooms = useCallback((newRoom) => {
+    setSelectedChatRoom("");
     setChatRooms((draft) => draft.filter((v) => v.id !== newRoom.id));
   }, []);
 
+  const onClickChatRoomLi = useCallback((event) => {
+    event.preventDefault();
+    setSelectedChatRoom(event.target.id);
+  }, []);
+
   useEffect(() => {
+    console.log(selectedChatRoom);
     linkToChatRoomList({ onAdded: addChatRooms, onRemoved: removeChatRooms });
   }, []);
 
@@ -85,10 +100,23 @@ const ChatRooms = () => {
 
         <ul class="nav nav-pills flex-column mb-auto">
           {chatRooms.map(({ name, id }) => (
-            <ChatRoomLi name={name} id={id}></ChatRoomLi>
+            <ChatRoomLi
+              name={name}
+              id={id}
+              onClick={onClickChatRoomLi}
+              selected={id === selectedChatRoom}
+            ></ChatRoomLi>
           ))}
         </ul>
       </div>
+      <ChatRoom
+        id={selectedChatRoom}
+        name={
+          selectedChatRoom !== ""
+            ? chatRooms.find((room) => room.id == selectedChatRoom)["name"]
+            : ""
+        }
+      ></ChatRoom>
     </div>
   );
 };
