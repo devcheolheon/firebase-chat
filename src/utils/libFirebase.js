@@ -1,5 +1,4 @@
 import { db, firebase, firebaseApp } from "../firebase";
-import ChatRooms from "../pages/ChatRooms";
 
 async function authSaveUser({ email, password, uid }) {
   await db.collection("google").add({
@@ -44,6 +43,21 @@ export async function createRoom(name) {
   if (!chatRoomSnapshot.empty) return;
 
   await db.collection("chatRooms").add({ name });
+}
+
+export function linkToChatRoomList({ onAdded, onRemoved }) {
+  const chatRoomsRef = db.collection("chatRooms");
+  chatRoomsRef.onSnapshot((snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      const newDoc = change.doc.data();
+      newDoc.id = change.doc.id;
+      if (change.type === "added") {
+        onAdded(newDoc);
+      } else if (change.type === "removed") {
+        onRemoved(newDoc);
+      }
+    });
+  });
 }
 
 export { authLogin, authLogout, authJoin, authSaveUser };
