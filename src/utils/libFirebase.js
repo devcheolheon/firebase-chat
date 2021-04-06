@@ -60,6 +60,28 @@ export function linkToChatRoomList({ onAdded, onRemoved }) {
   });
 }
 
+export function linkToChatList({ roomId, onAdded, onRemoved, onModified }) {
+  console.log(roomId);
+  const chatsRef = db
+    .collection("chatRooms")
+    .doc(roomId)
+    .collection("messages");
+
+  chatsRef.onSnapshot((snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      const newChat = change.doc.data();
+      newChat.id = change.doc.id;
+      if (change.type === "added") {
+        onAdded(newChat);
+      } else if (change.type === "removed") {
+        onRemoved(newChat);
+      } else if (change.type === "modified") {
+        onModified(newChat);
+      }
+    });
+  });
+}
+
 export async function addChatToRoom({ chatRoomId, userId, content }) {
   console.log(chatRoomId);
   const chatRoomsRef = db.collection("chatRooms").doc(chatRoomId);

@@ -48,6 +48,14 @@ const Content = ({ setClose, select }) => {
   );
 };
 
+const SelectRoomPlease = () => {
+  return (
+    <div className={Styles.background}>
+      <h1> 방을 선택해 주세요 </h1>
+    </div>
+  );
+};
+
 const ChatRooms = () => {
   const [close, setClose] = useState(false);
   const [chatRooms, setChatRooms] = useImmer([]);
@@ -109,14 +117,18 @@ const ChatRooms = () => {
           ))}
         </ul>
       </div>
-      <ChatRoom
-        id={selectedChatRoom}
-        name={
-          selectedChatRoom !== ""
-            ? chatRooms.find((room) => room.id == selectedChatRoom)["name"]
-            : ""
-        }
-      ></ChatRoom>
+      {selectedChatRoom == "" ? (
+        <SelectRoomPlease />
+      ) : (
+        <ChatRoom
+          id={selectedChatRoom}
+          name={
+            selectedChatRoom !== ""
+              ? chatRooms.find((room) => room.id == selectedChatRoom)["name"]
+              : ""
+          }
+        ></ChatRoom>
+      )}
     </div>
   );
 };

@@ -1,25 +1,18 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import Styles from "../bootstrap/chatroom.module.css";
 import { BsArrowReturnLeft } from "react-icons/bs";
+import { useImmer } from "use-immer";
 
 import Loading from "../components/common/Loading";
 import { addChatToRoom } from "../utils/libFirebase";
 import useCheckLogin from "../hooks/useCheckLogin";
 
-const SelectRoomPlease = () => {
-  return (
-    <div className={Styles.background}>
-      <h1> 방을 선택해 주세요 </h1>
-    </div>
-  );
-};
+import { linkToChatList } from "../utils/libFirebase";
 
-const chats = [];
-
-const Chat = ({ id, userId, text }) => {
+const Chat = ({ userId, content }) => {
   return (
     <div className={Styles.chats}>
-      <span>${userId} : </span> <span>{text}</span>
+      <span>${userId} : </span> <span>{content}</span>
     </div>
   );
 };
@@ -27,6 +20,7 @@ const Chat = ({ id, userId, text }) => {
 const ChatRoom = ({ id, name }) => {
   let [content, setContent] = useState("");
   let [loading, setLoading] = useState(false);
+  let [chats, setChats] = useImmer([]);
 
   const [loginStatus, setLoginStatus] = useCheckLogin(
     {
@@ -48,9 +42,29 @@ const ChatRoom = ({ id, name }) => {
     [id]
   );
 
-  if (id === "") {
-    return <SelectRoomPlease></SelectRoomPlease>;
-  }
+  const onAdded = useCallback((newChat) => {
+    setChats((draft) => {
+      draft.push(newChat);
+    });
+  }, []);
+
+  const onRemoved = useCallback((newChat) => {
+    setChats((draft) => draft.filter((chat) => chat.id !== newChat.id));
+  });
+
+  const onModified = useCallback((newChat) => {
+    setChats((draft) => {
+      let i = draft.findIndex((chat) => chat.id == newChat.id);
+      if (i >= 0) {
+        draft[i] = newChat;
+      }
+    });
+  });
+
+  useEffect(() => {
+    setChats([]);
+    linkToChatList({ roomId: id, onAdded, onRemoved, onModified });
+  }, [id]);
 
   return loading ? (
     <Loading></Loading>
