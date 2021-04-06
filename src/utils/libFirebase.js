@@ -60,4 +60,13 @@ export function linkToChatRoomList({ onAdded, onRemoved }) {
   });
 }
 
+export async function addChatToRoom({ chatRoomId, userId, content }) {
+  console.log(chatRoomId);
+  const chatRoomsRef = db.collection("chatRooms").doc(chatRoomId);
+  await chatRoomsRef.collection("messages").add({
+    userId,
+    content,
+    created: firebase.firestore.Timestamp.now().seconds,
+  });
+}
 export { authLogin, authLogout, authJoin, authSaveUser };

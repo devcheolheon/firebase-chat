@@ -26,7 +26,7 @@ const Join = () => {
     try {
       let uid = await authJoin(body);
       await authSaveUser({ ...body, uid });
-      setLoginStatus(true);
+      setLoginStatus(uid);
     } catch (e) {}
     setLoading(false);
   }, []);

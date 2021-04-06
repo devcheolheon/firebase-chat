@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import Styles from "../bootstrap/chatroom.module.css";
 import { BsArrowReturnLeft } from "react-icons/bs";
+
+import Loading from "../components/common/Loading";
+import { addChatToRoom } from "../utils/libFirebase";
+import useCheckLogin from "../hooks/useCheckLogin";
 
 const SelectRoomPlease = () => {
   return (
@@ -10,25 +14,7 @@ const SelectRoomPlease = () => {
   );
 };
 
-const chats = [
-  {
-    id: "11",
-    userId: "001",
-    text: "안녕하세요",
-  },
-
-  {
-    id: "22",
-    userId: "002",
-    text: "안녕하세요!!! ",
-  },
-
-  {
-    id: "33",
-    userId: "003",
-    text: "반갑습니다.",
-  },
-];
+const chats = [];
 
 const Chat = ({ id, userId, text }) => {
   return (
@@ -39,18 +25,47 @@ const Chat = ({ id, userId, text }) => {
 };
 
 const ChatRoom = ({ id, name }) => {
+  let [content, setContent] = useState("");
+  let [loading, setLoading] = useState(false);
+
+  const [loginStatus, setLoginStatus] = useCheckLogin(
+    {
+      setLoading,
+      successUrl: "/chatRooms",
+      failureUrl: "/login",
+    },
+    []
+  );
+
+  const addChat = useCallback(
+    async ({ userId, content }) => {
+      setContent("");
+      if (userId == "") return;
+      setLoading(true);
+      await addChatToRoom({ chatRoomId: id, userId, content });
+      setLoading(false);
+    },
+    [id]
+  );
+
   if (id === "") {
     return <SelectRoomPlease></SelectRoomPlease>;
   }
 
-  return (
+  return loading ? (
+    <Loading></Loading>
+  ) : (
     <div className={Styles.chatRoom}>
       <header> 채팅방 이름 : {name} </header>
       <hr></hr>
       <div className={Styles.chatsArea}>{chats.map(Chat)}</div>
       <div className={Styles.messageBox}>
-        <input type="text"></input>
-        <button>
+        <input
+          type="text"
+          onChange={(e) => setContent(e.target.value)}
+          value={content}
+        ></input>
+        <button onClick={() => addChat({ userId: loginStatus, content })}>
           <BsArrowReturnLeft></BsArrowReturnLeft>
         </button>
       </div>

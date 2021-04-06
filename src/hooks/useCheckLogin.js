@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 
 const useCheckLogin = ({ setLoading, successUrl, failureUrl }) => {
   const [isInit, setIsInit] = useState(true);
-  const [loginStatus, setLoginStatus] = useState(false);
+  const [loginStatus, setLoginStatus] = useState("");
   const history = useHistory();
 
   useEffect(() => {
@@ -13,10 +13,10 @@ const useCheckLogin = ({ setLoading, successUrl, failureUrl }) => {
       const uid = (firebaseApp.auth().currentUser || {}).uid;
 
       if (uid) {
-        setLoginStatus(true);
+        setLoginStatus(uid);
         if (successUrl) history.push(successUrl);
       } else {
-        setLoginStatus(false);
+        setLoginStatus("");
         if (failureUrl) history.push(failureUrl);
       }
 
