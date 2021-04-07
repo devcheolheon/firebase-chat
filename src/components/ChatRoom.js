@@ -10,29 +10,39 @@ import useCheckLogin from "../hooks/useCheckLogin";
 import {
   linkToChatList,
   getUserNameById,
+  getUnReadCount,
   addReadIds,
 } from "../utils/libFirebase";
 
-const Chat = ({ userId, content }) => {
+const Chat = ({ chatRoomId, id, userId, content }) => {
   let [loading, setLoading] = useState(true);
   let [nickname, setNickname] = useState("noname");
+  let [unReadCount, setUnReadCount] = useState(0);
 
   useEffect(() => {
     if (!userId) return;
     async function fetchNickname(userId) {
       setLoading(true);
       const name = await getUserNameById(userId);
+      const unReadCount = await getUnReadCount({
+        userId,
+        chatId: id,
+        chatRoomId,
+      });
+
       setNickname(name);
+      setUnReadCount(unReadCount);
       setLoading(false);
     }
     fetchNickname(userId);
   }, [userId]);
   return (
-    <div>
+    <div className={Styles.chatLine}>
       <div className={Styles.chats}>
-        {loading ? <Loading></Loading> : <span>{nickname} : </span>}{" "}
+        {loading ? <Loading></Loading> : <span>{nickname} : </span>}
         <span>{content}</span>
       </div>
+      <span class={Styles.unReadCount}>{unReadCount}</span>
     </div>
   );
 };
@@ -121,7 +131,7 @@ const ChatRoom = ({ id, name }) => {
       <hr></hr>
       <div className={Styles.chatsArea}>
         {chats.map((props) => (
-          <Chat {...props}></Chat>
+          <Chat {...props} chatRoomId={id}></Chat>
         ))}
         <div id="chatEnd" ref={chatEndRef}></div>
       </div>

@@ -111,6 +111,20 @@ export async function addReadIds({ chatRoomId, chatId, userId }) {
   });
 }
 
+export async function getUnReadCount({ chatRoomId, chatId, userId }) {
+  const chatRef = db
+    .collection("chatRooms")
+    .doc(chatRoomId)
+    .collection("messages")
+    .doc(chatId);
+
+  const members = await db.collection("google").get();
+  const chat = (await chatRef.get()).data();
+  console.log(members);
+  console.log(chat);
+  return members.size - chat.readids.length;
+}
+
 export async function getUserNameById(id) {
   const userRef = db.collection("google").where("uid", "==", id);
   const snapshot = await userRef.get();
