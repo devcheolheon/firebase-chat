@@ -16,7 +16,7 @@ const Login = () => {
     {
       setLoading,
       successUrl: "/chatRooms",
-      failureUrl: "/login",
+      failureUrl: "",
     },
     []
   );
@@ -39,6 +39,7 @@ const Login = () => {
       //
       setLoginStatus(true);
     } catch (e) {
+      console.log(e);
       if (e.code == "auth/user-not-found") {
         alert("가입하세요");
         return;
