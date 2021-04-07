@@ -65,14 +65,13 @@ export function linkToChatRoomList({ onAdded, onRemoved }) {
 }
 
 export function linkToChatList({ roomId, onAdded, onRemoved, onModified }) {
-  console.log(roomId);
   const chatsRef = db
     .collection("chatRooms")
     .doc(roomId)
     .collection("messages")
     .orderBy("created");
 
-  chatsRef.onSnapshot((snapshot) => {
+  const unscribe = chatsRef.onSnapshot((snapshot) => {
     snapshot.docChanges().forEach((change) => {
       const newChat = change.doc.data();
       newChat.id = change.doc.id;
@@ -85,6 +84,8 @@ export function linkToChatList({ roomId, onAdded, onRemoved, onModified }) {
       }
     });
   });
+
+  return unscribe;
 }
 
 export async function addChatToRoom({ chatRoomId, userId, content }) {

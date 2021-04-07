@@ -79,8 +79,14 @@ const ChatRoom = ({ id, name }) => {
   useEffect(() => {
     setLoading(true);
     setChats([]);
-    linkToChatList({ roomId: id, onAdded, onRemoved, onModified });
+    const unscribe = linkToChatList({
+      roomId: id,
+      onAdded,
+      onRemoved,
+      onModified,
+    });
     setLoading(false);
+    return () => unscribe();
   }, [id]);
 
   // ringle - sungpha 님 코드 그대로
