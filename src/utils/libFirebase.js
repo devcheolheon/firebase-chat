@@ -69,7 +69,8 @@ export function linkToChatList({ roomId, onAdded, onRemoved, onModified }) {
   const chatsRef = db
     .collection("chatRooms")
     .doc(roomId)
-    .collection("messages");
+    .collection("messages")
+    .orderBy("created");
 
   chatsRef.onSnapshot((snapshot) => {
     snapshot.docChanges().forEach((change) => {
