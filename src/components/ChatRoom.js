@@ -79,7 +79,7 @@ const ChatRoom = ({ id, name }) => {
     setChats([]);
     linkToChatList({ roomId: id, onAdded, onRemoved, onModified });
     setLoading(false);
-  }, [id]);
+  }, []);
 
   return loading ? (
     <Loading></Loading>
