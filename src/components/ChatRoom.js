@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import Styles from "../bootstrap/chatroom.module.css";
 import { BsArrowReturnLeft } from "react-icons/bs";
 import { useImmer } from "use-immer";
@@ -12,6 +12,7 @@ import { linkToChatList, getUserNameById } from "../utils/libFirebase";
 const Chat = ({ userId, content }) => {
   let [loading, setLoading] = useState(true);
   let [nickname, setNickname] = useState("noname");
+
   useEffect(() => {
     if (!userId) return;
     async function fetchNickname(userId) {
@@ -36,6 +37,7 @@ const ChatRoom = ({ id, name }) => {
   let [content, setContent] = useState("");
   let [loading, setLoading] = useState(true);
   let [chats, setChats] = useImmer([]);
+  let chatEndRef = useRef();
 
   const [loginStatus, setLoginStatus] = useCheckLogin(
     {
@@ -79,7 +81,16 @@ const ChatRoom = ({ id, name }) => {
     setChats([]);
     linkToChatList({ roomId: id, onAdded, onRemoved, onModified });
     setLoading(false);
+  }, [id]);
+
+  // ringle - sungpha 님 코드 그대로
+  const scrollToBottom = useCallback(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chats, id]);
 
   return loading ? (
     <Loading></Loading>
@@ -91,6 +102,7 @@ const ChatRoom = ({ id, name }) => {
         {chats.map((props) => (
           <Chat {...props}></Chat>
         ))}
+        <div id="chatEnd" ref={chatEndRef}></div>
       </div>
       <div className={Styles.messageBox}>
         <input
