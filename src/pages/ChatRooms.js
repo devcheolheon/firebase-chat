@@ -8,6 +8,7 @@ import {
   linkToChatRoomList,
   createRoom,
   getUserNameById,
+  authLogout,
 } from "../utils/libFirebase";
 import useCheckLogin from "../hooks/useCheckLogin";
 
@@ -106,6 +107,11 @@ const ChatRooms = () => {
     setSelectedChatRoom(event.target.id);
   }, []);
 
+  const onClickLogout = useCallback((event) => {
+    event.preventDefault();
+    authLogout();
+  });
+
   useEffect(() => {
     linkToChatRoomList({ onAdded: addChatRooms, onRemoved: removeChatRooms });
   }, []);
@@ -125,7 +131,12 @@ const ChatRooms = () => {
           <span class="fs-4">채팅방 </span>
         </a>
         <hr />
-        <div>{nickname}</div>
+        <div>
+          {nickname}
+          <a href="#" class="text-muted" onClick={onClickLogout}>
+            (logout)
+          </a>
+        </div>
         <hr />
         <ul class="nav d-flex flex-column nav-pills">
           <li class="nav-item">

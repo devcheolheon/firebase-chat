@@ -15,18 +15,21 @@ async function authJoin({ email, password }) {
     .auth()
     .createUserWithEmailAndPassword(email, password);
   const uid = (firebaseApp.auth().currentUser || {}).uid;
-
   return uid;
 }
 
 async function authLogin(email, password) {
-  let user = await firebaseApp
-    .auth()
-    .signInWithEmailAndPassword(email, password);
+  try {
+    let user = await firebaseApp
+      .auth()
+      .signInWithEmailAndPassword(email, password);
 
-  const uid = (firebaseApp.auth().currentUser || {}).uid;
-
-  return uid;
+    const uid = (firebaseApp.auth().currentUser || {}).uid;
+    return uid;
+  } catch (e) {
+    console.log(e);
+    return "";
+  }
 }
 
 async function authLogout() {
