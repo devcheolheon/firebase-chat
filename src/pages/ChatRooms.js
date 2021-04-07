@@ -4,7 +4,13 @@ import Popup from "../components/common/Popup";
 import ChatRoom from "../components/ChatRoom";
 import Styles from "../bootstrap/chatrooms.module.css";
 import logo from "../logo.png";
-import { linkToChatRoomList, createRoom } from "../utils/libFirebase";
+import {
+  linkToChatRoomList,
+  createRoom,
+  getUserNameById,
+} from "../utils/libFirebase";
+import useCheckLogin from "../hooks/useCheckLogin";
+
 import { useImmer } from "use-immer";
 
 const ChatRoomLi = ({ id, name, selected, onClick }) => {
@@ -60,6 +66,29 @@ const ChatRooms = () => {
   const [close, setClose] = useState(false);
   const [chatRooms, setChatRooms] = useImmer([]);
   const [selectedChatRoom, setSelectedChatRoom] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [nickname, setNickname] = useState("noname");
+
+  const [loginStatus, setLoginStatus] = useCheckLogin(
+    {
+      setLoading,
+      successUrl: "/chatRooms",
+      failureUrl: "/login",
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (loginStatus == "") return;
+    const userId = loginStatus;
+    async function fetchNickname(userId) {
+      setLoading(true);
+      const name = await getUserNameById(userId);
+      setNickname(name);
+      setLoading(false);
+    }
+    fetchNickname(userId);
+  }, [loginStatus]);
 
   const addChatRooms = useCallback((newRoom) => {
     setChatRooms((draft) => {
@@ -78,7 +107,6 @@ const ChatRooms = () => {
   }, []);
 
   useEffect(() => {
-    console.log(selectedChatRoom);
     linkToChatRoomList({ onAdded: addChatRooms, onRemoved: removeChatRooms });
   }, []);
 
@@ -96,6 +124,8 @@ const ChatRooms = () => {
         >
           <span class="fs-4">채팅방 </span>
         </a>
+        <hr />
+        <div>{nickname}</div>
         <hr />
         <ul class="nav d-flex flex-column nav-pills">
           <li class="nav-item">
