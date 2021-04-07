@@ -75,6 +75,7 @@ export function linkToChatList({ roomId, onAdded, onRemoved, onModified }) {
     snapshot.docChanges().forEach((change) => {
       const newChat = change.doc.data();
       newChat.id = change.doc.id;
+
       if (change.type === "added") {
         onAdded(newChat);
       } else if (change.type === "removed") {
@@ -89,12 +90,24 @@ export function linkToChatList({ roomId, onAdded, onRemoved, onModified }) {
 }
 
 export async function addChatToRoom({ chatRoomId, userId, content }) {
-  console.log(chatRoomId);
   const chatRoomsRef = db.collection("chatRooms").doc(chatRoomId);
   await chatRoomsRef.collection("messages").add({
     userId,
     content,
+    readids: [userId],
     created: firebase.firestore.Timestamp.now().seconds,
+  });
+}
+
+export async function addReadIds({ chatRoomId, chatId, userId }) {
+  const chatRef = db
+    .collection("chatRooms")
+    .doc(chatRoomId)
+    .collection("messages")
+    .doc(chatId);
+
+  chatRef.update({
+    readids: firebase.firestore.FieldValue.arrayUnion(userId),
   });
 }
 

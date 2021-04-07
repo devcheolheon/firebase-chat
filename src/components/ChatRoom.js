@@ -7,7 +7,11 @@ import Loading from "../components/common/Loading";
 import { addChatToRoom } from "../utils/libFirebase";
 import useCheckLogin from "../hooks/useCheckLogin";
 
-import { linkToChatList, getUserNameById } from "../utils/libFirebase";
+import {
+  linkToChatList,
+  getUserNameById,
+  addReadIds,
+} from "../utils/libFirebase";
 
 const Chat = ({ userId, content }) => {
   let [loading, setLoading] = useState(true);
@@ -94,8 +98,19 @@ const ChatRoom = ({ id, name }) => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
+  const setAllChatsRead = useCallback(
+    (roomId, chats, userId) => {
+      if (userId == "") return;
+      chats.forEach((chat) => {
+        addReadIds({ chatId: chat.id, chatRoomId: roomId, userId });
+      });
+    },
+    [setChats]
+  );
+
   useEffect(() => {
     scrollToBottom();
+    setAllChatsRead(id, chats, loginStatus);
   }, [chats, id]);
 
   return loading ? (
