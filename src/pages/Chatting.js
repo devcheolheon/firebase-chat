@@ -307,11 +307,31 @@ const Chatting = () => {
         <Grid container spacing={1}>
           {/* Chart */}
           <Grid item xs={12} lg={6}>
-            <div>?</div>
+            <List>
+              <ListItem>
+                <ListItemText primary="채팅방1" />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="채팅방2" />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="채팅방3" />
+              </ListItem>
+            </List>
           </Grid>
           {/* Recent Deposits */}
           <Grid item xs={12} lg={6}>
-            <div>?</div>
+            <List>
+              <ListItem>
+                <ListItemText primary="채팅1" />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="채팅2" />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="채팅3" />
+              </ListItem>
+            </List>
           </Grid>
         </Grid>
         <Box pt={4}></Box>
