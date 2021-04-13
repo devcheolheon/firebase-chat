@@ -16,7 +16,6 @@ import Container from "@material-ui/core/Container";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -64,67 +63,76 @@ const Join = () => {
   return loading ? (
     <Loading></Loading>
   ) : (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Logo></Logo>
-        <Typography component="h1" variant="h5">
-          가입하기
-        </Typography>
-        <form className={classes.form} noValidate>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="email"
-                label="이메일"
-                name="email"
-                autoComplete="email"
-                onChange={(e) => setEmail(e.target.value)}
-              />
+    <Grid
+      container
+      direction="row"
+      justify="center"
+      alignItems="center"
+      component="main"
+      style={{ minHeight: "100vh" }}
+    >
+      <Container maxWidth="xs">
+        <CssBaseline />
+        <div className={classes.paper}>
+          <Logo></Logo>
+          <Typography component="h1" variant="h5">
+            가입하기
+          </Typography>
+          <form className={classes.form} noValidate>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="email"
+                  label="이메일"
+                  name="email"
+                  autoComplete="email"
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  name="password"
+                  label="비밀번호"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  name="nickname"
+                  label="닉네임"
+                  type="text"
+                  id="nickname"
+                  onChange={(e) => setNickname(e.target.value)}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                name="password"
-                label="비밀번호"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                name="nickname"
-                label="닉네임"
-                type="text"
-                id="nickname"
-                onChange={(e) => setNickname(e.target.value)}
-              />
-            </Grid>
-          </Grid>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-            onClick={() => join({ nickname, password, email })}
-          >
-            가입
-          </Button>
-        </form>
-      </div>
-      <Box mt={5}></Box>
-    </Container>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              onClick={() => join({ nickname, password, email })}
+            >
+              가입
+            </Button>
+          </form>
+        </div>
+        <Box mt={5}></Box>
+      </Container>
+    </Grid>
   );
 };
 

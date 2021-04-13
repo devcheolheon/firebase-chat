@@ -16,7 +16,6 @@ import Container from "@material-ui/core/Container";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -77,55 +76,64 @@ const Login = () => {
   return loading ? (
     <Loading></Loading>
   ) : (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Logo></Logo>
-        <form className={classes.form} noValidate>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="이메일"
-            name="email"
-            autoComplete="email"
-            autoFocus
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="비밀번호"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-            onClick={() => login(email, password)}
-          >
-            입장
-          </Button>
-          <Grid container>
-            <Grid item xs></Grid>
-            <Grid item>
-              <Link onClick={() => linktoJoin()} variant="body2">
-                {"계정이 없으신가요? 가입하세요"}
-              </Link>
+    <Grid
+      container
+      direction="row"
+      justify="center"
+      alignItems="center"
+      component="main"
+      style={{ minHeight: "100vh" }}
+    >
+      <Container maxWidth="xs">
+        <CssBaseline />
+        <div className={classes.paper}>
+          <Logo></Logo>
+          <form className={classes.form} noValidate>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="이메일"
+              name="email"
+              autoComplete="email"
+              autoFocus
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="비밀번호"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              onClick={() => login(email, password)}
+            >
+              입장
+            </Button>
+            <Grid container>
+              <Grid item xs></Grid>
+              <Grid item>
+                <Link onClick={() => linktoJoin()} variant="body2">
+                  {"계정이 없으신가요? 가입하세요"}
+                </Link>
+              </Grid>
             </Grid>
-          </Grid>
-        </form>
-      </div>
-      <Box mt={8}></Box>
-    </Container>
+          </form>
+        </div>
+        <Box mt={8}></Box>
+      </Container>
+    </Grid>
   );
 };
 
