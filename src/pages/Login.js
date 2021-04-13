@@ -2,11 +2,41 @@ import React, { useState, useEffect, useCallback } from "react";
 import { authLogin, authLogout } from "../utils/libFirebase";
 import { useHistory } from "react-router-dom";
 import logo from "../logo.png";
-import styles from "../bootstrap/login.module.css";
 import Loading from "../components/common/Loading";
 import useCheckLogin from "../hooks/useCheckLogin";
 
+import Avatar from "@material-ui/core/Avatar";
+import Button from "@material-ui/core/Button";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import TextField from "@material-ui/core/TextField";
+import Link from "@material-ui/core/Link";
+import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
+import { makeStyles } from "@material-ui/core/styles";
+import Container from "@material-ui/core/Container";
+
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    marginTop: theme.spacing(8),
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
+  },
+  form: {
+    width: "100%", // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+}));
+
 const Login = () => {
+  const classes = useStyles();
   const history = useHistory();
 
   const [email, setEmail] = useState("");
@@ -52,50 +82,57 @@ const Login = () => {
   return loading ? (
     <Loading></Loading>
   ) : (
-    <main className={styles.login}>
-      <form>
-        <img class="mb-4" src={logo}></img>
-        <h1 class="h3 mb-5 fw-normal text-center">로그인 해주세요</h1>
-        <div class="form-floating">
-          <input
-            type="email"
-            class="form-control"
-            id="floatingInput"
-            placeholder="name@example.com"
-            value={email}
-            onChange={(evt) => setEmail(evt.target.value)}
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <div className={classes.paper}>
+        <Avatar className={classes.avatar}>
+          <img src={logo} />
+        </Avatar>
+        <form className={classes.form} noValidate>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="이메일"
+            name="email"
+            autoComplete="email"
+            autoFocus
           />
-          <label for="floatingInput">이메일</label>
-        </div>
-        <div class="form-floating">
-          <input
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="비밀번호"
             type="password"
-            class="form-control"
-            id="floatingPassword"
-            placeholder="Password"
-            value={password}
-            onChange={(evt) => setPassword(evt.target.value)}
+            id="password"
+            autoComplete="current-password"
           />
-          <label for="floatingPassword">비밀번호</label>
-        </div>
-
-        <button
-          class="w-100 btn btn-lg btn-primary"
-          type="submit"
-          onClick={() => {
-            login(email, password);
-          }}
-        >
-          로그인
-        </button>
-        <p
-          onClick={linktoJoin}
-          class="text-center text-muted w-100 mt-3 font-weight-light linktext"
-        >
-          가입하기
-        </p>
-      </form>
-    </main>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+            onClick={() => login(email, password)}
+          >
+            입장
+          </Button>
+          <Grid container>
+            <Grid item xs></Grid>
+            <Grid item>
+              <Link onClick={() => linktoJoin()} variant="body2">
+                {"계정이 없으신가요? 가입하세요"}
+              </Link>
+            </Grid>
+          </Grid>
+        </form>
+      </div>
+      <Box mt={8}></Box>
+    </Container>
   );
 };
 
