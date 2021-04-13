@@ -39,7 +39,7 @@ const Login = () => {
   const [loginStatus, setLoginStatus] = useCheckLogin(
     {
       setLoading,
-      successUrl: "/chatRooms",
+      successUrl: "/chatting",
       failureUrl: "",
     },
     []
@@ -99,6 +99,7 @@ const Login = () => {
               name="email"
               autoComplete="email"
               autoFocus
+              onChange={(e) => setEmail(e.target.value)}
             />
             <TextField
               variant="outlined"
@@ -110,6 +111,7 @@ const Login = () => {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={(e) => setPassword(e.target.value)}
             />
             <Button
               type="submit"
