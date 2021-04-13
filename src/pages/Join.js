@@ -1,11 +1,10 @@
 import React, { useState, useCallback } from "react";
 import { useHistory } from "react-router-dom";
-import styles from "../bootstrap/join.module.css";
 import Loading from "../components/common/Loading";
 import { authJoin, authSaveUser } from "../utils/libFirebase";
 import useCheckLogin from "../hooks/useCheckLogin";
 
-import Avatar from "@material-ui/core/Avatar";
+import Logo from "../components/common/Logo";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
@@ -68,7 +67,7 @@ const Join = () => {
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-        <Avatar className={classes.avatar}></Avatar>
+        <Logo></Logo>
         <Typography component="h1" variant="h5">
           가입하기
         </Typography>

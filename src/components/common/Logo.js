@@ -1,5 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import logo from "../../logo.png";
+import Avatar from "@material-ui/core/Avatar";
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
@@ -8,12 +10,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Logo = () => (
-  <Avatar
-    className={`${classes.avatar} ${classes.large}`}
-    src={logo}
-    variant="square"
-  />
-);
+const Logo = () => {
+  const classes = useStyles();
 
-exports Logo;
+  return (
+    <Avatar
+      className={`${classes.avatar} ${classes.large}`}
+      src={logo}
+      variant="square"
+    />
+  );
+};
+
+export default Logo;

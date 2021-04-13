@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { authLogin, authLogout } from "../utils/libFirebase";
 import { useHistory } from "react-router-dom";
-import logo from "../logo.png";
 import Loading from "../components/common/Loading";
 import useCheckLogin from "../hooks/useCheckLogin";
 
-import Avatar from "@material-ui/core/Avatar";
+import Logo from "../components/common/Logo";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
@@ -81,11 +80,7 @@ const Login = () => {
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-        <Avatar
-          className={`${classes.avatar} ${classes.large}`}
-          src={logo}
-          variant="square"
-        />
+        <Logo></Logo>
         <form className={classes.form} noValidate>
           <TextField
             variant="outlined"
