@@ -22,10 +22,6 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
   },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
   form: {
     width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1),
@@ -85,9 +81,11 @@ const Login = () => {
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <img src={logo} />
-        </Avatar>
+        <Avatar
+          className={`${classes.avatar} ${classes.large}`}
+          src={logo}
+          variant="square"
+        />
         <form className={classes.form} noValidate>
           <TextField
             variant="outlined"
