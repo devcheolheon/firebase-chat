@@ -23,6 +23,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 
 import ChatRoomList from "../components/ChatRoomList";
+import Chat from "../components/Chat";
 
 import {
   linkToChatRoomList,
@@ -194,7 +195,74 @@ const useStyles = makeStyles((theme) => ({
     height: "350px",
     overflowY: "scroll",
   },
+
+  ChatListContainer: {
+    marginTop: "4px",
+    height: "785px",
+    overflowY: "scroll",
+    border: "2px solid black",
+    borderColor: theme.palette.text.secondary,
+  },
 }));
+
+const tempChatsArr = [
+  {
+    id: "1",
+    uid: "----",
+    name: "피카츄",
+    content: "aaaa",
+    created: "1618378653151",
+    isMe: true,
+  },
+  {
+    id: "1",
+    uid: "----",
+    name: "피카츄",
+    content: "aaaa",
+    created: "1618378653151",
+    isMe: true,
+  },
+  {
+    id: "1",
+    uid: "----",
+    name: "피카츄",
+    content: "aaaa",
+    created: "1618378653151",
+    isMe: true,
+  },
+  {
+    id: "1",
+    uid: "----",
+    name: "피카츄",
+    content: "aaaa",
+    created: "1618378653151",
+    isMe: true,
+  },
+  {
+    id: "1",
+    uid: "----",
+    name: "피카츄",
+    content: "aaaa",
+    created: "1618378653151",
+    isMe: true,
+  },
+  {
+    id: "2",
+    uid: "----",
+    name: "라이츄",
+    content:
+      "bbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    created: "1618378653151",
+  },
+  {
+    isMe: true,
+    id: "3",
+    uid: "----",
+    name: "피카츄",
+    content: "aaaa",
+    created: "1618378653151",
+  },
+];
 
 const Chatting = () => {
   const [close, setClose] = useState(false);
@@ -350,18 +418,8 @@ const Chatting = () => {
             </Grid>
           </Grid>
           {/* Recent Deposits */}
-          <Grid item xs={12} lg={4}>
-            <List>
-              <ListItem>
-                <ListItemText primary="채팅1" />
-              </ListItem>
-              <ListItem>
-                <ListItemText primary="채팅2" />
-              </ListItem>
-              <ListItem>
-                <ListItemText primary="채팅" />
-              </ListItem>
-            </List>
+          <Grid item xs={12} lg={4} className={classes.ChatListContainer}>
+            {tempChatsArr.map(Chat)}
           </Grid>
           <Grid item xs={12} lg={4}>
             <List>
