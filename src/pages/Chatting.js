@@ -33,6 +33,7 @@ import {
 import useCheckLogin from "../hooks/useCheckLogin";
 
 import { useImmer } from "use-immer";
+import { CallReceived } from "@material-ui/icons";
 
 const ChatRoomLi = ({ id, name, selected, onClick }) => {
   console.log(`${id} - selected: ${selected}`);
@@ -140,6 +141,7 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.enteringScreen,
     }),
   },
+
   drawerPaperClose: {
     overflowX: "hidden",
     transition: theme.transitions.create("width", {
@@ -151,7 +153,9 @@ const useStyles = makeStyles((theme) => ({
       width: theme.spacing(9),
     },
   },
+
   appBarSpacer: theme.mixins.toolbar,
+
   content: {
     flexGrow: 1,
     height: "100vh",
@@ -167,8 +171,28 @@ const useStyles = makeStyles((theme) => ({
     overflow: "auto",
     flexDirection: "column",
   },
+
   fixedHeight: {
     height: 240,
+  },
+
+  ChatRoomListTitle: {
+    flex: 1,
+    backgroundColor: theme.palette.primary.dark,
+    paddingLeft: theme.spacing(2),
+    paddingTop: theme.spacing(2),
+  },
+
+  ChatRoomListContainer: {
+    [theme.breakpoints.up("sm")]: {
+      display: "flex",
+      flexDirection: "row",
+    },
+  },
+
+  ChatRoomList: {
+    height: "350px",
+    overflowY: "scroll",
   },
 }));
 
@@ -306,8 +330,24 @@ const Chatting = () => {
         <div className={classes.appBarSpacer} />
         <Grid container spacing={1}>
           {/* Chart */}
-          <Grid item xs={12} lg={4}>
-            <ChatRoomList />
+          <Grid
+            container
+            xs={12}
+            lg={4}
+            className={classes.ChatRoomListContainer}
+          >
+            <Typography variant="h6" className={classes.ChatRoomListTitle}>
+              참여 중인 채팅방
+            </Typography>
+            <Grid item xs={12} className={classes.ChatRoomList}>
+              <ChatRoomList />
+            </Grid>
+            <Typography variant="h6" className={classes.ChatRoomListTitle}>
+              채팅방
+            </Typography>
+            <Grid item xs={12} className={classes.ChatRoomList}>
+              <ChatRoomList />
+            </Grid>
           </Grid>
           {/* Recent Deposits */}
           <Grid item xs={12} lg={4}>

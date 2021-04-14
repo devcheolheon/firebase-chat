@@ -33,6 +33,33 @@ const tempArr = [
       content: "안녕하세요우",
     },
   },
+  {
+    chatRoomName: "채팅방1",
+    members: ["피카츄", "라이츄", "꼬부기"],
+    totalTalks: 5,
+    recentTalk: {
+      user: "피카츄",
+      content: "안녕하세요우",
+    },
+  },
+  {
+    chatRoomName: "채팅방1",
+    members: ["피카츄", "라이츄", "꼬부기"],
+    totalTalks: 5,
+    recentTalk: {
+      user: "피카츄",
+      content: "안녕하세요우",
+    },
+  },
+  {
+    chatRoomName: "채팅방1",
+    members: ["피카츄", "라이츄", "꼬부기"],
+    totalTalks: 5,
+    recentTalk: {
+      user: "피카츄",
+      content: "안녕하세요우",
+    },
+  },
 ];
 
 const useStyles = makeStyles((theme) => ({
