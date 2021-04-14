@@ -24,7 +24,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import { Card } from "@material-ui/core";
 
 import ChatRoomList from "../components/ChatRoomList";
-import Chat from "../components/Chat";
+import Chat from "../chatting/Chat";
 import ChatInputText from "../components/ChatInputText";
 
 import {
@@ -32,8 +32,8 @@ import {
   createRoom,
   getUserNameById,
   authLogout,
-} from "../utils/libFirebase";
-import useCheckLogin from "../hooks/useCheckLogin";
+} from "../../utils/libFirebase";
+import useCheckLogin from "../../hooks/useCheckLogin";
 
 import { useImmer } from "use-immer";
 

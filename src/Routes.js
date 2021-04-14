@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Login from "./pages/Login";
 import Join from "./pages/Join";
-import Chatting from "./pages/Chatting";
+import Main from "./pages/Main";
 
 class Routes extends React.Component {
   render() {
@@ -12,7 +12,7 @@ class Routes extends React.Component {
           <Route exact path="/" component={Login} />
           <Route exact path="/join" component={Join} />
           <Route exact path="/login" component={Login} />
-          <Route exact path="/chatting" component={Chatting} />
+          <Route exact path="/main" component={Main} />
         </Switch>
       </Router>
     );

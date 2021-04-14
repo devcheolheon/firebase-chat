@@ -39,7 +39,7 @@ const Login = () => {
   const [loginStatus, setLoginStatus] = useCheckLogin(
     {
       setLoading,
-      successUrl: "/chatting",
+      successUrl: "/main",
       failureUrl: "",
     },
     []
