@@ -21,6 +21,7 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
+import { Card } from "@material-ui/core";
 
 import ChatRoomList from "../components/ChatRoomList";
 import Chat from "../components/Chat";
@@ -35,7 +36,6 @@ import {
 import useCheckLogin from "../hooks/useCheckLogin";
 
 import { useImmer } from "use-immer";
-import { CallReceived } from "@material-ui/icons";
 
 const ChatRoomLi = ({ id, name, selected, onClick }) => {
   console.log(`${id} - selected: ${selected}`);
@@ -207,6 +207,19 @@ const useStyles = makeStyles((theme) => ({
   ChatList: {
     height: "630px",
     overflowY: "scroll",
+  },
+
+  ChatCardContainer: {
+    height: "785px",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-evenly",
+  },
+
+  ChatCard: {
+    marginLeft: "30px",
+    marginRight: "30px",
+    height: "300px",
   },
 }));
 
@@ -427,18 +440,9 @@ const Chatting = () => {
             <div className={classes.ChatList}>{tempChatsArr.map(Chat)}</div>
             <ChatInputText />
           </Grid>
-          <Grid item xs={12} lg={4}>
-            <List>
-              <ListItem>
-                <ListItemText primary="채팅1" />
-              </ListItem>
-              <ListItem>
-                <ListItemText primary="채팅2" />
-              </ListItem>
-              <ListItem>
-                <ListItemText primary="채팅" />
-              </ListItem>
-            </List>
+          <Grid item xs={12} lg={4} className={classes.ChatCardContainer}>
+            <Card variant="outlined" className={classes.ChatCard} />
+            <Card variant="outlined" className={classes.ChatCard} />
           </Grid>
         </Grid>
         <Box pt={4}></Box>
