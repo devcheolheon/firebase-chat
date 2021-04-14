@@ -1,31 +1,12 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { BsChat } from "react-icons/bs";
-import { FiUsers } from "react-icons/fi";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Drawer from "@material-ui/core/Drawer";
 import Box from "@material-ui/core/Box";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
-import Badge from "@material-ui/core/Badge";
 import Grid from "@material-ui/core/Grid";
-import MenuIcon from "@material-ui/icons/Menu";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import NotificationsIcon from "@material-ui/icons/Notifications";
 
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
 import { Card } from "@material-ui/core";
-
-import ChatRoomList from "../components/ChatRoomList";
-import Chat from "../chatting/Chat";
-import ChatInputText from "../components/ChatInputText";
 
 import {
   linkToChatRoomList,
@@ -33,6 +14,7 @@ import {
   getUserNameById,
   authLogout,
 } from "../../utils/libFirebase";
+
 import useCheckLogin from "../../hooks/useCheckLogin";
 
 import { useImmer } from "use-immer";
@@ -223,66 +205,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const tempChatsArr = [
-  {
-    id: "1",
-    uid: "----",
-    name: "피카츄",
-    content: "aaaa",
-    created: "1618378653151",
-    isMe: true,
-  },
-  {
-    id: "1",
-    uid: "----",
-    name: "피카츄",
-    content: "aaaa",
-    created: "1618378653151",
-    isMe: true,
-  },
-  {
-    id: "1",
-    uid: "----",
-    name: "피카츄",
-    content: "aaaa",
-    created: "1618378653151",
-    isMe: true,
-  },
-  {
-    id: "1",
-    uid: "----",
-    name: "피카츄",
-    content: "aaaa",
-    created: "1618378653151",
-    isMe: true,
-  },
-  {
-    id: "1",
-    uid: "----",
-    name: "피카츄",
-    content: "aaaa",
-    created: "1618378653151",
-    isMe: true,
-  },
-  {
-    id: "2",
-    uid: "----",
-    name: "라이츄",
-    content:
-      "bbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-    created: "1618378653151",
-  },
-  {
-    isMe: true,
-    id: "3",
-    uid: "----",
-    name: "피카츄",
-    content: "aaaa",
-    created: "1618378653151",
-  },
-];
-
-const Chatting = () => {
+const Users = () => {
   const [close, setClose] = useState(false);
   const [chatRooms, setChatRooms] = useImmer([]);
   const [selectedChatRoom, setSelectedChatRoom] = useState("");
@@ -349,106 +272,34 @@ const Chatting = () => {
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   return (
-    <div className={classes.root}>
-      <CssBaseline />
-      <AppBar
-        position="absolute"
-        className={clsx(classes.appBar, open && classes.appBarShift)}
-      >
-        <Toolbar className={classes.toolbar}>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            className={clsx(
-              classes.menuButton,
-              open && classes.menuButtonHidden
-            )}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography
-            component="h1"
-            variant="h6"
-            color="inherit"
-            noWrap
-            className={classes.title}
-          >
+    <React.Fragment>
+      <Grid container spacing={1}>
+        {/* Chart */}
+        <Grid
+          container
+          xs={12}
+          lg={4}
+          className={classes.ChatRoomListContainer}
+        >
+          <Typography variant="h6" className={classes.ChatRoomListTitle}>
+            참여 중인 채팅방
+          </Typography>
+          <Grid item xs={12} className={classes.ChatRoomList}></Grid>
+          <Typography variant="h6" className={classes.ChatRoomListTitle}>
             채팅방
           </Typography>
-          <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        variant="permanent"
-        classes={{
-          paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
-        }}
-        open={open}
-      >
-        <div className={classes.toolbarIcon}>
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </div>
-        <Divider />
-        <List>
-          <ListItem button>
-            <ListItemIcon className={classes.listItemIcon}>
-              <BsChat size="22" className={classes.reactIcon} />
-            </ListItemIcon>
-            <ListItemText primary="채팅방" />
-          </ListItem>
-          <ListItem button>
-            <ListItemIcon className={classes.listItemIcon}>
-              <FiUsers size="22" className={classes.reactIcon} />
-            </ListItemIcon>
-            <ListItemText primary="사용자" />
-          </ListItem>
-        </List>
-      </Drawer>
-      <main className={classes.content}>
-        <div className={classes.appBarSpacer} />
-        <Grid container spacing={1}>
-          {/* Chart */}
-          <Grid
-            container
-            xs={12}
-            lg={4}
-            className={classes.ChatRoomListContainer}
-          >
-            <Typography variant="h6" className={classes.ChatRoomListTitle}>
-              참여 중인 채팅방
-            </Typography>
-            <Grid item xs={12} className={classes.ChatRoomList}>
-              <ChatRoomList />
-            </Grid>
-            <Typography variant="h6" className={classes.ChatRoomListTitle}>
-              채팅방
-            </Typography>
-            <Grid item xs={12} className={classes.ChatRoomList}>
-              <ChatRoomList />
-            </Grid>
-          </Grid>
-          {/* Recent Deposits */}
-          <Grid item xs={12} lg={4} className={classes.ChatListContainer}>
-            <div className={classes.ChatList}>{tempChatsArr.map(Chat)}</div>
-            <ChatInputText />
-          </Grid>
-          <Grid item xs={12} lg={4} className={classes.ChatCardContainer}>
-            <Card variant="outlined" className={classes.ChatCard} />
-            <Card variant="outlined" className={classes.ChatCard} />
-          </Grid>
+          <Grid item xs={12} className={classes.ChatRoomList}></Grid>
         </Grid>
-        <Box pt={4}></Box>
-      </main>
-    </div>
+        {/* Recent Deposits */}
+        <Grid item xs={12} lg={4} className={classes.ChatListContainer}></Grid>
+        <Grid item xs={12} lg={4} className={classes.ChatCardContainer}>
+          <Card variant="outlined" className={classes.ChatCard} />
+          <Card variant="outlined" className={classes.ChatCard} />
+        </Grid>
+      </Grid>
+      <Box pt={4}></Box>
+    </React.Fragment>
   );
 };
 
-export default Chatting;
+export default Users;

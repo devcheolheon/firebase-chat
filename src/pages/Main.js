@@ -21,6 +21,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 
 import Chatting from "../components/chatting/Chatting";
+import Users from "../components/users/Users";
 
 import { getUserNameById, authLogout } from "../utils/libFirebase";
 import useCheckLogin from "../hooks/useCheckLogin";
@@ -211,7 +212,8 @@ const Main = () => {
             noWrap
             className={classes.title}
           >
-            채팅방
+            {menu === MENU_CHATTING && " 채팅 "}
+            {menu === MENU_USER && "사용자 정보 "}
           </Typography>
           <IconButton color="inherit">
             <Badge badgeContent={4} color="secondary">
@@ -262,7 +264,8 @@ const Main = () => {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
-        <Chatting />
+        {menu === MENU_CHATTING && <Chatting />}
+        {menu === MENU_USER && <Users />}
       </main>
     </div>
   );
