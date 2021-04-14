@@ -14,6 +14,8 @@ import {
   addReadIds,
 } from "../utils/libFirebase";
 
+import { ChatInputText } from "../components/ChatInputText";
+
 const Chat = ({ chatRoomId, id, userId, content }) => {
   let [loading, setLoading] = useState(true);
   let [nickname, setNickname] = useState("noname");

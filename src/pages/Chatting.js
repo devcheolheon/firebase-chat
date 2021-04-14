@@ -24,6 +24,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 
 import ChatRoomList from "../components/ChatRoomList";
 import Chat from "../components/Chat";
+import ChatInputText from "../components/ChatInputText";
 
 import {
   linkToChatRoomList,
@@ -199,9 +200,13 @@ const useStyles = makeStyles((theme) => ({
   ChatListContainer: {
     marginTop: "4px",
     height: "785px",
+    borderLeft: "2px solid rgb(66,66,66)",
+    borderRight: "2px solid rgb(66,66,66)",
+  },
+
+  ChatList: {
+    height: "630px",
     overflowY: "scroll",
-    border: "2px solid black",
-    borderColor: theme.palette.text.secondary,
   },
 }));
 
@@ -419,7 +424,8 @@ const Chatting = () => {
           </Grid>
           {/* Recent Deposits */}
           <Grid item xs={12} lg={4} className={classes.ChatListContainer}>
-            {tempChatsArr.map(Chat)}
+            <div className={classes.ChatList}>{tempChatsArr.map(Chat)}</div>
+            <ChatInputText />
           </Grid>
           <Grid item xs={12} lg={4}>
             <List>
