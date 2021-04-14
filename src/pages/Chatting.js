@@ -13,9 +13,7 @@ import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import Badge from "@material-ui/core/Badge";
-import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import NotificationsIcon from "@material-ui/icons/Notifications";
@@ -23,6 +21,8 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
+
+import ChatRoomList from "../components/ChatRoomList";
 
 import {
   linkToChatRoomList,
@@ -306,21 +306,11 @@ const Chatting = () => {
         <div className={classes.appBarSpacer} />
         <Grid container spacing={1}>
           {/* Chart */}
-          <Grid item xs={12} lg={6}>
-            <List>
-              <ListItem>
-                <ListItemText primary="채팅방1" />
-              </ListItem>
-              <ListItem>
-                <ListItemText primary="채팅방2" />
-              </ListItem>
-              <ListItem>
-                <ListItemText primary="채팅방3" />
-              </ListItem>
-            </List>
+          <Grid item xs={12} lg={4}>
+            <ChatRoomList />
           </Grid>
           {/* Recent Deposits */}
-          <Grid item xs={12} lg={6}>
+          <Grid item xs={12} lg={4}>
             <List>
               <ListItem>
                 <ListItemText primary="채팅1" />
@@ -329,7 +319,20 @@ const Chatting = () => {
                 <ListItemText primary="채팅2" />
               </ListItem>
               <ListItem>
-                <ListItemText primary="채팅3" />
+                <ListItemText primary="채팅" />
+              </ListItem>
+            </List>
+          </Grid>
+          <Grid item xs={12} lg={4}>
+            <List>
+              <ListItem>
+                <ListItemText primary="채팅1" />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="채팅2" />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="채팅" />
               </ListItem>
             </List>
           </Grid>
