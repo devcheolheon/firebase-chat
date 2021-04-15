@@ -23,7 +23,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Chatting from "../components/chatting/Chatting";
 import Users from "../components/users/Users";
 
-import { getUserNameById, authLogout } from "../utils/libFirebase";
+import { getUserNameById, authLogout } from "../firebaseUtils/libFirebase";
 import useCheckLogin from "../hooks/useCheckLogin";
 
 const drawerWidth = 160;

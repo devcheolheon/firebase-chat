@@ -8,12 +8,8 @@ import ChatInputText from "./ChatInputText";
 
 import { useImmer } from "use-immer";
 
-import {
-  linkToChatRoomList,
-  createRoom,
-  getUserNameById,
-  authLogout,
-} from "../../utils/libFirebase";
+import { createChat, linkToChatsList } from "../../firebaseUtils/chats";
+
 import useCheckLogin from "../../hooks/useCheckLogin";
 
 const useStyles = makeStyles((theme) => ({
@@ -62,69 +58,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const tempChatsArr = [
-  {
-    id: "1",
-    uid: "----",
-    name: "피카츄",
-    content: "aaaa",
-    created: "1618378653151",
-    isMe: true,
-  },
-  {
-    id: "1",
-    uid: "----",
-    name: "피카츄",
-    content: "aaaa",
-    created: "1618378653151",
-    isMe: true,
-  },
-  {
-    id: "1",
-    uid: "----",
-    name: "피카츄",
-    content: "aaaa",
-    created: "1618378653151",
-    isMe: true,
-  },
-  {
-    id: "1",
-    uid: "----",
-    name: "피카츄",
-    content: "aaaa",
-    created: "1618378653151",
-    isMe: true,
-  },
-  {
-    id: "1",
-    uid: "----",
-    name: "피카츄",
-    content: "aaaa",
-    created: "1618378653151",
-    isMe: true,
-  },
-  {
-    id: "2",
-    uid: "----",
-    name: "라이츄",
-    content:
-      "bbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-    created: "1618378653151",
-  },
-  {
-    isMe: true,
-    id: "3",
-    uid: "----",
-    name: "피카츄",
-    content: "aaaa",
-    created: "1618378653151",
-  },
-];
-
 const Chatting = () => {
   const [close, setClose] = useState(false);
-  const [chatRooms, setChatRooms] = useImmer([]);
-  const [selectedChatRoom, setSelectedChatRoom] = useState("");
+  const [chats, setChats] = useImmer([]);
+  const [selectedChats, setSelectedChats] = useState("");
   const [loading, setLoading] = useState(false);
   const [nickname, setNickname] = useState("noname");
   const classes = useStyles();
@@ -143,19 +80,27 @@ const Chatting = () => {
     const userId = loginStatus;
     async function fetchNickname(userId) {
       setLoading(true);
-      const name = await getUserNameById(userId);
-      setNickname(name);
+      //const name = await getUserNameById(userId);
+      //setNickname(name);
       setLoading(false);
     }
     fetchNickname(userId);
   }, [loginStatus]);
 
-  const addChatRooms = useCallback((newRoom) => {
-    setChatRooms((draft) => {
+  const addChat = useCallback((newRoom) => {
+    setChats((draft) => {
       draft.push(newRoom);
     });
   }, []);
 
+  //  addChat 테스트
+  useEffect(() => {
+    if (loginStatus !== "") {
+      createChat({ name: "test", userId: loginStatus });
+    }
+  }, [loginStatus]);
+
+  /*
   const removeChatRooms = useCallback((newRoom) => {
     setSelectedChatRoom("");
     setChatRooms((draft) => draft.filter((v) => v.id !== newRoom.id));
@@ -170,9 +115,11 @@ const Chatting = () => {
     event.preventDefault();
     authLogout();
   });
+  
+  */
 
   useEffect(() => {
-    //  linkToChatRoomList({ onAdded: addChatRooms, onRemoved: removeChatRooms });
+    linkToChatsList({ onAdded: addChat });
   }, []);
 
   return (
@@ -189,19 +136,17 @@ const Chatting = () => {
           <Typography variant="h6" className={classes.ChatRoomListTitle}>
             참여 중인 채팅방
           </Typography>
-          <Grid item xs={12} className={classes.ChatRoomList}>
-            <ChatRoomList />
-          </Grid>
+          <Grid item xs={12} className={classes.ChatRoomList}></Grid>
           <Typography variant="h6" className={classes.ChatRoomListTitle}>
             채팅방
           </Typography>
           <Grid item xs={12} className={classes.ChatRoomList}>
-            <ChatRoomList />
+            <ChatRoomList chats={chats} />
           </Grid>
         </Grid>
         {/* Recent Deposits */}
         <Grid item xs={12} lg={4} className={classes.ChatListContainer}>
-          <div className={classes.ChatList}>{tempChatsArr.map(Chat)}</div>
+          <div className={classes.ChatList}>{}</div>
           <ChatInputText />
         </Grid>
         <Grid item xs={12} lg={4} className={classes.ChatCardContainer}>

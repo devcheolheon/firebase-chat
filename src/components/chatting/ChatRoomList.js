@@ -2,65 +2,8 @@ import React from "react";
 
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import { Divider, makeStyles, Typography, Box } from "@material-ui/core";
+import { Divider, makeStyles, Typography } from "@material-ui/core";
 import List from "@material-ui/core/List";
-
-const tempArr = [
-  {
-    chatRoomName: "채팅방1",
-    members: ["피카츄", "라이츄", "꼬부기"],
-    totalTalks: 10,
-    recentTalk: {
-      user: "피카츄",
-      content: "안녕하세요우",
-    },
-  },
-  {
-    chatRoomName: "채팅방1",
-    totalTalks: 5,
-    members: ["피카츄", "라이츄", "꼬부기"],
-    recentTalk: {
-      user: "피카츄",
-      content: "안녕하세요우",
-    },
-  },
-  {
-    chatRoomName: "채팅방1",
-    members: ["피카츄", "라이츄", "꼬부기"],
-    totalTalks: 5,
-    recentTalk: {
-      user: "피카츄",
-      content: "안녕하세요우",
-    },
-  },
-  {
-    chatRoomName: "채팅방1",
-    members: ["피카츄", "라이츄", "꼬부기"],
-    totalTalks: 5,
-    recentTalk: {
-      user: "피카츄",
-      content: "안녕하세요우",
-    },
-  },
-  {
-    chatRoomName: "채팅방1",
-    members: ["피카츄", "라이츄", "꼬부기"],
-    totalTalks: 5,
-    recentTalk: {
-      user: "피카츄",
-      content: "안녕하세요우",
-    },
-  },
-  {
-    chatRoomName: "채팅방1",
-    members: ["피카츄", "라이츄", "꼬부기"],
-    totalTalks: 5,
-    recentTalk: {
-      user: "피카츄",
-      content: "안녕하세요우",
-    },
-  },
-];
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -88,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Members = ({ member, classes }) => {
+  console.log(member);
   return (
     <Typography
       variant="h8"
@@ -105,7 +49,7 @@ const Members = ({ member, classes }) => {
   );
 };
 
-const ChatRoomLi = ({ chatRoomName, members, recentTalk, totalTalks }) => {
+const ChatRoomLi = ({ name, users, recentMessage, totalMessages }) => {
   const classes = useStyles();
 
   return (
@@ -115,25 +59,29 @@ const ChatRoomLi = ({ chatRoomName, members, recentTalk, totalTalks }) => {
           primary={
             <React.Fragment>
               <Typography variant="h5" component="h5" color="textPrimary">
-                {chatRoomName}
+                {name}
               </Typography>
 
-              <Members classes={classes} member={members}></Members>
+              <Members classes={classes} member={users}></Members>
             </React.Fragment>
           }
           secondary={
             <div className={classes.chatRoomLiBody}>
-              <div className={classes.totalTalks}> {totalTalks} </div>
+              <div className={classes.totalTalks}> {totalMessages || 0} </div>
               <div>
-                <Typography
-                  component="span"
-                  variant="body2"
-                  className={classes.inline}
-                  color="textPrimary"
-                >
-                  {recentTalk.user} -
-                </Typography>
-                {" " + recentTalk.content}
+                {recentMessage && (
+                  <React.Fragement>
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      className={classes.inline}
+                      color="textPrimary"
+                    >
+                      {recentMessage.user} -
+                    </Typography>
+                    {" " + recentMessage.content}
+                  </React.Fragement>
+                )}
               </div>
             </div>
           }
@@ -144,8 +92,8 @@ const ChatRoomLi = ({ chatRoomName, members, recentTalk, totalTalks }) => {
   );
 };
 
-const ChatRoomList = () => {
-  return <List>{tempArr.map(ChatRoomLi)}</List>;
+const ChatRoomList = ({ chats }) => {
+  return <List>{chats.map(ChatRoomLi)}</List>;
 };
 
 export default ChatRoomList;
