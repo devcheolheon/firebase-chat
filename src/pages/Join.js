@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import Loading from "../components/common/Loading";
-import { authJoin, authSaveUser } from "../utils/libFirebase";
+import { authJoin, authSaveUser } from "../firebaseUtils/auth";
 import useCheckLogin from "../hooks/useCheckLogin";
 
 import Logo from "../components/common/Logo";

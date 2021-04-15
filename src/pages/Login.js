@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { authLogin, authLogout } from "../utils/libFirebase";
+import { authLogin, authLogout } from "../firebaseUtils/auth";
 import { useHistory } from "react-router-dom";
 import Loading from "../components/common/Loading";
 import useCheckLogin from "../hooks/useCheckLogin";
