@@ -1,6 +1,5 @@
 import firebase from "firebase";
 
-console.log(process.env.REACT_FireApiKey);
 const firebaseApp = firebase.initializeApp({
   apiKey: process.env.REACT_APP_FireApiKey,
   authDomain: process.env.REACT_APP_authDomain,
