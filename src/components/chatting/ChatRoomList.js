@@ -1,4 +1,5 @@
 import React from "react";
+import clsx from "clsx";
 
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -28,10 +29,13 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "100px",
     backgroundColor: theme.palette.secondary.main,
   },
+
+  selectedChat: {
+    backgroundColor: theme.palette.primary.light,
+  },
 }));
 
 const Members = ({ member, classes }) => {
-  console.log(member);
   return (
     <Typography
       variant="h8"
@@ -49,12 +53,24 @@ const Members = ({ member, classes }) => {
   );
 };
 
-const ChatRoomLi = ({ name, users, recentMessage, totalMessages }) => {
+const ChatRoomLi = ({
+  id,
+  name,
+  users,
+  recentMessage,
+  totalMessages,
+  selected,
+}) => {
   const classes = useStyles();
 
   return (
     <React.Fragment>
-      <ListItem alignItems="flex-start">
+      <ListItem
+        alignItems="flex-start"
+        data-id={id}
+        key={id}
+        className={clsx(selected && classes.selectedChat)}
+      >
         <ListItemText
           primary={
             <React.Fragment>
@@ -92,10 +108,24 @@ const ChatRoomLi = ({ name, users, recentMessage, totalMessages }) => {
   );
 };
 
-const ChatRoomList = ({ chats }) => {
-  return <List>{chats.map(ChatRoomLi)}</List>;
+const ChatRoomList = ({ chats, onClickHandler, selectedChat }) => {
+  const checkedChats = chats.map((chat) => {
+    if (chat.id === selectedChat) return { ...chat, selected: true };
+    if (chat.selected) return { ...chat, selected: false };
+    return chat;
+  });
+
+  return (
+    <List
+      onClick={(e) => {
+        const li = e.target.closest("li");
+        const id = li.dataset.id;
+        onClickHandler(id);
+      }}
+    >
+      {checkedChats.map(ChatRoomLi)}
+    </List>
+  );
 };
 
 export default ChatRoomList;
-
-console.log("?");

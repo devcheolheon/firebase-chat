@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
 const Chatting = () => {
   const [close, setClose] = useState(false);
   const [chats, setChats] = useImmer([]);
-  const [selectedChats, setSelectedChats] = useState("");
+  const [selectedChat, setSelectedChat] = useState("");
   const [loading, setLoading] = useState(false);
   const [nickname, setNickname] = useState("noname");
   const classes = useStyles();
@@ -105,17 +105,17 @@ const Chatting = () => {
     setSelectedChatRoom("");
     setChatRooms((draft) => draft.filter((v) => v.id !== newRoom.id));
   }, []);
+  */
 
-  const onClickChatRoomLi = useCallback((event) => {
-    event.preventDefault();
-    setSelectedChatRoom(event.target.id);
+  const onClickChatRoomLi = useCallback((id) => {
+    setSelectedChat(id);
   }, []);
 
+  /*
   const onClickLogout = useCallback((event) => {
     event.preventDefault();
     authLogout();
   });
-  
   */
 
   useEffect(() => {
@@ -136,13 +136,17 @@ const Chatting = () => {
           <Typography variant="h6" className={classes.ChatRoomListTitle}>
             참여 중인 채팅방
           </Typography>
-          <Grid item xs={12} className={classes.ChatRoomList}></Grid>
+          <Grid item xs={12} className={classes.ChatRoomList}>
+            <ChatRoomList
+              selectedChat={selectedChat}
+              chats={chats}
+              onClickHandler={onClickChatRoomLi}
+            />
+          </Grid>
           <Typography variant="h6" className={classes.ChatRoomListTitle}>
             채팅방
           </Typography>
-          <Grid item xs={12} className={classes.ChatRoomList}>
-            <ChatRoomList chats={chats} />
-          </Grid>
+          <Grid item xs={12} className={classes.ChatRoomList}></Grid>
         </Grid>
         {/* Recent Deposits */}
         <Grid item xs={12} lg={4} className={classes.ChatListContainer}>
