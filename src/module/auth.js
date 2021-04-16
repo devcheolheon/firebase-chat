@@ -39,13 +39,12 @@ function* initSaga(action) {
 }
 
 function* loginSaga(action) {
-  try {
-    const uid = yield call(authLogin, action.payload);
-    if (uid == "") return;
+  let uid = yield call(authLogin, action.payload);
+  if (uid === "") {
+    yield put(unSetUser());
+  } else {
     const nickname = yield call(getUserNameById, uid);
     yield put(setUser({ uid, nickname }));
-  } catch (e) {
-    yield put(unSetUser());
   }
 }
 

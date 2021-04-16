@@ -19,17 +19,15 @@ async function authJoin({ email, password }) {
 }
 
 async function authLogin({ email, password }) {
-  try {
-    let user = await firebaseApp
-      .auth()
-      .signInWithEmailAndPassword(email, password);
+  let uid = "";
 
-    const uid = (firebaseApp.auth().currentUser || {}).uid;
-    return uid;
-  } catch (e) {
-    console.log(e);
-    return "";
-  }
+  await firebaseApp
+    .auth()
+    .signInWithEmailAndPassword(email, password)
+    .catch(() => {});
+
+  uid = (firebaseApp.auth().currentUser || {}).uid || "";
+  return uid;
 }
 
 async function authLogout() {
@@ -38,6 +36,7 @@ async function authLogout() {
 
 async function linkToAuthState({ onLogin, onLogout }) {
   firebase.auth().onAuthStateChanged(function (user) {
+    console.log("???? - sync");
     if (user) {
       onLogin(user.uid);
     } else onLogout();
