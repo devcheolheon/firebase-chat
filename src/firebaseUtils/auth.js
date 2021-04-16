@@ -1,9 +1,8 @@
 import { db, firebase, firebaseApp } from "../firebase";
 
-async function authSaveUser({ email, password, uid, nickname }) {
+async function authSaveUser({ email, uid, nickname }) {
   await db.collection("google").add({
     email,
-    password,
     uid,
     nickname,
     created: firebase.firestore.Timestamp.now().seconds,
