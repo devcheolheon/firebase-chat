@@ -6,6 +6,7 @@ import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import { Card } from "@material-ui/core";
+import UserList from "../users/UserList";
 
 import { useImmer } from "use-immer";
 
@@ -99,6 +100,25 @@ const useStyles = makeStyles((theme) => ({
     height: 240,
   },
 
+  UserListTitle: {
+    flex: 1,
+    backgroundColor: theme.palette.primary.dark,
+    paddingLeft: theme.spacing(2),
+    paddingTop: theme.spacing(2),
+  },
+
+  UserListContainer: {
+    [theme.breakpoints.up("sm")]: {
+      display: "flex",
+      flexDirection: "row",
+    },
+  },
+
+  UserList: {
+    height: "785px",
+    overflowY: "scroll",
+  },
+
   ChatRoomListTitle: {
     flex: 1,
     backgroundColor: theme.palette.primary.dark,
@@ -106,48 +126,38 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(2),
   },
 
-  ChatRoomListContainer: {
+  LongChatRoomListContainer: {
     [theme.breakpoints.up("sm")]: {
       display: "flex",
       flexDirection: "row",
     },
   },
 
-  ChatRoomList: {
-    height: "350px",
+  LongChatRoomList: {
+    height: "750px",
     overflowY: "scroll",
-  },
-
-  ChatListContainer: {
-    marginTop: "4px",
-    height: "785px",
-    borderLeft: "2px solid rgb(66,66,66)",
-    borderRight: "2px solid rgb(66,66,66)",
-  },
-
-  ChatList: {
-    height: "630px",
-    overflowY: "scroll",
-  },
-
-  ChatCardContainer: {
-    height: "785px",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-evenly",
-  },
-
-  ChatCard: {
-    marginLeft: "30px",
-    marginRight: "30px",
-    height: "300px",
   },
 }));
+
+const tempuserData = [
+  { id: 1, name: "피카츄", email: "a@gmail.com" },
+  { id: 2, name: "라이츄", email: "b@gmail.com" },
+  { id: 3, name: "파이리", email: "c@gmail.com" },
+
+  { id: 4, name: "피카츄", email: "a@gmail.com" },
+  { id: 5, name: "라이츄", email: "b@gmail.com" },
+  { id: 6, name: "파이리", email: "c@gmail.com" },
+
+  { id: 7, name: "피카츄", email: "a@gmail.com" },
+  { id: 9, name: "라이츄", email: "b@gmail.com" },
+  { id: 10, name: "파이리", email: "c@gmail.com" },
+];
 
 const Users = () => {
   const classes = useStyles();
 
   const [open, setOpen] = React.useState(true);
+  const [selectedUser, setSelectedUser] = React.useState("");
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -160,27 +170,26 @@ const Users = () => {
   return (
     <React.Fragment>
       <Grid container spacing={1}>
-        {/* Chart */}
-        <Grid
-          container
-          xs={12}
-          lg={4}
-          className={classes.ChatRoomListContainer}
-        >
+        <Grid container xs={12} lg={4} className={classes.UserListContainer}>
+          <Grid item xs={12} className={classes.UserList}>
+            <UserList
+              users={tempuserData}
+              onClickHandler={(id) => setSelectedUser(id)}
+              selectedUser={selectedUser}
+            />
+          </Grid>
+        </Grid>
+        <Grid item xs={12} lg={4} className={classes.LongChatListContainer}>
           <Typography variant="h6" className={classes.ChatRoomListTitle}>
             참여 중인 채팅방
           </Typography>
-          <Grid item xs={12} className={classes.ChatRoomList}></Grid>
-          <Typography variant="h6" className={classes.ChatRoomListTitle}>
-            채팅방
-          </Typography>
-          <Grid item xs={12} className={classes.ChatRoomList}></Grid>
+          <Grid item xs={12} className={classes.LongChatRoomList} />
         </Grid>
-        {/* Recent Deposits */}
-        <Grid item xs={12} lg={4} className={classes.ChatListContainer}></Grid>
-        <Grid item xs={12} lg={4} className={classes.ChatCardContainer}>
-          <Card variant="outlined" className={classes.ChatCard} />
-          <Card variant="outlined" className={classes.ChatCard} />
+        <Grid item xs={12} lg={4} className={classes.LongChatListContainer}>
+          <Typography variant="h6" className={classes.ChatRoomListTitle}>
+            나와 함께 참여중인 채팅방
+          </Typography>
+          <Grid item xs={12} className={classes.LongChatRoomList} />
         </Grid>
       </Grid>
       <Box pt={4}></Box>

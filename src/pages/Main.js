@@ -279,7 +279,7 @@ const Main = () => {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         {menu === MENU_CHATTING && <Chatting />}
-        {menu === MENU_USER && <Users />}
+        {menu === MENU_USER && <Users myId={uid} />}
       </main>
     </div>
   );
