@@ -9,7 +9,7 @@ const useSyncLoginStatus = () => {
     dispatch(init(uid));
   };
   const onLogout = (uid) => {
-    dispatch(unSetUser);
+    dispatch(unSetUser());
   };
 
   useEffect(() => {
