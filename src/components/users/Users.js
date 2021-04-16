@@ -5,70 +5,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
-
 import { Card } from "@material-ui/core";
 
-import {
-  linkToChatRoomList,
-  createRoom,
-  getUserNameById,
-  authLogout,
-} from "../../firebaseUtils/libFirebase";
-
-import useCheckLogin from "../../hooks/useCheckLogin";
-
 import { useImmer } from "use-immer";
-
-const ChatRoomLi = ({ id, name, selected, onClick }) => {
-  console.log(`${id} - selected: ${selected}`);
-  return (
-    <li class="nav-item" key={id}>
-      <a
-        id={id}
-        href="#"
-        className={"nav-link " + (selected ? "active" : "text-white")}
-        onClick={onClick}
-      >
-        <BsChat size={"1.4rem"} class="pb-1"></BsChat> {name}
-      </a>
-    </li>
-  );
-};
-/*
-const Content = ({ setClose, select }) => {
-  const [name, setName] = useState("");
-
-  const makeRoom = useCallback(async (name) => {
-    await createRoom(name);
-    setClose(true);
-  }, []);
-
-  return (
-    <div className={Styles.popupContent}>
-      <h1>채팅방 이름을 입력하세요 </h1>
-      <div>
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          type="text"
-        ></input>
-        <button type="submit" onClick={(e) => makeRoom(name)}>
-          방 만들기{" "}
-        </button>
-      </div>
-    </div>
-  );
-};
-
-const SelectRoomPlease = () => {
-  return (
-    <div className={Styles.background}>
-      <h1> 방을 선택해 주세요 </h1>
-    </div>
-  );
-};
-
-*/
 
 const drawerWidth = 160;
 
@@ -206,11 +145,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Users = () => {
-  const [close, setClose] = useState(false);
-  const [chatRooms, setChatRooms] = useImmer([]);
-  const [selectedChatRoom, setSelectedChatRoom] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [nickname, setNickname] = useState("noname");
   const classes = useStyles();
 
   const [open, setOpen] = React.useState(true);
@@ -222,54 +156,6 @@ const Users = () => {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
-  const [loginStatus, setLoginStatus] = useCheckLogin(
-    {
-      setLoading,
-      successUrl: "",
-      failureUrl: "/login",
-    },
-    []
-  );
-
-  useEffect(() => {
-    if (loginStatus == "") return;
-    const userId = loginStatus;
-    async function fetchNickname(userId) {
-      setLoading(true);
-      const name = await getUserNameById(userId);
-      setNickname(name);
-      setLoading(false);
-    }
-    fetchNickname(userId);
-  }, [loginStatus]);
-
-  const addChatRooms = useCallback((newRoom) => {
-    setChatRooms((draft) => {
-      draft.push(newRoom);
-    });
-  }, []);
-
-  const removeChatRooms = useCallback((newRoom) => {
-    setSelectedChatRoom("");
-    setChatRooms((draft) => draft.filter((v) => v.id !== newRoom.id));
-  }, []);
-
-  const onClickChatRoomLi = useCallback((event) => {
-    event.preventDefault();
-    setSelectedChatRoom(event.target.id);
-  }, []);
-
-  const onClickLogout = useCallback((event) => {
-    event.preventDefault();
-    authLogout();
-  });
-
-  useEffect(() => {
-    //  linkToChatRoomList({ onAdded: addChatRooms, onRemoved: removeChatRooms });
-  }, []);
-
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   return (
     <React.Fragment>
