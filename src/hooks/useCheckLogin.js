@@ -1,31 +1,24 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { firebaseApp } from "../firebase";
 import { useHistory } from "react-router-dom";
 
-const useCheckLogin = ({ setLoading, successUrl, failureUrl }) => {
-  const [isInit, setIsInit] = useState(true);
-  const [loginStatus, setLoginStatus] = useState("");
+const useCheckLogin = ({ loginUrl, logoutUrl }) => {
+  const login_loading = useSelector((state) => state.auth.loading);
+  const isLogin = useSelector((state) => state.auth.isLogin);
+  const uid = useSelector((state) => state.auth.uid);
+  const nickname = useSelector((state) => state.auth.nickname);
+
   const history = useHistory();
 
   useEffect(() => {
-    firebaseApp.auth().onAuthStateChanged((user) => {
-      if (isInit) setLoading(true);
-      const uid = (firebaseApp.auth().currentUser || {}).uid;
+    if (!login_loading) {
+      if (isLogin && loginUrl) history.push(loginUrl);
+      if (!isLogin && logoutUrl) history.push(logoutUrl);
+    }
+  }, [login_loading]);
 
-      if (uid) {
-        setLoginStatus(uid);
-        if (successUrl) history.push(successUrl);
-      } else {
-        setLoginStatus("");
-        if (failureUrl) history.push(failureUrl);
-      }
-
-      if (isInit) setLoading(false);
-      setIsInit(false);
-    });
-  }, []);
-
-  return [loginStatus, setLoginStatus];
+  return [login_loading, isLogin, uid, nickname];
 };
 
 export default useCheckLogin;

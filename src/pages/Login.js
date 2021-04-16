@@ -32,18 +32,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Login = () => {
-  const classes = useStyles();
-  const history = useHistory();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [login_loading, isLogin, uid, nickname] = useCheckLogin({});
 
   const dispatch = useDispatch();
   const onLogin = (email, password) => {
     dispatch(login(email, password));
   };
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-
+  const history = useHistory();
   const linktoJoin = useCallback(() => {
     history.push("/join");
   }, []);
@@ -53,7 +51,8 @@ const Login = () => {
     return true;
   }, {});
 
-  return loading ? (
+  const classes = useStyles();
+  return login_loading ? (
     <Loading></Loading>
   ) : (
     <Grid

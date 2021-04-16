@@ -36,4 +36,12 @@ async function authLogout() {
   await firebaseApp.auth().signOut();
 }
 
-export { authLogin, authLogout, authJoin, authSaveUser };
+async function linkToAuthState({ onLogin, onLogout }) {
+  firebase.auth().onAuthStateChanged(function (user) {
+    if (user) {
+      onLogin(user.uid);
+    } else onLogout();
+  });
+}
+
+export { authLogin, authLogout, authJoin, authSaveUser, linkToAuthState };
