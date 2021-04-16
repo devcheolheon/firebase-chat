@@ -2,11 +2,11 @@ import { call, put, takeEvery } from "redux-saga/effects";
 import { authLogin, authLogout } from "../firebaseUtils/auth";
 import { getUserNameById } from "../firebaseUtils/users";
 
-const INIT = "LOGIN/INIT";
-const LOGIN = "LOGIN";
-const LOGOUT = "LOGOUT";
-const SET_USER = "SET_USER";
-const UNSET_USER = "UNSET_USER";
+const INIT = "auth/INIT";
+const LOGIN = "auth/LOGIN";
+const LOGOUT = "auth/LOGOUT";
+const SET_USER = "auth/SET_USER";
+const UNSET_USER = "auth/UNSET_USER";
 
 export const init = (uid) => ({ type: INIT, payload: uid });
 
