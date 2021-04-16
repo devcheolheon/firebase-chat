@@ -49,7 +49,6 @@ const Join = () => {
     try {
       let uid = await authJoin(body);
       await authSaveUser({ ...body, uid });
-      //setLoginStatus(uid);
     } catch (e) {}
     setLoading(false);
   }, []);

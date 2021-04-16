@@ -1,4 +1,5 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React from "react";
+import { useDispatch } from "react-redux";
 import { BsChat } from "react-icons/bs";
 import { FiUsers } from "react-icons/fi";
 import clsx from "clsx";
@@ -15,6 +16,7 @@ import Badge from "@material-ui/core/Badge";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import NotificationsIcon from "@material-ui/icons/Notifications";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
@@ -23,8 +25,8 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Chatting from "../components/chatting/Chatting";
 import Users from "../components/users/Users";
 
-import { getUserNameById, authLogout } from "../firebaseUtils/libFirebase";
 import useCheckLogin from "../hooks/useCheckLogin";
+import { logout } from "../module/auth";
 
 const drawerWidth = 160;
 
@@ -176,6 +178,11 @@ const Main = () => {
     logoutUrl: "/login",
   });
 
+  const dispatch = useDispatch();
+  const onLogout = () => {
+    dispatch(logout());
+  };
+
   const selectMenu = (menu) => {
     setMenu(menu);
   };
@@ -218,10 +225,14 @@ const Main = () => {
             {menu === MENU_CHATTING && " 채팅 "}
             {menu === MENU_USER && "사용자 정보 "}
           </Typography>
+
           <IconButton color="inherit">
             <Badge badgeContent={4} color="secondary">
               <NotificationsIcon />
             </Badge>
+          </IconButton>
+          <IconButton color="inherit" onClick={onLogout}>
+            <ExitToAppIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
