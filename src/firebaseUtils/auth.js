@@ -18,7 +18,7 @@ async function authJoin({ email, password }) {
   return uid;
 }
 
-async function authLogin(email, password) {
+async function authLogin({ email, password }) {
   try {
     let user = await firebaseApp
       .auth()

@@ -13,6 +13,8 @@ import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
+import { useDispatch } from "react-redux";
+import { login } from "../module/auth";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -33,17 +35,14 @@ const Login = () => {
   const classes = useStyles();
   const history = useHistory();
 
+  const dispatch = useDispatch();
+  const onLogin = (email, password) => {
+    dispatch(login(email, password));
+  };
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [loginStatus, setLoginStatus] = useCheckLogin(
-    {
-      setLoading,
-      successUrl: "/main",
-      failureUrl: "",
-    },
-    []
-  );
 
   const linktoJoin = useCallback(() => {
     history.push("/join");
@@ -53,25 +52,6 @@ const Login = () => {
     // todo : 로그인 폼 validation
     return true;
   }, {});
-
-  const login = useCallback(async (email, password) => {
-    if (!validateForm()) return false;
-    setLoading(true);
-
-    try {
-      await authLogin(email, password);
-      //
-      setLoginStatus(true);
-    } catch (e) {
-      console.log(e);
-      if (e.code == "auth/user-not-found") {
-        alert("가입하세요");
-        return;
-      }
-    }
-
-    setLoading(false);
-  }, []);
 
   return loading ? (
     <Loading></Loading>
@@ -119,7 +99,10 @@ const Login = () => {
               variant="contained"
               color="primary"
               className={classes.submit}
-              onClick={() => login(email, password)}
+              onClick={(e) => {
+                e.preventDefault();
+                onLogin({ email, password });
+              }}
             >
               입장
             </Button>

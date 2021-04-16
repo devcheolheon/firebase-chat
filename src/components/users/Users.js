@@ -13,7 +13,7 @@ import {
   createRoom,
   getUserNameById,
   authLogout,
-} from "../../utils/libFirebase";
+} from "../../firebaseUtils/libFirebase";
 
 import useCheckLogin from "../../hooks/useCheckLogin";
 
