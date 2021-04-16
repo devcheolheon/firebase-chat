@@ -40,22 +40,16 @@ const Join = () => {
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const [loginStatus, setLoginStatus] = useCheckLogin(
-    {
-      setLoading,
-      successUrl: "/chatRooms",
-      failureUrl: "/join",
-    },
-    []
-  );
+  useCheckLogin({
+    loginUrl: "/main",
+  });
 
   const join = useCallback(async (body) => {
     setLoading(true);
     try {
       let uid = await authJoin(body);
       await authSaveUser({ ...body, uid });
-      setLoginStatus(uid);
+      //setLoginStatus(uid);
     } catch (e) {}
     setLoading(false);
   }, []);

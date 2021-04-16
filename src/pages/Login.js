@@ -34,7 +34,9 @@ const useStyles = makeStyles((theme) => ({
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [login_loading, isLogin, uid, nickname] = useCheckLogin({});
+  const [login_loading, isLogin, uid, nickname] = useCheckLogin({
+    loginUrl: "/main",
+  });
 
   const dispatch = useDispatch();
   const onLogin = (email, password) => {

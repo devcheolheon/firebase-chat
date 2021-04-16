@@ -172,6 +172,9 @@ const Main = () => {
   const classes = useStyles();
   const [menu, setMenu] = React.useState(MENU_CHATTING);
   const [open, setOpen] = React.useState(true);
+  const [login_loading, isLogin, uid, nickname] = useCheckLogin({
+    logoutUrl: "/login",
+  });
 
   const selectMenu = (menu) => {
     setMenu(menu);
