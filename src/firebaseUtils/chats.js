@@ -31,6 +31,8 @@ function makeChat({ name, userId }) {
   return {
     name,
     users: [userId],
+    recentMessage: "",
+    totalMessages: 0,
   };
 }
 
@@ -50,9 +52,15 @@ async function createChat({ name, userId }) {
     .where("name", "==", name)
     .get();
 
-  if (!chatRoomSnapshot.empty) return;
+  if (!chatRoomSnapshot.empty) return true;
 
-  await db.collection("chats").add(makeChat({ name, userId }));
+  let docRef = await db
+    .collection("chats")
+    .add(makeChat({ name, userId }))
+    .catch((e) => false);
+
+  if (!docRef) return "";
+  else return docRef.id;
 }
 
 function linkToChatsList({ onAdded }) {
