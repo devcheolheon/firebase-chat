@@ -5,6 +5,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import { Divider, makeStyles, Typography } from "@material-ui/core";
 import List from "@material-ui/core/List";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,8 +28,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const UserLi = ({ id, name, email, selected }) => {
+const UserLi = ({ id, selected }) => {
   const classes = useStyles();
+  const user = useSelector((state) => state.users[id]);
 
   return (
     <React.Fragment>
@@ -42,13 +44,13 @@ const UserLi = ({ id, name, email, selected }) => {
           primary={
             <React.Fragment>
               <Typography variant="h5" component="h5" color="textPrimary">
-                {name}
+                {user.nickname}
               </Typography>
             </React.Fragment>
           }
           secondary={
             <div className={classes.userLiBody}>
-              <div>{email}</div>
+              <div>{user.email}</div>
             </div>
           }
         />
@@ -59,10 +61,9 @@ const UserLi = ({ id, name, email, selected }) => {
 };
 
 const UserList = ({ users, onClickHandler, selectedUser }) => {
-  const checkedUsers = users.map((user) => {
-    if (user.id === selectedUser) return { ...user, selected: true };
-    if (user.selected) return { ...user, selected: false };
-    return user;
+  const checkedUsers = users.map((id) => {
+    if (id === selectedUser) return { id, selected: true };
+    return { id };
   });
 
   return (

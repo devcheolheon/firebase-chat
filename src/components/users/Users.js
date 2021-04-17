@@ -1,4 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
+import { useSelector } from "react-redux";
+
 import { BsChat } from "react-icons/bs";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
@@ -7,6 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import { Card } from "@material-ui/core";
 import UserList from "../users/UserList";
+import Loading from "../common/Loading";
 
 import { useImmer } from "use-immer";
 
@@ -139,22 +142,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const tempuserData = [
-  { id: 1, name: "피카츄", email: "a@gmail.com" },
-  { id: 2, name: "라이츄", email: "b@gmail.com" },
-  { id: 3, name: "파이리", email: "c@gmail.com" },
-
-  { id: 4, name: "피카츄", email: "a@gmail.com" },
-  { id: 5, name: "라이츄", email: "b@gmail.com" },
-  { id: 6, name: "파이리", email: "c@gmail.com" },
-
-  { id: 7, name: "피카츄", email: "a@gmail.com" },
-  { id: 9, name: "라이츄", email: "b@gmail.com" },
-  { id: 10, name: "파이리", email: "c@gmail.com" },
-];
-
 const Users = () => {
   const classes = useStyles();
+  const users = useSelector((state) => state.users.users);
+  const loading = useSelector((state) => state.users.loading);
 
   const [open, setOpen] = React.useState(true);
   const [selectedUser, setSelectedUser] = React.useState("");
@@ -167,13 +158,15 @@ const Users = () => {
     setOpen(false);
   };
 
-  return (
+  return loading ? (
+    <Loading></Loading>
+  ) : (
     <React.Fragment>
       <Grid container spacing={1}>
         <Grid container xs={12} lg={4} className={classes.UserListContainer}>
           <Grid item xs={12} className={classes.UserList}>
             <UserList
-              users={tempuserData}
+              users={users}
               onClickHandler={(id) => setSelectedUser(id)}
               selectedUser={selectedUser}
             />

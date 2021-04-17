@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { BsChat } from "react-icons/bs";
 import { FiUsers } from "react-icons/fi";
@@ -27,6 +27,7 @@ import Users from "../components/users/Users";
 
 import useCheckLogin from "../hooks/useCheckLogin";
 import { logout } from "../module/auth";
+import { getUsers } from "../module/users";
 
 const drawerWidth = 160;
 
@@ -179,6 +180,11 @@ const Main = () => {
   });
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getUsers());
+  }, []);
+
   const onLogout = () => {
     dispatch(logout());
   };
