@@ -6,6 +6,7 @@ async function authSaveUser({ email, password, uid, nickname }) {
     password,
     uid,
     nickname,
+    chats: [],
     created: firebase.firestore.Timestamp.now().seconds,
   });
 }

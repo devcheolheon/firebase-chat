@@ -4,14 +4,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Card, Grid, Box, Typography } from "@material-ui/core";
 
 import ChatRoomList from "./ChatRoomList";
-import Chat from "./Chat";
 import ChatInputText from "./ChatInputText";
 
-import { useImmer } from "use-immer";
-
-import { createChat, linkToChatsList } from "../../firebaseUtils/chats";
-
-import useCheckLogin from "../../hooks/useCheckLogin";
+import AlertDialog from "../common/Popup";
 
 const useStyles = makeStyles((theme) => ({
   ChatRoomListTitle: {
@@ -61,7 +56,13 @@ const useStyles = makeStyles((theme) => ({
 
 const Chatting = () => {
   const [selectedChat, setSelectedChat] = useState("");
+  const [popupOpen, setPopupOpen] = useState(false);
+  const uid = useSelector((state) => state.auth.uid);
   const chats = useSelector((state) => state.chats.chats);
+  const { chats: myChats = [] } = useSelector((state) => state.auth);
+  const notMyChats = chats.filter(
+    (chat) => myChats.findIndex((myChat) => myChat == chat) == -1
+  );
 
   const classes = useStyles();
 
@@ -69,12 +70,14 @@ const Chatting = () => {
     setSelectedChat(id);
   }, []);
 
-  /*
-  const onClickLogout = useCallback((event) => {
-    event.preventDefault();
-    authLogout();
-  });
-  */
+  const onClickNotMyChatRoomLi = useCallback((id) => {
+    setSelectedChat(id);
+    setPopupOpen(true);
+  }, []);
+
+  const handleAgree = useCallback(() => {
+    console.log(`${uid} 가 ${selectedChat}에 join!`);
+  }, [selectedChat]);
 
   useEffect(() => {
     //linkToChatsList({ onAdded: addChat });
@@ -97,14 +100,20 @@ const Chatting = () => {
           <Grid item xs={12} className={classes.ChatRoomList}>
             <ChatRoomList
               selectedChat={selectedChat}
-              chats={chats}
+              chats={myChats}
               onClickHandler={onClickChatRoomLi}
             />
           </Grid>
           <Typography variant="h6" className={classes.ChatRoomListTitle}>
             채팅방
           </Typography>
-          <Grid item xs={12} className={classes.ChatRoomList}></Grid>
+          <Grid item xs={12} className={classes.ChatRoomList}>
+            <ChatRoomList
+              selectedChat={selectedChat}
+              chats={notMyChats}
+              onClickHandler={onClickNotMyChatRoomLi}
+            />
+          </Grid>
         </Grid>
         {/* Recent Deposits */}
         <Grid item xs={12} lg={4} className={classes.ChatListContainer}>
@@ -117,6 +126,13 @@ const Chatting = () => {
         </Grid>
       </Grid>
       <Box pt={4}></Box>
+      <AlertDialog
+        open={popupOpen}
+        setOpen={setPopupOpen}
+        content="채팅에 참여하시겠습니까?"
+        title="잠시만요~"
+        handleAgree={handleAgree}
+      ></AlertDialog>
     </React.Fragment>
   );
 };

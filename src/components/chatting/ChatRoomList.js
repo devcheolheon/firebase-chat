@@ -59,6 +59,7 @@ function ChatRoomLi({ id, selected }) {
   const { name, totalMessages, recentMessage, users } = useSelector(
     (state) => state.chats[id]
   );
+
   return (
     <React.Fragment>
       <ListItem

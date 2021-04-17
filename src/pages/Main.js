@@ -183,7 +183,6 @@ const Main = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(createChats({ name: "채팅방 1", userId: "ccc" }));
     dispatch(getUsers());
     dispatch(getChats());
   }, []);
