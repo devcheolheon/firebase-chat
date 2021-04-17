@@ -6,6 +6,7 @@ import {
   unjoinChats as unjoinChatAPI,
 } from "../firebaseUtils/chats";
 import { userJoinChat, userUnjoinChat } from "./users";
+import produce from "immer";
 
 const CREATE_CHATS = "chats/CREATE_CHATS";
 const ADD_CHATS = "chats/ADD_CHATS";
@@ -111,31 +112,38 @@ export default function chat(state = initialState, action) {
     }
 
     case ADD_CHATS:
-      return {
-        ...state,
-        chats: state[id] ? state.chats : state.chats.concat(id),
-        [id]: action.payload,
-      };
+      return produce(state, (draft) => {
+        if (draft.chats) {
+          draft.chats.push(id);
+        } else {
+          draft.chats = [id];
+        }
+        draft[id] = action.payload;
+      });
 
     case JOIN_CHAT:
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          users: (state[id].users || []).concat(action.payload.param),
-        },
-      };
+      return produce(state, (draft) => {
+        if (
+          draft[id].users &&
+          draft[id].users.indexOf(action.payload.param) < 0
+        ) {
+          draft[id].users.push(action.payload.param);
+        } else {
+          draft[id].users = [action.payload.param];
+        }
+      });
 
     case UNJOIN_CHAT:
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          users: (state[id].users || []).filter(
-            (id) => id !== action.payload.param
-          ),
-        },
-      };
+      return produce(state, (draft) => {
+        if (draft[id].users) {
+          let index = draft[id].users.indexOf(action.payload.param);
+          if (index < 0) return;
+          draft[id].users.splice(index, 1);
+        } else {
+          draft[id].users = [];
+        }
+      });
+
     default:
       return state;
   }

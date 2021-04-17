@@ -1,5 +1,6 @@
 import { takeEvery, getContext, put, call } from "redux-saga/effects";
 import { getUsers as apiGetUsers } from "../firebaseUtils/users";
+import produce from "immer";
 
 const ADD_USER = "users/ADD_USER";
 const UPDATE_USER = "users/UPDATE_USER";
@@ -90,9 +91,7 @@ export function* usersSaga() {
 }
 
 export default function users(state = initialState, action) {
-  console.log(action.payload);
   const id = action.payload && action.payload.meta;
-  console.log(id);
 
   switch (action.type) {
     case LOADING_START:
@@ -115,12 +114,12 @@ export default function users(state = initialState, action) {
       };
 
     case SET_USER:
-      return {
-        ...state,
-        users: state[id] ? state.users : state.users.concat(id),
-        ...state,
-        [id]: action.payload.user,
-      };
+      return produce(state, (draft) => {
+        if (!draft[id]) {
+          draft.users.push(id);
+          draft[id] = action.payload.user;
+        }
+      });
 
     case UPDATE_USER:
       return {
@@ -136,31 +135,35 @@ export default function users(state = initialState, action) {
       };
 
     case ADD_USER:
-      return {
-        ...state,
-        users: state[id] ? state.users : state.users.concat(id),
-        [id]: state[id],
-      };
+      return produce(state, (draft) => {
+        if (!draft[id]) {
+          draft.push(id);
+          draft[id] = action.payload.user;
+        }
+      });
 
     case USER_JOIN_CHAT:
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          chats: (state[id].chats || []).concat(action.payload.param),
-        },
-      };
+      return produce(state, (draft) => {
+        if (
+          draft[id].chats &&
+          draft[id].chats.indexOf(action.payload.param) < 0
+        ) {
+          draft[id].chats.push(action.payload.param);
+        } else {
+          draft[id].chats = [action.payload.param];
+        }
+      });
 
     case USER_UNJOIN_CHAT:
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          chats: (state[id].chats || []).filter(
-            (id) => id !== action.payload.param
-          ),
-        },
-      };
+      return produce(state, (draft) => {
+        if (draft[id].chats) {
+          let index = draft[id].chats.indexOf(action.payload.param);
+          if (index < 0) return;
+          draft[id].chats.splice(index, 1);
+        } else {
+          draft[id].chats = [];
+        }
+      });
 
     default:
       return state;
