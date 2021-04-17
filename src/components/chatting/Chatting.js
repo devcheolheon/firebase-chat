@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { Card, Grid, Box, Typography } from "@material-ui/core";
 
@@ -7,6 +7,9 @@ import ChatRoomList from "./ChatRoomList";
 import ChatInputText from "./ChatInputText";
 
 import AlertDialog from "../common/Popup";
+
+import { userJoinChat } from "../../module/users";
+import { joinChats } from "../../module/chats";
 
 const useStyles = makeStyles((theme) => ({
   ChatRoomListTitle: {
@@ -57,9 +60,13 @@ const useStyles = makeStyles((theme) => ({
 const Chatting = () => {
   const [selectedChat, setSelectedChat] = useState("");
   const [popupOpen, setPopupOpen] = useState(false);
+  const dispatch = useDispatch();
   const uid = useSelector((state) => state.auth.uid);
   const chats = useSelector((state) => state.chats.chats);
-  const { chats: myChats = [] } = useSelector((state) => state.auth);
+  const { chats: myChats = [] } = useSelector(
+    (state) => state.users[state.auth.uid] || { chats: [] }
+  );
+
   const notMyChats = chats.filter(
     (chat) => myChats.findIndex((myChat) => myChat == chat) == -1
   );
@@ -77,7 +84,8 @@ const Chatting = () => {
 
   const handleAgree = useCallback(() => {
     console.log(`${uid} 가 ${selectedChat}에 join!`);
-  }, [selectedChat]);
+    dispatch(joinChats({ uid, id: selectedChat }));
+  }, [selectedChat, dispatch]);
 
   useEffect(() => {
     //linkToChatsList({ onAdded: addChat });

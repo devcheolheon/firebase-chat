@@ -76,6 +76,25 @@ export async function getAllChats() {
   return result;
 }
 
+export async function joinChats({ meta: id, param: uid }) {
+  let chatRef = await db.collection("chats").doc(id);
+  let result = await chatRef
+    .update({
+      users: firebase.firestore.FieldValue.arrayUnion(uid),
+    })
+    .catch((error) => false);
+  if (!result) return result;
+
+  let userRef = await db.collection("google").doc(uid);
+  result = await userRef
+    .update({
+      chats: firebase.firestore.FieldValue.arrayUnion(id),
+    })
+    .catch((error) => false);
+
+  return result;
+}
+
 function linkToChatsList({ onAdded }) {
   const chatRoomsRef = db.collection("chats");
   chatRoomsRef.onSnapshot((snapshot) => {

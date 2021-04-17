@@ -9,6 +9,7 @@ const SET_USER = "users/SET_USER";
 const GET_USERS = "users/GET_USERS";
 const SET_USERS = "users/SET_USERS";
 
+const USER_JOIN_CHAT = "users/USER_JOIN_CHAT";
 const LOADING_START = "users/LOADING";
 const LOADING_FINISH = "users/FINISH";
 
@@ -62,6 +63,11 @@ export const loadingFinish = () => ({
   type: LOADING_FINISH,
 });
 
+export const userJoinChat = (payload) => ({
+  type: USER_JOIN_CHAT,
+  payload,
+});
+
 const getUsersSaga = function* (type) {
   yield put(loadingStart());
   const users = yield call(apiGetUsers);
@@ -78,7 +84,9 @@ export function* usersSaga() {
 }
 
 export default function users(state = initialState, action) {
+  console.log(action.payload);
   const id = action.payload && action.payload.meta;
+  console.log(id);
 
   switch (action.type) {
     case LOADING_START:
@@ -126,6 +134,15 @@ export default function users(state = initialState, action) {
         ...state,
         users: state[id] ? state.users : state.users.concat(id),
         [id]: state[id],
+      };
+
+    case USER_JOIN_CHAT:
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          chats: (state[id].chats || []).concat(action.payload.param),
+        },
       };
     default:
       return state;

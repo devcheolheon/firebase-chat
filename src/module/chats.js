@@ -1,5 +1,10 @@
 import { takeEvery, put, call } from "redux-saga/effects";
-import { createChat, getAllChats } from "../firebaseUtils/chats";
+import {
+  createChat,
+  getAllChats,
+  joinChats as joinChatAPI,
+} from "../firebaseUtils/chats";
+import { userJoinChat } from "./users";
 
 const CREATE_CHATS = "chats/CREATE_CHATS";
 const ADD_CHATS = "chats/ADD_CHATS";
@@ -10,6 +15,8 @@ const LOADING_FINISH = "chats/LOADING_FINISH";
 const GET_CHATS = "chats/GET_CHATS";
 const SET_CHATS = "chats/SET_CHATS";
 
+const JOIN_CHAT = "chats/JOIN_CHAT";
+
 export const createChats = (payload) => ({ type: CREATE_CHATS, payload });
 const addChats = (payload) => ({ type: ADD_CHATS, payload });
 // saga에서만 호출하는 action
@@ -19,6 +26,13 @@ const loadingFinish = () => ({ type: LOADING_FINISH });
 
 export const getChats = () => ({ type: GET_CHATS });
 const setChats = (payload) => ({ type: SET_CHATS, payload });
+
+export const joinChats = ({ id, uid }) => ({
+  type: JOIN_CHAT,
+  payload: { meta: id, param: uid },
+});
+
+// user reducer에서 처리
 
 function* createChatsSaga(action) {
   let id = yield call(createChat, action.payload);
@@ -38,9 +52,17 @@ function* getChatsSaga() {
   yield put(loadingFinish());
 }
 
+function* joinChatSaga(action) {
+  yield put(
+    userJoinChat({ meta: action.payload.param, param: action.payload.meta })
+  );
+  yield call(joinChatAPI, action.payload);
+}
+
 export function* chatsSaga() {
   yield takeEvery(GET_CHATS, getChatsSaga);
   yield takeEvery(CREATE_CHATS, createChatsSaga);
+  yield takeEvery(JOIN_CHAT, joinChatSaga);
 }
 
 const initialState = {
@@ -78,6 +100,15 @@ export default function chat(state = initialState, action) {
         ...state,
         chats: state[id] ? state.chats : state.chats.concat(id),
         [id]: action.payload,
+      };
+
+    case JOIN_CHAT:
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          users: (state[id].users || []).concat(action.payload.param),
+        },
       };
     default:
       return state;

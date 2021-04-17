@@ -37,10 +37,10 @@ export default function AlertDialog({
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseAgree} color="primary">
+          <Button onClick={handleCloseDisagree} color="primary">
             아니요
           </Button>
-          <Button onClick={handleCloseDisagree} color="primary" autoFocus>
+          <Button onClick={handleCloseAgree} color="primary" autoFocus>
             네
           </Button>
         </DialogActions>
