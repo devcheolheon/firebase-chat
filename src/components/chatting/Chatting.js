@@ -8,8 +8,7 @@ import ChatInputText from "./ChatInputText";
 
 import AlertDialog from "../common/Popup";
 
-import { userJoinChat } from "../../module/users";
-import { joinChats } from "../../module/chats";
+import { joinChats, unjoinChats } from "../../module/chats";
 
 const useStyles = makeStyles((theme) => ({
   ChatRoomListTitle: {
@@ -60,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
 const Chatting = () => {
   const [selectedChat, setSelectedChat] = useState("");
   const [popupOpen, setPopupOpen] = useState(false);
+  const [popupOpen2, setPopupOpen2] = useState(false);
   const dispatch = useDispatch();
   const uid = useSelector((state) => state.auth.uid);
   const chats = useSelector((state) => state.chats.chats);
@@ -75,6 +75,7 @@ const Chatting = () => {
 
   const onClickChatRoomLi = useCallback((id) => {
     setSelectedChat(id);
+    setPopupOpen2(true);
   }, []);
 
   const onClickNotMyChatRoomLi = useCallback((id) => {
@@ -82,9 +83,14 @@ const Chatting = () => {
     setPopupOpen(true);
   }, []);
 
-  const handleAgree = useCallback(() => {
+  const joinChat = useCallback(() => {
     console.log(`${uid} 가 ${selectedChat}에 join!`);
     dispatch(joinChats({ uid, id: selectedChat }));
+  }, [selectedChat, dispatch]);
+
+  const unJoinChat = useCallback(() => {
+    console.log(`${uid} 가 ${selectedChat}에 unjoin!`);
+    dispatch(unjoinChats({ uid, id: selectedChat }));
   }, [selectedChat, dispatch]);
 
   useEffect(() => {
@@ -139,7 +145,14 @@ const Chatting = () => {
         setOpen={setPopupOpen}
         content="채팅에 참여하시겠습니까?"
         title="잠시만요~"
-        handleAgree={handleAgree}
+        handleAgree={joinChat}
+      ></AlertDialog>
+      <AlertDialog
+        open={popupOpen2}
+        setOpen={setPopupOpen2}
+        content="채팅에서 나오시겠습니까?"
+        title="잠시만요~"
+        handleAgree={unJoinChat}
       ></AlertDialog>
     </React.Fragment>
   );

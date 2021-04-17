@@ -10,6 +10,7 @@ const GET_USERS = "users/GET_USERS";
 const SET_USERS = "users/SET_USERS";
 
 const USER_JOIN_CHAT = "users/USER_JOIN_CHAT";
+const USER_UNJOIN_CHAT = "users/USER_UNJOIN_CHAT";
 const LOADING_START = "users/LOADING";
 const LOADING_FINISH = "users/FINISH";
 
@@ -65,6 +66,11 @@ export const loadingFinish = () => ({
 
 export const userJoinChat = (payload) => ({
   type: USER_JOIN_CHAT,
+  payload,
+});
+
+export const userUnjoinChat = (payload) => ({
+  type: USER_UNJOIN_CHAT,
   payload,
 });
 
@@ -144,6 +150,18 @@ export default function users(state = initialState, action) {
           chats: (state[id].chats || []).concat(action.payload.param),
         },
       };
+
+    case USER_UNJOIN_CHAT:
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          chats: (state[id].chats || []).filter(
+            (id) => id !== action.payload.param
+          ),
+        },
+      };
+
     default:
       return state;
   }

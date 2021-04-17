@@ -3,8 +3,9 @@ import {
   createChat,
   getAllChats,
   joinChats as joinChatAPI,
+  unjoinChats as unjoinChatAPI,
 } from "../firebaseUtils/chats";
-import { userJoinChat } from "./users";
+import { userJoinChat, userUnjoinChat } from "./users";
 
 const CREATE_CHATS = "chats/CREATE_CHATS";
 const ADD_CHATS = "chats/ADD_CHATS";
@@ -16,6 +17,7 @@ const GET_CHATS = "chats/GET_CHATS";
 const SET_CHATS = "chats/SET_CHATS";
 
 const JOIN_CHAT = "chats/JOIN_CHAT";
+const UNJOIN_CHAT = "chats/UNJOIN_CHAT";
 
 export const createChats = (payload) => ({ type: CREATE_CHATS, payload });
 const addChats = (payload) => ({ type: ADD_CHATS, payload });
@@ -29,6 +31,11 @@ const setChats = (payload) => ({ type: SET_CHATS, payload });
 
 export const joinChats = ({ id, uid }) => ({
   type: JOIN_CHAT,
+  payload: { meta: id, param: uid },
+});
+
+export const unjoinChats = ({ id, uid }) => ({
+  type: UNJOIN_CHAT,
   payload: { meta: id, param: uid },
 });
 
@@ -59,10 +66,18 @@ function* joinChatSaga(action) {
   yield call(joinChatAPI, action.payload);
 }
 
+function* unJoinChatSaga(action) {
+  yield put(
+    userUnjoinChat({ meta: action.payload.param, param: action.payload.meta })
+  );
+  yield call(unjoinChatAPI, action.payload);
+}
+
 export function* chatsSaga() {
   yield takeEvery(GET_CHATS, getChatsSaga);
   yield takeEvery(CREATE_CHATS, createChatsSaga);
   yield takeEvery(JOIN_CHAT, joinChatSaga);
+  yield takeEvery(UNJOIN_CHAT, unJoinChatSaga);
 }
 
 const initialState = {
@@ -108,6 +123,17 @@ export default function chat(state = initialState, action) {
         [id]: {
           ...state[id],
           users: (state[id].users || []).concat(action.payload.param),
+        },
+      };
+
+    case UNJOIN_CHAT:
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          users: (state[id].users || []).filter(
+            (id) => id !== action.payload.param
+          ),
         },
       };
     default:
