@@ -28,6 +28,7 @@ import Users from "../components/users/Users";
 import useCheckLogin from "../hooks/useCheckLogin";
 import { logout } from "../module/auth";
 import { getUsers } from "../module/users";
+import { getChats, createChats } from "../module/chats";
 
 const drawerWidth = 160;
 
@@ -182,7 +183,9 @@ const Main = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    dispatch(createChats({ name: "채팅방 1", userId: "ccc" }));
     dispatch(getUsers());
+    dispatch(getChats());
   }, []);
 
   const onLogout = () => {

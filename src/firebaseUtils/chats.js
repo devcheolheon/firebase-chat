@@ -1,3 +1,4 @@
+import { RssFeedOutlined } from "@material-ui/icons";
 import { db, firebase, firebaseApp } from "../firebase";
 
 // chats collection과 관련된 firebase 작업들이 모여있습니다.
@@ -52,7 +53,7 @@ async function createChat({ name, userId }) {
     .where("name", "==", name)
     .get();
 
-  if (!chatRoomSnapshot.empty) return true;
+  if (!chatRoomSnapshot.empty) return "";
 
   let docRef = await db
     .collection("chats")
@@ -61,6 +62,18 @@ async function createChat({ name, userId }) {
 
   if (!docRef) return "";
   else return docRef.id;
+}
+
+export async function getAllChats() {
+  let chatsSnapshot = await db.collection("chats").get();
+  let result = [];
+  chatsSnapshot.forEach((doc) => {
+    let chat = doc.data();
+    chat.id = doc.id;
+    result.push(chat);
+  });
+  console.log(result);
+  return result;
 }
 
 function linkToChatsList({ onAdded }) {

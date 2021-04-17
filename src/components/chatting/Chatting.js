@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { Card, Grid, Box, Typography } from "@material-ui/core";
 
@@ -59,53 +60,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Chatting = () => {
-  const [close, setClose] = useState(false);
-  const [chats, setChats] = useImmer([]);
   const [selectedChat, setSelectedChat] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [nickname, setNickname] = useState("noname");
+  const chats = useSelector((state) => state.chats.chats);
+
   const classes = useStyles();
-
-  const [loginStatus, setLoginStatus] = useCheckLogin(
-    {
-      setLoading,
-      successUrl: "",
-      failureUrl: "/login",
-    },
-    []
-  );
-
-  useEffect(() => {
-    if (loginStatus == "") return;
-    const userId = loginStatus;
-    async function fetchNickname(userId) {
-      setLoading(true);
-      //const name = await getUserNameById(userId);
-      //setNickname(name);
-      setLoading(false);
-    }
-    fetchNickname(userId);
-  }, [loginStatus]);
-
-  const addChat = useCallback((newRoom) => {
-    setChats((draft) => {
-      draft.push(newRoom);
-    });
-  }, []);
-
-  //  addChat 테스트
-  useEffect(() => {
-    if (loginStatus !== "") {
-      createChat({ name: "test", userId: loginStatus });
-    }
-  }, [loginStatus]);
-
-  /*
-  const removeChatRooms = useCallback((newRoom) => {
-    setSelectedChatRoom("");
-    setChatRooms((draft) => draft.filter((v) => v.id !== newRoom.id));
-  }, []);
-  */
 
   const onClickChatRoomLi = useCallback((id) => {
     setSelectedChat(id);
@@ -119,7 +77,7 @@ const Chatting = () => {
   */
 
   useEffect(() => {
-    linkToChatsList({ onAdded: addChat });
+    //linkToChatsList({ onAdded: addChat });
   }, []);
 
   return (

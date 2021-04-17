@@ -1,4 +1,5 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import clsx from "clsx";
 
 import ListItem from "@material-ui/core/ListItem";
@@ -53,16 +54,11 @@ const Members = ({ member, classes }) => {
   );
 };
 
-const ChatRoomLi = ({
-  id,
-  name,
-  users,
-  recentMessage,
-  totalMessages,
-  selected,
-}) => {
+function ChatRoomLi({ id, selected }) {
   const classes = useStyles();
-
+  const { name, totalMessages, recentMessage, users } = useSelector(
+    (state) => state.chats[id]
+  );
   return (
     <React.Fragment>
       <ListItem
@@ -106,13 +102,12 @@ const ChatRoomLi = ({
       <Divider component="li" />
     </React.Fragment>
   );
-};
+}
 
 const ChatRoomList = ({ chats, onClickHandler, selectedChat }) => {
-  const checkedChats = chats.map((chat) => {
-    if (chat.id === selectedChat) return { ...chat, selected: true };
-    if (chat.selected) return { ...chat, selected: false };
-    return chat;
+  const checkedChats = chats.map((id) => {
+    if (id === selectedChat) return { id, selected: true };
+    return { id };
   });
 
   return (
