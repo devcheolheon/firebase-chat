@@ -46,6 +46,7 @@ const Join = () => {
 
   const join = useCallback(async (body) => {
     setLoading(true);
+    console.log("join");
     try {
       let uid = await authJoin(body);
       await authSaveUser({ ...body, uid });

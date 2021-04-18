@@ -72,7 +72,6 @@ export const getUsersSaga = function* () {
   payload.userDic = {};
   users.forEach((user) => (payload.userDic[user.uid] = user));
   yield put(setUsers(payload));
-  return payload.usersDic;
 };
 
 export function* usersSaga() {

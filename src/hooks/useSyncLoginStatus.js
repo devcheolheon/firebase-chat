@@ -6,6 +6,7 @@ import { init, unSetUser } from "../module/auth";
 const useSyncLoginStatus = () => {
   const dispatch = useDispatch();
   const onLogin = (uid) => {
+    console.log("onLogin");
     dispatch(init(uid));
   };
   const onLogout = (uid) => {
