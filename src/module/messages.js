@@ -1,6 +1,15 @@
 import { takeEvery, put, call } from "redux-saga/effects";
-import { sendMessage as sendMessageAPI } from "../firebaseUtils/messages";
-import { setMessage as setMessageInChat } from "../module/chats";
+
+import {
+  sendMessage as sendMessageAPI,
+  getMessages as getMessagesAPI,
+} from "../firebaseUtils/messages";
+
+import {
+  setMessage as setMessageInChat,
+  setMessages as setMessagesInChat,
+} from "../module/chats";
+
 import produce from "immer";
 
 const GET_MESSAGES = "messages/GET_MESSAGES";
@@ -19,14 +28,23 @@ const setMessage = (payload) => ({
   payload,
 });
 
-export const getMessages = () => ({
+export const getMessages = (payload) => ({
   type: GET_MESSAGES,
+  payload,
 });
 
 export const setMessages = (payload) => ({
   type: SET_MESSAGES,
   payload,
 });
+
+function* getMessagesSaga(action) {
+  let messages = yield call(getMessagesAPI, action.payload);
+  yield put(setMessagesInChat({ messages, meta: action.payload.chat }));
+  let messagesDic = {};
+  messages.forEach((message) => (messagesDic[message.id] = message));
+  yield put(setMessages(messagesDic));
+}
 
 function* sendMessageSaga(action) {
   let message = yield call(sendMessageAPI, action.payload);
@@ -37,6 +55,7 @@ function* sendMessageSaga(action) {
 }
 
 export function* messagesSaga() {
+  yield takeEvery(GET_MESSAGES, getMessagesSaga);
   yield takeEvery(SEND_MESSAGE, sendMessageSaga);
 }
 

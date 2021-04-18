@@ -40,3 +40,14 @@ export async function sendMessage(payload) {
 
   return { ...message, id };
 }
+
+export async function getMessages(payload) {
+  let chatRef = db.collection("chats").doc(payload.chat);
+  let messageRef = chatRef.collection("messages");
+  let messages = [];
+  const messageSnapshot = await messageRef.get().catch(() => []);
+  messageSnapshot.forEach((doc) => {
+    messages.push({ id: doc.id, ...doc.data() });
+  });
+  return messages;
+}

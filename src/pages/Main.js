@@ -29,6 +29,7 @@ import useCheckLogin from "../hooks/useCheckLogin";
 import { logout } from "../module/auth";
 import { getUsers } from "../module/users";
 import { getChats, createChats } from "../module/chats";
+import { getMessages } from "../module/messages";
 
 const drawerWidth = 160;
 
@@ -185,6 +186,7 @@ const Main = () => {
   useEffect(() => {
     dispatch(getUsers());
     dispatch(getChats());
+    dispatch(getMessages({ chat: "TLMieU3mreaaDHIzTH7d" }));
   }, []);
 
   const onLogout = () => {

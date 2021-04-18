@@ -21,6 +21,7 @@ const JOIN_CHAT = "chats/JOIN_CHAT";
 const UNJOIN_CHAT = "chats/UNJOIN_CHAT";
 
 const SET_MESSAGE = "chats/SET_MESSAGE";
+const SET_MESSAGES = "chats/SET_MESSAGES";
 
 export const createChats = (payload) => ({ type: CREATE_CHATS, payload });
 const addChats = (payload) => ({ type: ADD_CHATS, payload });
@@ -46,6 +47,12 @@ export const setMessage = (payload) => ({
   type: SET_MESSAGE,
   payload,
 });
+
+export const setMessages = (payload) => ({
+  type: SET_MESSAGES,
+  payload,
+});
+
 // user reducer에서 처리
 
 function* createChatsSaga(action) {
@@ -154,7 +161,11 @@ export default function chat(state = initialState, action) {
       return produce(state, (draft) => {
         if (draft[id].messages) {
           let message = draft[id].messages.find(({ id: cid }) => cid == id);
-          if (!message) return;
+          if (message) return;
+          draft[id].messages.push({
+            id: action.payload.id,
+            created: action.payload.created,
+          });
         } else {
           draft[id].messages = [
             { id: action.payload.id, created: action.payload.created },
@@ -162,6 +173,21 @@ export default function chat(state = initialState, action) {
         }
       });
 
+    case SET_MESSAGES:
+      return produce(state, (draft) => {
+        if (draft[id].messages) {
+          action.payload.messages.forEach((message) => {
+            let exist = draft[id].messages.find(({ id: cid }) => cid == id);
+            if (exist) return;
+            draft[id].messages.push({
+              id: message.id,
+              created: message.created,
+            });
+          });
+        } else {
+          draft[id].messages = action.payload.messages;
+        }
+      });
     default:
       return state;
   }
