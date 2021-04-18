@@ -58,6 +58,7 @@ function* createChatsSaga(action) {
 
 export function* getChatsSaga() {
   let chats = yield call(getAllChats);
+  console.log(chats);
   const payload = {};
   payload.chats = chats.map((chat) => chat.id);
   payload.chatsDic = {};
@@ -162,7 +163,12 @@ export default function chat(state = initialState, action) {
             });
           });
         } else {
-          draft[id].messages = action.payload.messages;
+          draft[
+            id
+          ].messages = action.payload.messages.map(({ id, created }) => ({
+            id,
+            created,
+          }));
         }
       });
     default:
