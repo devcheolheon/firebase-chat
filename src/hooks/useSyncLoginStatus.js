@@ -14,7 +14,10 @@ const useSyncLoginStatus = () => {
 
   useEffect(() => {
     const unscribe = linkToAuthState({ onLogin, onLogout });
-    return () => unscribe();
+    return () => {
+      console.log(unscribe);
+      if (typeof unscribe == "function") unscribe();
+    };
   }, []);
 };
 

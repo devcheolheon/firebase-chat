@@ -20,6 +20,8 @@ const SET_CHATS = "chats/SET_CHATS";
 const JOIN_CHAT = "chats/JOIN_CHAT";
 const UNJOIN_CHAT = "chats/UNJOIN_CHAT";
 
+const SET_MESSAGE = "chats/SET_MESSAGE";
+
 export const createChats = (payload) => ({ type: CREATE_CHATS, payload });
 const addChats = (payload) => ({ type: ADD_CHATS, payload });
 // saga에서만 호출하는 action
@@ -40,6 +42,10 @@ export const unjoinChats = ({ id, uid }) => ({
   payload: { meta: id, param: uid },
 });
 
+export const setMessage = (payload) => ({
+  type: SET_MESSAGE,
+  payload,
+});
 // user reducer에서 처리
 
 function* createChatsSaga(action) {
@@ -141,6 +147,18 @@ export default function chat(state = initialState, action) {
           draft[id].users.splice(index, 1);
         } else {
           draft[id].users = [];
+        }
+      });
+
+    case SET_MESSAGE:
+      return produce(state, (draft) => {
+        if (draft[id].messages) {
+          let message = draft[id].messages.find(({ id: cid }) => cid == id);
+          if (!message) return;
+        } else {
+          draft[id].messages = [
+            { id: action.payload.id, created: action.payload.created },
+          ];
         }
       });
 

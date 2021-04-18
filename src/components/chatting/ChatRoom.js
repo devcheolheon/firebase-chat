@@ -55,20 +55,16 @@ const ChatRoom = ({ id, name }) => {
   let [chats, setChats] = useImmer([]);
   let chatEndRef = useRef();
 
-  const [loginStatus, setLoginStatus] = useCheckLogin(
-    {
-      setLoading,
-      successUrl: "/chatRooms",
-      failureUrl: "/login",
-    },
-    []
-  );
+  const [login_loading, isLogin, uid, nickname] = useCheckLogin({
+    logoutUrl: "/login",
+  });
 
   const addChat = useCallback(
-    async ({ userId, content }) => {
+    ({ userId, content }) => {
       setContent("");
       if (userId == "") return;
-      await addChatToRoom({ chatRoomId: id, userId, content });
+      addChatToRoom({ chatRoomId: id, userId, content });
+      console.log("?");
     },
     [id]
   );

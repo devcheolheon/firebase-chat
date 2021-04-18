@@ -1,5 +1,5 @@
 import { makeStyles, TextField, Button } from "@material-ui/core";
-import React from "react";
+import React, { useState } from "react";
 const useStyle = makeStyles((theme) => ({
   root: {
     minWidth: "100%",
@@ -14,8 +14,13 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-const ChatInputText = () => {
+const ChatInputText = ({ onSendMessage }) => {
   const classes = useStyle();
+  const [text, setText] = useState("");
+  const onSubmitHandler = () => {
+    onSendMessage(text);
+    setText("");
+  };
   return (
     <div className={classes.root}>
       <TextField
@@ -23,14 +28,16 @@ const ChatInputText = () => {
         id="filled-multiline-static"
         multiline
         rows={4}
-        defaultValue="메시지를 입력해주세요..."
+        value={text}
         variant="filled"
+        onChange={(e) => setText(e.target.value)}
       />
       <Button
         variant="outlined"
         size="large"
         color="primary"
         className={classes.margin}
+        onClick={onSubmitHandler}
       >
         전송
       </Button>

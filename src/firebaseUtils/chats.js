@@ -32,7 +32,7 @@ function makeChat({ name, userId }) {
   return {
     name,
     users: [userId],
-    recentMessage: "",
+    recentMessage: null,
     totalMessages: 0,
   };
 }

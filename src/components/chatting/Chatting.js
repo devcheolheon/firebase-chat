@@ -9,6 +9,7 @@ import ChatInputText from "./ChatInputText";
 import AlertDialog from "../common/Popup";
 
 import { joinChats, unjoinChats } from "../../module/chats";
+import { sendMessage } from "../../module/messages";
 
 const useStyles = makeStyles((theme) => ({
   ChatRoomListTitle: {
@@ -63,6 +64,7 @@ const Chatting = () => {
   const dispatch = useDispatch();
   const uid = useSelector((state) => state.auth.uid);
   const chats = useSelector((state) => state.chats.chats);
+
   const { chats: myChats = [] } = useSelector(
     (state) => state.users[state.auth.uid] || { chats: [] }
   );
@@ -93,6 +95,12 @@ const Chatting = () => {
     dispatch(unjoinChats({ uid, id: selectedChat }));
   }, [selectedChat, dispatch]);
 
+  const onSendMessage = useCallback(
+    (text) => {
+      dispatch(sendMessage({ user: uid, chat: selectedChat, content: text }));
+    },
+    [uid, selectedChat, dispatch]
+  );
   useEffect(() => {
     //linkToChatsList({ onAdded: addChat });
   }, []);
@@ -132,7 +140,7 @@ const Chatting = () => {
         {/* Recent Deposits */}
         <Grid item xs={12} lg={4} className={classes.ChatListContainer}>
           <div className={classes.ChatList}>{}</div>
-          <ChatInputText />
+          <ChatInputText onSendMessage={onSendMessage} />
         </Grid>
         <Grid item xs={12} lg={4} className={classes.ChatCardContainer}>
           <Card variant="outlined" className={classes.ChatCard} />

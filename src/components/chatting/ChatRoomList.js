@@ -56,9 +56,12 @@ const Members = ({ member, classes }) => {
 
 function ChatRoomLi({ id, selected }) {
   const classes = useStyles();
-  const { name, totalMessages, recentMessage, users } = useSelector(
-    (state) => state.chats[id]
-  );
+  const {
+    name = "",
+    totalMessages = 0,
+    recentMessage = null,
+    users = [],
+  } = useSelector((state) => state.chats[id]);
 
   return (
     <React.Fragment>
@@ -82,19 +85,12 @@ function ChatRoomLi({ id, selected }) {
             <div className={classes.chatRoomLiBody}>
               <div className={classes.totalTalks}> {totalMessages || 0} </div>
               <div>
-                {recentMessage && (
-                  <React.Fragement>
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      className={classes.inline}
-                      color="textPrimary"
-                    >
-                      {recentMessage.user} -
-                    </Typography>
-                    {" " + recentMessage.content}
-                  </React.Fragement>
-                )}
+                <Typography
+                  component="span"
+                  variant="body2"
+                  className={classes.inline}
+                  color="textPrimary"
+                />
               </div>
             </div>
           }
