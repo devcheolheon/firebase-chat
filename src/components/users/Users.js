@@ -145,7 +145,6 @@ const useStyles = makeStyles((theme) => ({
 const Users = () => {
   const classes = useStyles();
   const users = useSelector((state) => state.users.users);
-  const loading = useSelector((state) => state.users.loading);
 
   const [open, setOpen] = React.useState(true);
   const [selectedUser, setSelectedUser] = React.useState("");
@@ -158,9 +157,7 @@ const Users = () => {
     setOpen(false);
   };
 
-  return loading ? (
-    <Loading></Loading>
-  ) : (
+  return (
     <React.Fragment>
       <Grid container spacing={1}>
         <Grid container xs={12} lg={4} className={classes.UserListContainer}>

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { BsChat } from "react-icons/bs";
 import { FiUsers } from "react-icons/fi";
 import clsx from "clsx";
@@ -27,9 +27,7 @@ import Users from "../components/users/Users";
 
 import useCheckLogin from "../hooks/useCheckLogin";
 import { logout } from "../module/auth";
-import { getUsers } from "../module/users";
-import { getChats, createChats } from "../module/chats";
-import { getMessages } from "../module/messages";
+import { startInit } from "../module/init";
 
 const drawerWidth = 160;
 
@@ -173,6 +171,7 @@ const useStyles = makeStyles((theme) => ({
 const MENU_USER = "MENU_USER";
 const MENU_CHATTING = "MENU_CHATTING";
 
+let callInit = false;
 const Main = () => {
   const classes = useStyles();
   const [menu, setMenu] = React.useState(MENU_CHATTING);
@@ -181,13 +180,16 @@ const Main = () => {
     logoutUrl: "/login",
   });
 
+  const loading = useSelector((state) => state.init.loading);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getUsers());
-    dispatch(getChats());
-    dispatch(getMessages({ chat: "TLMieU3mreaaDHIzTH7d" }));
-  }, []);
+    if (uid && !callInit) {
+      dispatch(startInit({ uid }));
+      callInit = true;
+    }
+  }, [uid]);
 
   const onLogout = () => {
     dispatch(logout());
