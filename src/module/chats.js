@@ -11,9 +11,6 @@ import produce from "immer";
 const CREATE_CHATS = "chats/CREATE_CHATS";
 const ADD_CHATS = "chats/ADD_CHATS";
 
-const LOADING_START = "chats/LOADING_START";
-const LOADING_FINISH = "chats/LOADING_FINISH";
-
 const GET_CHATS = "chats/GET_CHATS";
 const SET_CHATS = "chats/SET_CHATS";
 
@@ -26,9 +23,6 @@ const SET_MESSAGES = "chats/SET_MESSAGES";
 export const createChats = (payload) => ({ type: CREATE_CHATS, payload });
 const addChats = (payload) => ({ type: ADD_CHATS, payload });
 // saga에서만 호출하는 action
-
-const loadingStart = () => ({ type: LOADING_START });
-const loadingFinish = () => ({ type: LOADING_FINISH });
 
 export const getChats = () => ({ type: GET_CHATS });
 const setChats = (payload) => ({ type: SET_CHATS, payload });
@@ -62,15 +56,13 @@ function* createChatsSaga(action) {
   }
 }
 
-function* getChatsSaga() {
-  yield put(loadingStart());
+export function* getChatsSaga() {
   let chats = yield call(getAllChats);
   const payload = {};
   payload.chats = chats.map((chat) => chat.id);
   payload.chatsDic = {};
   chats.forEach((chat) => (payload.chatsDic[chat.id] = chat));
   yield put(setChats(payload));
-  yield put(loadingFinish());
 }
 
 function* joinChatSaga(action) {
@@ -88,7 +80,6 @@ function* unJoinChatSaga(action) {
 }
 
 export function* chatsSaga() {
-  yield takeEvery(GET_CHATS, getChatsSaga);
   yield takeEvery(CREATE_CHATS, createChatsSaga);
   yield takeEvery(JOIN_CHAT, joinChatSaga);
   yield takeEvery(UNJOIN_CHAT, unJoinChatSaga);
@@ -102,20 +93,6 @@ export default function chat(state = initialState, action) {
   const id = action.payload && action.payload.meta;
 
   switch (action.type) {
-    case LOADING_START: {
-      return {
-        ...state,
-        loading: true,
-      };
-    }
-
-    case LOADING_FINISH: {
-      return {
-        ...state,
-        loading: false,
-      };
-    }
-
     case SET_CHATS: {
       return {
         ...state,

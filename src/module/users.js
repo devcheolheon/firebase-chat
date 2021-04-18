@@ -12,8 +12,6 @@ const SET_USERS = "users/SET_USERS";
 
 const USER_JOIN_CHAT = "users/USER_JOIN_CHAT";
 const USER_UNJOIN_CHAT = "users/USER_UNJOIN_CHAT";
-const LOADING_START = "users/LOADING";
-const LOADING_FINISH = "users/FINISH";
 
 /* 
 user {
@@ -24,7 +22,7 @@ user {
 }
 */
 
-const initialState = { users: [], loading: true };
+const initialState = { users: [] };
 
 export const addUser = (payload) => ({
   type: ADD_USER,
@@ -57,14 +55,6 @@ export const setUsers = (payload) => ({
   payload,
 });
 
-export const loadingStart = () => ({
-  type: LOADING_START,
-});
-
-export const loadingFinish = () => ({
-  type: LOADING_FINISH,
-});
-
 export const userJoinChat = (payload) => ({
   type: USER_JOIN_CHAT,
   payload,
@@ -75,15 +65,14 @@ export const userUnjoinChat = (payload) => ({
   payload,
 });
 
-const getUsersSaga = function* (type) {
-  yield put(loadingStart());
+export const getUsersSaga = function* () {
   const users = yield call(apiGetUsers);
   const payload = {};
   payload.users = users.map((user) => user.uid);
   payload.userDic = {};
   users.forEach((user) => (payload.userDic[user.uid] = user));
   yield put(setUsers(payload));
-  yield put(loadingFinish());
+  return payload.usersDic;
 };
 
 export function* usersSaga() {
@@ -94,18 +83,6 @@ export default function users(state = initialState, action) {
   const id = action.payload && action.payload.meta;
 
   switch (action.type) {
-    case LOADING_START:
-      return {
-        ...state,
-        loading: true,
-      };
-
-    case LOADING_FINISH:
-      return {
-        ...state,
-        loading: false,
-      };
-
     case SET_USERS:
       return {
         ...state,
