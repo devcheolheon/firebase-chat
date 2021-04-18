@@ -1,4 +1,3 @@
-import { RssFeedOutlined } from "@material-ui/icons";
 import { db, firebase, firebaseApp } from "../firebase";
 
 // chats collection과 관련된 firebase 작업들이 모여있습니다.
@@ -76,42 +75,35 @@ export async function getAllChats() {
   return result;
 }
 
-export async function joinChats({ meta: id, param: uid }) {
+export async function joinChats({ meta: id, param: uid, join = true }) {
+  let targetFunc = join
+    ? firebase.firestore.FieldValue.arrayUnion
+    : firebase.firestore.FieldValue.arrayRemove;
+
   let chatRef = await db.collection("chats").doc(id);
   let result = await chatRef
     .update({
-      users: firebase.firestore.FieldValue.arrayUnion(uid),
+      users: targetFunc(uid),
     })
     .catch((error) => false);
-  if (!result) return result;
 
-  let userRef = await db.collection("google").doc(uid);
+  let userQuery = await db.collection("google").where("uid", "==", uid).get();
+  let userDocs = userQuery.docs;
+  if (userDocs.length == 0) return;
+
+  let userRef = userDocs[0].ref;
+
   result = await userRef
     .update({
-      chats: firebase.firestore.FieldValue.arrayUnion(id),
+      chats: targetFunc(id),
     })
     .catch((error) => false);
 
   return result;
 }
 
-export async function unjoinChats({ meta: id, param: uid }) {
-  let chatRef = await db.collection("chats").doc(id);
-  let result = await chatRef
-    .update({
-      users: firebase.firestore.FieldValue.arrayRemove(uid),
-    })
-    .catch((error) => false);
-  if (!result) return result;
-
-  let userRef = await db.collection("google").doc(uid);
-  result = await userRef
-    .update({
-      chats: firebase.firestore.FieldValue.arrayRemove(id),
-    })
-    .catch((error) => false);
-
-  return result;
+export async function unjoinChats(payload) {
+  return joinChats({ ...payload, join: false });
 }
 
 function linkToChatsList({ onAdded }) {
