@@ -1,7 +1,7 @@
-import { takeEvery, put, call } from "redux-saga/effects";
+import { takeEvery, put, select } from "redux-saga/effects";
 import { getChatsSaga } from "../module/chats";
 import { getUsersSaga } from "../module/users";
-import { getMessages } from "../module/messages";
+import { getMessages, getMessagesSaga } from "../module/messages";
 
 const SET_LOADING = "init/SET_LOADING";
 const UNSET_LOADING = "init/UNSET_LOADING";
@@ -18,9 +18,12 @@ const initialState = {
 export function* initDataSaga(action) {
   yield put(setloading());
   yield getChatsSaga();
-  let users = yield getUsersSaga();
-  for (let i = 0; i < users[action.payload.uid].chats.length; i++) {
-    yield put(getMessages(users.chats[i]));
+  yield getUsersSaga();
+  let chats = yield select(
+    (state) => state.users[action.payload.uid].chats || []
+  );
+  for (let chatId of chats) {
+    yield getMessagesSaga(getMessages({ chat: chatId }));
   }
   yield put(unsetloading());
 }

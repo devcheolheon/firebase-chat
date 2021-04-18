@@ -38,7 +38,7 @@ export const setMessages = (payload) => ({
   payload,
 });
 
-function* getMessagesSaga(action) {
+export function* getMessagesSaga(action) {
   let messages = yield call(getMessagesAPI, action.payload);
   yield put(setMessagesInChat({ messages, meta: action.payload.chat }));
   let messagesDic = {};
