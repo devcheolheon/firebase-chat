@@ -49,8 +49,8 @@ export function* getMessagesSaga(action) {
 function* sendMessageSaga(action) {
   let message = yield call(sendMessageAPI, action.payload);
   if (message.id !== "") {
-    yield put(setMessageInChat({ ...message, meta: message.chat }));
     yield put(setMessage({ ...message, meta: message.id }));
+    yield put(setMessageInChat({ ...message, meta: message.chat }));
   }
 }
 
