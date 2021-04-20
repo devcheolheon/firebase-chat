@@ -86,10 +86,15 @@ const Chatting = () => {
 
   const classes = useStyles();
 
-  const onClickChatRoomLi = useCallback((id) => {
-    setSelectedChat(id);
-    setPopupOpen2(true);
-  }, []);
+  const onClickChatRoomLi = useCallback(
+    (id) => {
+      setSelectedChat(id);
+      if (id == selectedChat) {
+        setPopupOpen2(true);
+      }
+    },
+    [selectedChat]
+  );
 
   const onClickNotMyChatRoomLi = useCallback((id) => {
     setSelectedChat(id);
@@ -116,6 +121,7 @@ const Chatting = () => {
 
   const onSendMessage = useCallback(
     (text) => {
+      console.log(uid, selectedChat, text);
       dispatch(sendMessage({ user: uid, chat: selectedChat, content: text }));
     },
     [uid, selectedChat, dispatch]
@@ -159,8 +165,12 @@ const Chatting = () => {
         </Grid>
         {/* Recent Deposits */}
         <Grid item xs={12} lg={4} className={classes.ChatListContainer}>
-          {selectedChat && <MessageList chat={selectedChat}></MessageList>}
-          <ChatInputText onSendMessage={onSendMessage} />
+          {selectedChat && (
+            <React.Fragment>
+              <MessageList chat={selectedChat}></MessageList>
+              <ChatInputText onSendMessage={onSendMessage} />
+            </React.Fragment>
+          )}
         </Grid>
         <Grid item xs={12} lg={4} className={classes.ChatCardContainer}>
           <Card variant="outlined" className={classes.ChatCard} />
