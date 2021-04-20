@@ -163,12 +163,12 @@ export default function chat(state = initialState, action) {
             });
           });
         } else {
-          draft[
-            id
-          ].messages = action.payload.messages.map(({ id, created }) => ({
-            id,
-            created,
-          }));
+          draft[id].messages = action.payload.messages.map(
+            ({ id, created }) => ({
+              id,
+              created,
+            })
+          );
         }
       });
     default:
