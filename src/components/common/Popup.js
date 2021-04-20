@@ -12,14 +12,17 @@ export default function AlertDialog({
   content,
   title,
   handleAgree,
+  onClose,
 }) {
   const handleCloseAgree = () => {
     setOpen(false);
     handleAgree();
+    onClose && onClose();
   };
 
   const handleCloseDisagree = () => {
     setOpen(false);
+    onClose && onClose();
   };
 
   return (

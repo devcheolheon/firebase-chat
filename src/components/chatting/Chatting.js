@@ -2,21 +2,35 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { Card, Grid, Box, Typography } from "@material-ui/core";
+import ControlPointIcon from "@material-ui/icons/ControlPoint";
 
 import ChatRoomList from "./ChatRoomList";
+import MessageList from "./MessageList";
 import ChatInputText from "./ChatInputText";
-
 import AlertDialog from "../common/Popup";
+import CreateChatFormDialog from "./CreateChatFormDialog";
 
-import { joinChats, unjoinChats } from "../../module/chats";
+import {
+  joinChats,
+  unjoinChats,
+  createChats as createChatAction,
+} from "../../module/chats";
 import { sendMessage } from "../../module/messages";
 
 const useStyles = makeStyles((theme) => ({
   ChatRoomListTitle: {
     flex: 1,
     backgroundColor: theme.palette.primary.dark,
-    paddingLeft: theme.spacing(2),
-    paddingTop: theme.spacing(2),
+    padding: theme.spacing(2),
+  },
+
+  notInChatRoomListTitle: {
+    flex: 1,
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: theme.palette.primary.dark,
+    padding: theme.spacing(2),
   },
 
   ChatRoomListContainer: {
@@ -38,11 +52,6 @@ const useStyles = makeStyles((theme) => ({
     borderRight: "2px solid rgb(66,66,66)",
   },
 
-  ChatList: {
-    height: "630px",
-    overflowY: "scroll",
-  },
-
   ChatCardContainer: {
     height: "785px",
     display: "flex",
@@ -61,6 +70,8 @@ const Chatting = () => {
   const [selectedChat, setSelectedChat] = useState("");
   const [popupOpen, setPopupOpen] = useState(false);
   const [popupOpen2, setPopupOpen2] = useState(false);
+  const [popupOpen3, setPopupOpen3] = useState(false);
+
   const dispatch = useDispatch();
   const uid = useSelector((state) => state.auth.uid);
   const chats = useSelector((state) => state.chats.chats);
@@ -95,6 +106,14 @@ const Chatting = () => {
     dispatch(unjoinChats({ uid, id: selectedChat }));
   }, [selectedChat, dispatch]);
 
+  const createChat = useCallback(
+    (subject) => {
+      console.log(`create chat ${subject}`);
+      dispatch(createChatAction({ userId: uid, name: subject }));
+    },
+    [dispatch, uid]
+  );
+
   const onSendMessage = useCallback(
     (text) => {
       dispatch(sendMessage({ user: uid, chat: selectedChat, content: text }));
@@ -126,9 +145,10 @@ const Chatting = () => {
               onClickHandler={onClickChatRoomLi}
             />
           </Grid>
-          <Typography variant="h6" className={classes.ChatRoomListTitle}>
-            채팅방
-          </Typography>
+          <div className={classes.notInChatRoomListTitle}>
+            <Typography variant="h6">채팅방</Typography>
+            <ControlPointIcon size="33" onClick={() => setPopupOpen3(true)} />
+          </div>
           <Grid item xs={12} className={classes.ChatRoomList}>
             <ChatRoomList
               selectedChat={selectedChat}
@@ -139,7 +159,7 @@ const Chatting = () => {
         </Grid>
         {/* Recent Deposits */}
         <Grid item xs={12} lg={4} className={classes.ChatListContainer}>
-          <div className={classes.ChatList}>{}</div>
+          {selectedChat && <MessageList chat={selectedChat}></MessageList>}
           <ChatInputText onSendMessage={onSendMessage} />
         </Grid>
         <Grid item xs={12} lg={4} className={classes.ChatCardContainer}>
@@ -162,6 +182,11 @@ const Chatting = () => {
         title="잠시만요~"
         handleAgree={unJoinChat}
       ></AlertDialog>
+      <CreateChatFormDialog
+        open={popupOpen3}
+        setOpen={setPopupOpen3}
+        onSubmit={createChat}
+      ></CreateChatFormDialog>
     </React.Fragment>
   );
 };
