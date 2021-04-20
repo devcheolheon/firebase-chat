@@ -208,92 +208,96 @@ const Main = () => {
   };
 
   return (
-    <div className={classes.root}>
-      <CssBaseline />
-      <AppBar
-        position="absolute"
-        className={clsx(classes.appBar, open && classes.appBarShift)}
-      >
-        <Toolbar className={classes.toolbar}>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            className={clsx(
-              classes.menuButton,
-              open && classes.menuButtonHidden
-            )}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography
-            component="h1"
-            variant="h6"
-            color="inherit"
-            noWrap
-            className={classes.title}
-          >
-            {menu === MENU_CHATTING && " 채팅 "}
-            {menu === MENU_USER && "사용자 정보 "}
-          </Typography>
+    loading || (
+      <div className={classes.root}>
+        <CssBaseline />
+        <AppBar
+          position="absolute"
+          className={clsx(classes.appBar, open && classes.appBarShift)}
+        >
+          <Toolbar className={classes.toolbar}>
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              className={clsx(
+                classes.menuButton,
+                open && classes.menuButtonHidden
+              )}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography
+              component="h1"
+              variant="h6"
+              color="inherit"
+              noWrap
+              className={classes.title}
+            >
+              {menu === MENU_CHATTING && " 채팅 "}
+              {menu === MENU_USER && "사용자 정보 "}
+            </Typography>
 
-          <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
-          <IconButton color="inherit" onClick={onLogout}>
-            <ExitToAppIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        variant="permanent"
-        classes={{
-          paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
-        }}
-        open={open}
-      >
-        <div className={classes.toolbarIcon}>
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </div>
-        <Divider />
-        <List>
-          <ListItem
-            button
-            onClick={() => {
-              selectMenu(MENU_CHATTING);
-            }}
-            className={clsx({ [classes.selectedMenu]: menu === MENU_CHATTING })}
-          >
-            <ListItemIcon className={classes.listItemIcon}>
-              <BsChat size="22" className={classes.reactIcon} />
-            </ListItemIcon>
-            <ListItemText primary="채팅방" />
-          </ListItem>
-          <ListItem
-            button
-            onClick={() => {
-              selectMenu(MENU_USER);
-            }}
-            className={clsx({ [classes.selectedMenu]: menu === MENU_USER })}
-          >
-            <ListItemIcon className={classes.listItemIcon}>
-              <FiUsers size="22" className={classes.reactIcon} />
-            </ListItemIcon>
-            <ListItemText primary="사용자" />
-          </ListItem>
-        </List>
-      </Drawer>
-      <main className={classes.content}>
-        <div className={classes.appBarSpacer} />
-        {menu === MENU_CHATTING && <Chatting />}
-        {menu === MENU_USER && <Users myId={uid} />}
-      </main>
-    </div>
+            <IconButton color="inherit">
+              <Badge badgeContent={4} color="secondary">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+            <IconButton color="inherit" onClick={onLogout}>
+              <ExitToAppIcon />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+        <Drawer
+          variant="permanent"
+          classes={{
+            paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
+          }}
+          open={open}
+        >
+          <div className={classes.toolbarIcon}>
+            <IconButton onClick={handleDrawerClose}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </div>
+          <Divider />
+          <List>
+            <ListItem
+              button
+              onClick={() => {
+                selectMenu(MENU_CHATTING);
+              }}
+              className={clsx({
+                [classes.selectedMenu]: menu === MENU_CHATTING,
+              })}
+            >
+              <ListItemIcon className={classes.listItemIcon}>
+                <BsChat size="22" className={classes.reactIcon} />
+              </ListItemIcon>
+              <ListItemText primary="채팅방" />
+            </ListItem>
+            <ListItem
+              button
+              onClick={() => {
+                selectMenu(MENU_USER);
+              }}
+              className={clsx({ [classes.selectedMenu]: menu === MENU_USER })}
+            >
+              <ListItemIcon className={classes.listItemIcon}>
+                <FiUsers size="22" className={classes.reactIcon} />
+              </ListItemIcon>
+              <ListItemText primary="사용자" />
+            </ListItem>
+          </List>
+        </Drawer>
+        <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+          {menu === MENU_CHATTING && <Chatting />}
+          {menu === MENU_USER && <Users myId={uid} />}
+        </main>
+      </div>
+    )
   );
 };
 
