@@ -54,8 +54,7 @@ const Members = ({ member, classes }) => {
   );
 };
 
-function ChatRoomLi({ id, selected }) {
-  const classes = useStyles();
+function ChatRoomLi({ chat: { id, selected }, classes }) {
   const {
     name = "",
     totalMessages = 0,
@@ -102,6 +101,7 @@ function ChatRoomLi({ id, selected }) {
 }
 
 const ChatRoomList = ({ chats, onClickHandler, selectedChat }) => {
+  const classes = useStyles();
   const checkedChats = chats.map((id) => {
     if (id === selectedChat) return { id, selected: true };
     return { id };
@@ -116,7 +116,9 @@ const ChatRoomList = ({ chats, onClickHandler, selectedChat }) => {
         onClickHandler(id);
       }}
     >
-      {checkedChats.map(ChatRoomLi)}
+      {checkedChats.map((chat) => (
+        <ChatRoomLi classes={classes} chat={chat}></ChatRoomLi>
+      ))}
     </List>
   );
 };
