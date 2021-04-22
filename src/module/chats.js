@@ -71,7 +71,8 @@ export const addChat = (payload) => ({
 // user reducer에서 처리
 
 function* createChatsSaga(action) {
-  yield call(createChat, action.payload);
+  const id = yield call(createChat, action.payload);
+  yield put(joinChats({ id, uid: action.payload.userId }));
 }
 
 export function* getChatsSaga() {
