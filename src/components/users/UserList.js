@@ -7,29 +7,7 @@ import { Divider, makeStyles, Typography } from "@material-ui/core";
 import List from "@material-ui/core/List";
 import { useSelector } from "react-redux";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    maxWidth: "36ch",
-    backgroundColor: theme.palette.background.paper,
-  },
-  inline: {
-    display: "inline",
-  },
-
-  userLiBody: {
-    display: "flex",
-    flexDirection: "row-reverse",
-    alignItems: "center",
-  },
-
-  selectedUser: {
-    backgroundColor: theme.palette.primary.light,
-  },
-}));
-
-const UserLi = ({ id, selected }) => {
-  const classes = useStyles();
+const UserLi = ({ user: { id, selected }, classes }) => {
   const user = useSelector((state) => state.users[id]);
 
   return (
@@ -60,7 +38,7 @@ const UserLi = ({ id, selected }) => {
   );
 };
 
-const UserList = ({ users, onClickHandler, selectedUser }) => {
+const UserList = ({ classes, users, onClickHandler, selectedUser }) => {
   const checkedUsers = users.map((id) => {
     if (id === selectedUser) return { id, selected: true };
     return { id };
@@ -74,7 +52,9 @@ const UserList = ({ users, onClickHandler, selectedUser }) => {
         onClickHandler(id);
       }}
     >
-      {checkedUsers.map(UserLi)}
+      {checkedUsers.map((user) => (
+        <UserLi user={user} classes={classes}></UserLi>
+      ))}
     </List>
   );
 };

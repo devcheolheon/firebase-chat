@@ -1,6 +1,7 @@
-import { takeEvery, getContext, put, call } from "redux-saga/effects";
+import { takeEvery, put, call } from "redux-saga/effects";
+import { eventChannel } from "redux-saga";
 import { getUsers as apiGetUsers } from "../firebaseUtils/users";
-import { subscribeUsers } from "../firebaseUtils/users";
+import { usersSnapshotChannel } from "../firebaseUtils/users";
 
 import produce from "immer";
 
@@ -15,6 +16,7 @@ const SET_USERS = "users/SET_USERS";
 const USER_JOIN_CHAT = "users/USER_JOIN_CHAT";
 const USER_UNJOIN_CHAT = "users/USER_UNJOIN_CHAT";
 
+const LINK_TO_USERS = "users/LINK_TO_USERS";
 /* 
 user {
     id
@@ -28,19 +30,17 @@ const initialState = { users: [] };
 
 export const addUser = (payload) => ({
   type: ADD_USER,
-  payload,
+  payload: { user: payload, meta: payload.id },
 });
 
 export const updateUser = (payload) => ({
   type: UPDATE_USER,
-  payload,
-  meta: payload.id,
+  payload: { user: payload, meta: payload.id },
 });
 
 export const deleteUser = (payload) => ({
   type: DELETE_USER,
-  payload,
-  meta: payload.id,
+  payload: { user: payload, meta: payload.id },
 });
 
 export const getUser = (id) => ({
@@ -67,6 +67,10 @@ export const userUnjoinChat = (payload) => ({
   payload,
 });
 
+export const linkToUsers = () => ({
+  type: LINK_TO_USERS,
+});
+
 export const getUsersSaga = function* () {
   const users = yield call(apiGetUsers);
   const payload = {};
@@ -76,8 +80,29 @@ export const getUsersSaga = function* () {
   yield put(setUsers(payload));
 };
 
+function* linkToUsersSaga() {
+  const usersChannel = createUsersChannel();
+  yield takeEvery(usersChannel, setChangesToUsers);
+}
+
+function createUsersChannel() {
+  return eventChannel((emitter) => usersSnapshotChannel(emitter));
+}
+
+function* setChangesToUsers(action) {
+  switch (action.type) {
+    case "added": {
+      yield put(addUser(action.payload));
+    }
+    //case "modified":
+    //yield put(setChat(action.payload));
+    //return;
+  }
+}
+
 export function* usersSaga() {
   yield takeEvery(GET_USERS, getUsersSaga);
+  yield takeEvery(LINK_TO_USERS, linkToUsersSaga);
 }
 
 export default function users(state = initialState, action) {
@@ -115,7 +140,7 @@ export default function users(state = initialState, action) {
     case ADD_USER:
       return produce(state, (draft) => {
         if (!draft[id]) {
-          draft.push(id);
+          draft.users.push(id);
           draft[id] = action.payload.user;
         }
       });

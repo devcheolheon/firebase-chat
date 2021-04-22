@@ -140,6 +140,26 @@ const useStyles = makeStyles((theme) => ({
     height: "750px",
     overflowY: "scroll",
   },
+
+  liRoot: {
+    width: "100%",
+    maxWidth: "36ch",
+    backgroundColor: theme.palette.background.paper,
+  },
+
+  liInline: {
+    display: "inline",
+  },
+
+  userLiBody: {
+    display: "flex",
+    flexDirection: "row-reverse",
+    alignItems: "center",
+  },
+
+  selectedUser: {
+    backgroundColor: theme.palette.primary.light,
+  },
 }));
 
 const Users = () => {
@@ -166,6 +186,7 @@ const Users = () => {
               users={users}
               onClickHandler={(id) => setSelectedUser(id)}
               selectedUser={selectedUser}
+              classes={classes}
             />
           </Grid>
         </Grid>

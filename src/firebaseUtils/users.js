@@ -1,4 +1,5 @@
 import { db, firebase, firebaseApp } from "../firebase";
+import { emitOnSnapshot } from "./common";
 
 export async function getUserNameById(id) {
   const userRef = db.collection("google").where("uid", "==", id);
@@ -19,23 +20,9 @@ export async function getUsers() {
   return users;
 }
 
-export async function subscribeUsers({ onAdded, onRemoved, onModified }) {
+export function usersSnapshotChannel(emitter) {
   const usersRef = db.collection("google");
-  const unscribe = usersRef.onSnapshot((snapshot) => {
-    snapshot.docChanges().forEach((change) => {
-      const newUser = change.doc.data();
-      newUser.id = change.doc.id;
-
-      if (change.type === "added") {
-        onAdded(newUser);
-      } else if (change.type === "removed") {
-        onRemoved(newUser);
-      } else if (change.type === "modified") {
-        onModified(newUser);
-      }
-    });
-  });
-
+  const unscribe = emitOnSnapshot(emitter, usersRef);
   return unscribe;
 }
 
