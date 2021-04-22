@@ -12,19 +12,13 @@ import {
   setMessages as setMessagesInChat,
 } from "../module/chats";
 
-import produce from "immer";
-import {
-  SelectAllRounded,
-  SignalCellularNoSimOutlined,
-} from "@material-ui/icons";
-
 const GET_MESSAGES = "messages/GET_MESSAGES";
 const SET_MESSAGES = "messages/SET_MESSAGES";
 
 const SEND_MESSAGE = "messages/SEND_MESSAGE";
 const SET_MESSAGE = "messages/SET_MESSAGE";
 
-const ADD_MESSAGE = "messages/ADD_MESSAGE";
+const ADD_LINK_TO_CHAT_MESSAGE = "messages/ADD_LINK_TO_CHAT_MESSAGE";
 
 export const sendMessage = (payload) => ({
   type: SEND_MESSAGE,
@@ -46,6 +40,11 @@ export const setMessages = (payload) => ({
   payload,
 });
 
+export const addLinkToChatMessages = (payload) => ({
+  type: ADD_LINK_TO_CHAT_MESSAGE,
+  payload,
+});
+
 export function* getMessagesSaga(action) {
   let messages = yield call(getMessagesAPI, action.payload);
   yield put(setMessagesInChat({ messages, meta: action.payload.chat }));
@@ -56,6 +55,10 @@ export function* getMessagesSaga(action) {
 
 function* sendMessageSaga(action) {
   yield call(sendMessageAPI, action.payload);
+}
+
+function* addLinkToChatMessagesSaga(action) {
+  yield linkToChatMessagesSaga(action.payload.chat);
 }
 
 export function* initLinkToChatMessagesSaga() {
@@ -99,6 +102,7 @@ function* setChangesToChannel(action) {
 export function* messagesSaga() {
   yield takeEvery(GET_MESSAGES, getMessagesSaga);
   yield takeEvery(SEND_MESSAGE, sendMessageSaga);
+  yield takeEvery(ADD_LINK_TO_CHAT_MESSAGE, addLinkToChatMessagesSaga);
 }
 
 const initialState = {};

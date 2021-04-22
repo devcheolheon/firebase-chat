@@ -7,6 +7,7 @@ import {
   unjoinChats as unjoinChatAPI,
 } from "../firebaseUtils/chats";
 import { userJoinChat, userUnjoinChat } from "./users";
+import { addLinkToChatMessages } from "./messages";
 import produce from "immer";
 import { eventChannel } from "@redux-saga/core";
 
@@ -110,6 +111,7 @@ function* joinChatSaga(action) {
   yield put(
     userJoinChat({ meta: action.payload.param, param: action.payload.meta })
   );
+  yield put(addLinkToChatMessages({ chat: action.payload.meta }));
   yield call(joinChatAPI, action.payload);
 }
 
