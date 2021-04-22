@@ -1,5 +1,6 @@
-import { takeEvery, put, call } from "redux-saga/effects";
+import { takeEvery, put, call, channel } from "redux-saga/effects";
 import {
+  chatsSnapshotChannel,
   createChat,
   getAllChats,
   joinChats as joinChatAPI,
@@ -7,9 +8,13 @@ import {
 } from "../firebaseUtils/chats";
 import { userJoinChat, userUnjoinChat } from "./users";
 import produce from "immer";
+import { eventChannel } from "@redux-saga/core";
 
 const CREATE_CHATS = "chats/CREATE_CHATS";
+const ADD_CHAT = "chats/ADD_CHAT";
 const ADD_CHATS = "chats/ADD_CHATS";
+
+const UPDATE_CHAT = "chats/UPDATE_CHAT";
 
 const GET_CHATS = "chats/GET_CHATS";
 const SET_CHATS = "chats/SET_CHATS";
@@ -19,6 +24,8 @@ const UNJOIN_CHAT = "chats/UNJOIN_CHAT";
 
 const SET_MESSAGE = "chats/SET_MESSAGE";
 const SET_MESSAGES = "chats/SET_MESSAGES";
+
+const LINK_TO_CHATS = "chats/LINK_TO_CHATS";
 
 export const createChats = (payload) => ({ type: CREATE_CHATS, payload });
 const addChats = (payload) => ({ type: ADD_CHATS, payload });
@@ -47,13 +54,24 @@ export const setMessages = (payload) => ({
   payload,
 });
 
+export const linkToChats = () => ({
+  type: LINK_TO_CHATS,
+});
+
+export const updateChat = (payload) => ({
+  type: UPDATE_CHAT,
+  payload,
+});
+
+export const addChat = (payload) => ({
+  type: ADD_CHAT,
+  payload: { chat: payload, meta: payload.id },
+});
+
 // user reducer에서 처리
 
 function* createChatsSaga(action) {
-  let id = yield call(createChat, action.payload);
-  if (id != "") {
-    yield put(addChats({ ...action.payload, meta: id }));
-  }
+  yield call(createChat, action.payload);
 }
 
 export function* getChatsSaga() {
@@ -64,6 +82,27 @@ export function* getChatsSaga() {
   payload.chatsDic = {};
   chats.forEach((chat) => (payload.chatsDic[chat.id] = chat));
   yield put(setChats(payload));
+}
+
+function* linkToChatsSaga() {
+  const chatsChannel = createChatsChannel();
+  yield takeEvery(chatsChannel, setChangesToChannel);
+}
+
+function createChatsChannel() {
+  return eventChannel((emitter) => chatsSnapshotChannel(emitter));
+}
+
+function* setChangesToChannel(action) {
+  console.log(action);
+  switch (action.type) {
+    case "added": {
+      yield put(addChat(action.payload));
+    }
+    //case "modified":
+    //yield put(setChat(action.payload));
+    //return;
+  }
 }
 
 function* joinChatSaga(action) {
@@ -81,6 +120,7 @@ function* unJoinChatSaga(action) {
 }
 
 export function* chatsSaga() {
+  yield takeEvery(LINK_TO_CHATS, linkToChatsSaga);
   yield takeEvery(CREATE_CHATS, createChatsSaga);
   yield takeEvery(JOIN_CHAT, joinChatSaga);
   yield takeEvery(UNJOIN_CHAT, unJoinChatSaga);
@@ -101,6 +141,21 @@ export default function chat(state = initialState, action) {
         chats: action.payload.chats,
       };
     }
+
+    case ADD_CHAT:
+      return produce(state, (draft) => {
+        if (draft[id]) {
+          return draft;
+        } else {
+          draft[id] = action.payload.chat;
+          if (draft.chats) {
+            draft.chats.push(id);
+          } else {
+            draft.chats = [id];
+          }
+          return draft;
+        }
+      });
 
     case ADD_CHATS:
       return produce(state, (draft) => {

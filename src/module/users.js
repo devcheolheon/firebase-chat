@@ -1,5 +1,7 @@
 import { takeEvery, getContext, put, call } from "redux-saga/effects";
 import { getUsers as apiGetUsers } from "../firebaseUtils/users";
+import { subscribeUsers } from "../firebaseUtils/users";
+
 import produce from "immer";
 
 const ADD_USER = "users/ADD_USER";
@@ -29,16 +31,16 @@ export const addUser = (payload) => ({
   payload,
 });
 
-export const updateUser = (id, payload) => ({
+export const updateUser = (payload) => ({
   type: UPDATE_USER,
   payload,
-  meta: id,
+  meta: payload.id,
 });
 
-export const deleteUser = (id, payload) => ({
+export const deleteUser = (payload) => ({
   type: DELETE_USER,
   payload,
-  meta: id,
+  meta: payload.id,
 });
 
 export const getUser = (id) => ({

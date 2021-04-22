@@ -44,7 +44,7 @@ function makeChat({ name, userId }) {
 // 반환값 참고 (https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference?hl=ko#add)
 // 같은 이름의 채팅방에 없으면 chats 콜렉션에 새 객체 생성
 
-async function createChat({ name, userId }) {
+export async function createChat({ name, userId }) {
   name = name.trim();
 
   let chatRoomSnapshot = await db
@@ -106,20 +106,20 @@ export async function unjoinChats(payload) {
   return joinChats({ ...payload, join: false });
 }
 
-function linkToChatsList({ onAdded }) {
+export function chatsSnapshotChannel(emitter) {
   const chatRoomsRef = db.collection("chats");
-  chatRoomsRef.onSnapshot((snapshot) => {
+
+  const unscribe = chatRoomsRef.onSnapshot((snapshot) => {
     snapshot.docChanges().forEach((change) => {
       const newDoc = change.doc.data();
       newDoc.id = change.doc.id;
-      if (change.type === "added") {
-        onAdded(newDoc);
-      }
+      newDoc.type = change.type;
+      emitter({ payload: newDoc, type: change.type });
     });
   });
-}
 
-export { createChat, linkToChatsList };
+  return unscribe;
+}
 
 /*
 export function linkToChatList({ roomId, onAdded, onRemoved, onModified }) {
