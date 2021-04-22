@@ -30,17 +30,17 @@ const initialState = { users: [] };
 
 export const addUser = (payload) => ({
   type: ADD_USER,
-  payload: { user: payload, meta: payload.id },
+  payload: { user: payload, meta: payload.uid },
 });
 
 export const updateUser = (payload) => ({
   type: UPDATE_USER,
-  payload: { user: payload, meta: payload.id },
+  payload: { user: payload, meta: payload.uid },
 });
 
 export const deleteUser = (payload) => ({
   type: DELETE_USER,
-  payload: { user: payload, meta: payload.id },
+  payload: { user: payload, meta: payload.uid },
 });
 
 export const getUser = (id) => ({
@@ -93,10 +93,16 @@ function* setChangesToUsers(action) {
   switch (action.type) {
     case "added": {
       yield put(addUser(action.payload));
+      return;
     }
-    //case "modified":
-    //yield put(setChat(action.payload));
-    //return;
+    case "modified": {
+      yield put(updateUser(action.payload));
+      return;
+    }
+    case "removed": {
+      yield put(deleteUser(action.payload));
+      return;
+    }
   }
 }
 
@@ -127,13 +133,13 @@ export default function users(state = initialState, action) {
     case UPDATE_USER:
       return {
         ...state,
-        [id]: { ...state.user[id], ...action.payload },
+        [id]: { ...state[id], ...action.payload.user },
       };
 
     case DELETE_USER:
       return {
         ...state,
-        users: users.filter((user) => user.id !== id),
+        users: state.users.filter((user) => user !== id),
         [id]: undefined,
       };
 
