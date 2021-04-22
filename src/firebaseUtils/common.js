@@ -7,6 +7,5 @@ export function emitOnSnapshot(emitter, ref) {
       emitter({ payload: newDoc, type: change.type });
     });
   });
-  console.log(unscribe);
   return unscribe;
 }

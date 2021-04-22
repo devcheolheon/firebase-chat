@@ -1,7 +1,11 @@
 import { takeEvery, put, select } from "redux-saga/effects";
 import { getChatsSaga, linkToChats } from "../module/chats";
 import { getUsersSaga, linkToUsers } from "../module/users";
-import { getMessages, getMessagesSaga } from "../module/messages";
+import {
+  getMessages,
+  getMessagesSaga,
+  initLinkToChatMessagesSaga,
+} from "../module/messages";
 
 const SET_LOADING = "init/SET_LOADING";
 const UNSET_LOADING = "init/UNSET_LOADING";
@@ -35,6 +39,7 @@ export function* initDataSaga(action) {
 export function* linkDataSaga() {
   yield put(linkToChats());
   yield put(linkToUsers());
+  yield initLinkToChatMessagesSaga();
 }
 
 export function* initSaga() {

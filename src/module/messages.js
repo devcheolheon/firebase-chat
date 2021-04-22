@@ -1,8 +1,10 @@
-import { takeEvery, put, call } from "redux-saga/effects";
+import { takeEvery, put, call, select } from "redux-saga/effects";
+import { eventChannel } from "redux-saga/";
 
 import {
   sendMessage as sendMessageAPI,
   getMessages as getMessagesAPI,
+  messagesSnapshotChannel,
 } from "../firebaseUtils/messages";
 
 import {
@@ -11,12 +13,18 @@ import {
 } from "../module/chats";
 
 import produce from "immer";
+import {
+  SelectAllRounded,
+  SignalCellularNoSimOutlined,
+} from "@material-ui/icons";
 
 const GET_MESSAGES = "messages/GET_MESSAGES";
 const SET_MESSAGES = "messages/SET_MESSAGES";
 
 const SEND_MESSAGE = "messages/SEND_MESSAGE";
 const SET_MESSAGE = "messages/SET_MESSAGE";
+
+const ADD_MESSAGE = "messages/ADD_MESSAGE";
 
 export const sendMessage = (payload) => ({
   type: SEND_MESSAGE,
@@ -25,7 +33,7 @@ export const sendMessage = (payload) => ({
 
 const setMessage = (payload) => ({
   type: SET_MESSAGE,
-  payload,
+  payload: { message: payload, meta: payload.id },
 });
 
 export const getMessages = (payload) => ({
@@ -47,10 +55,44 @@ export function* getMessagesSaga(action) {
 }
 
 function* sendMessageSaga(action) {
-  let message = yield call(sendMessageAPI, action.payload);
-  if (message.id !== "") {
-    yield put(setMessage({ ...message, meta: message.id }));
-    yield put(setMessageInChat({ ...message, meta: message.chat }));
+  yield call(sendMessageAPI, action.payload);
+}
+
+export function* initLinkToChatMessagesSaga() {
+  const myChats = yield select(
+    (state) => (state.auth.uid && state.users[state.auth.uid].chats) || []
+  );
+
+  for (let i = 0; i < myChats.length; i++) {
+    yield linkToChatMessagesSaga(myChats[i]);
+  }
+}
+
+function* linkToChatMessagesSaga(chatId) {
+  const channel = createMessagesChannel(chatId);
+  yield takeEvery(channel, setChangesToChannel);
+}
+
+function createMessagesChannel(chatId) {
+  return eventChannel((emitter) => messagesSnapshotChannel(emitter, chatId));
+}
+
+function* setChangesToChannel(action) {
+  console.log("message: ", action);
+  switch (action.type) {
+    case "added": {
+      let exist = yield select((state) => state.messages[action.payload.id]);
+      console.log("exist : ", exist);
+      if (exist) return;
+      yield put(setMessage(action.payload));
+      yield put(
+        setMessageInChat({ ...action.payload, meta: action.payload.chat })
+      );
+      return;
+    }
+    //case "modified":
+    //yield put(setChat(action.payload));
+    //return;
   }
 }
 
@@ -69,7 +111,7 @@ export default function messages(state = initialState, action) {
     case SET_MESSAGE:
       return {
         ...state,
-        [id]: action.payload,
+        [id]: action.payload.message,
       };
     case SET_MESSAGES:
       return {

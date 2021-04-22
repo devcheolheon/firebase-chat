@@ -1,4 +1,5 @@
 import { db, firebase, firebaseApp } from "../firebase";
+import { emitOnSnapshot } from "./common";
 
 // makeMessage
 
@@ -50,4 +51,10 @@ export async function getMessages(payload) {
     messages.push({ id: doc.id, ...doc.data() });
   });
   return messages;
+}
+
+export function messagesSnapshotChannel(emitter, chatId) {
+  const messageRef = db.collection("chats").doc(chatId).collection("messages");
+  const unscribe = emitOnSnapshot(emitter, messageRef);
+  return unscribe;
 }
