@@ -1,5 +1,5 @@
 import { db, firebase, firebaseApp } from "../firebase";
-
+import { emitOnSnapshot } from "./common";
 // chats collection과 관련된 firebase 작업들이 모여있습니다.
 
 // chat
@@ -108,16 +108,7 @@ export async function unjoinChats(payload) {
 
 export function chatsSnapshotChannel(emitter) {
   const chatRoomsRef = db.collection("chats");
-
-  const unscribe = chatRoomsRef.onSnapshot((snapshot) => {
-    snapshot.docChanges().forEach((change) => {
-      const newDoc = change.doc.data();
-      newDoc.id = change.doc.id;
-      newDoc.type = change.type;
-      emitter({ payload: newDoc, type: change.type });
-    });
-  });
-
+  const unscribe = emitOnSnapshot(emitter, chatRoomsRef);
   return unscribe;
 }
 
