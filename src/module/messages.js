@@ -1,4 +1,4 @@
-import { takeEvery, put, call, select } from "redux-saga/effects";
+import { takeEvery, put, call, select, take } from "redux-saga/effects";
 import { eventChannel } from "redux-saga/";
 
 import {
@@ -19,6 +19,7 @@ const SEND_MESSAGE = "messages/SEND_MESSAGE";
 const SET_MESSAGE = "messages/SET_MESSAGE";
 
 const ADD_LINK_TO_CHAT_MESSAGE = "messages/ADD_LINK_TO_CHAT_MESSAGE";
+const CLOSE_LINK_TO_CHAT_MESSAGE = "messages/CLOSE_LINK_TO_CHAT_MESSAGE";
 
 export const sendMessage = (payload) => ({
   type: SEND_MESSAGE,
@@ -42,6 +43,11 @@ export const setMessages = (payload) => ({
 
 export const addLinkToChatMessages = (payload) => ({
   type: ADD_LINK_TO_CHAT_MESSAGE,
+  payload,
+});
+
+export const closeLinkToChatMessages = (payload) => ({
+  type: CLOSE_LINK_TO_CHAT_MESSAGE,
   payload,
 });
 
@@ -71,9 +77,21 @@ export function* initLinkToChatMessagesSaga() {
   }
 }
 
+function makeCloseChannel(chatId, channel) {
+  return function* closeChannel(action) {
+    if (action.payload.chat == chatId) {
+      channel.close();
+    }
+  };
+}
+
 function* linkToChatMessagesSaga(chatId) {
   const channel = createMessagesChannel(chatId);
   yield takeEvery(channel, setChangesToChannel);
+  yield takeEvery(
+    CLOSE_LINK_TO_CHAT_MESSAGE,
+    makeCloseChannel(chatId, channel)
+  );
 }
 
 function createMessagesChannel(chatId) {

@@ -1,4 +1,4 @@
-import { takeEvery, put, call, channel } from "redux-saga/effects";
+import { takeEvery, put, call } from "redux-saga/effects";
 import {
   chatsSnapshotChannel,
   createChat,
@@ -7,7 +7,7 @@ import {
   unjoinChats as unjoinChatAPI,
 } from "../firebaseUtils/chats";
 import { userJoinChat, userUnjoinChat } from "./users";
-import { addLinkToChatMessages } from "./messages";
+import { addLinkToChatMessages, closeLinkToChatMessages } from "./messages";
 import produce from "immer";
 import { eventChannel } from "@redux-saga/core";
 
@@ -119,6 +119,7 @@ function* unJoinChatSaga(action) {
   yield put(
     userUnjoinChat({ meta: action.payload.param, param: action.payload.meta })
   );
+  yield put(closeLinkToChatMessages({ chat: action.payload.meta }));
   yield call(unjoinChatAPI, action.payload);
 }
 
