@@ -55,12 +55,17 @@ const Members = ({ member, classes }) => {
 };
 
 function ChatRoomLi({ chat: { id, selected }, classes }) {
-  const {
+  let {
     name = "",
     totalMessages = 0,
     recentMessage = null,
     users = [],
-  } = useSelector((state) => state.chats[id]);
+  } = useSelector((state) => ({
+    ...state.chats[id],
+    users: state.chats[id].users.map((id) =>
+      state.users[id] ? state.users[id].nickname : "unknown"
+    ),
+  }));
 
   return (
     <React.Fragment>
