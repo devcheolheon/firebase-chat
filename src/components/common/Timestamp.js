@@ -1,4 +1,3 @@
-import { ScreenLockLandscapeRounded } from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
 
 function dateToTimestring(date) {

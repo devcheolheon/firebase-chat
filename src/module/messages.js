@@ -1,4 +1,4 @@
-import { takeEvery, put, call, select, take } from "redux-saga/effects";
+import { takeEvery, put, call, select, takeLatest } from "redux-saga/effects";
 import { eventChannel } from "redux-saga/";
 
 import {
@@ -164,7 +164,7 @@ export function* messagesSaga() {
   yield takeEvery(GET_MESSAGES, getMessagesSaga);
   yield takeEvery(SEND_MESSAGE, sendMessageSaga);
   yield takeEvery(ADD_LINK_TO_CHAT_MESSAGE, addLinkToChatMessagesSaga);
-  yield takeEvery(SET_MESSAGES_READ, setMessagesReadSaga);
+  yield takeLatest(SET_MESSAGES_READ, setMessagesReadSaga);
 }
 
 const initialState = {};

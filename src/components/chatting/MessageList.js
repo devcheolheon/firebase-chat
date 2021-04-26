@@ -12,7 +12,8 @@ import React, { useEffect, useRef, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { blue } from "@material-ui/core/colors";
 import Message from "./Message.js";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setMessagesRead } from "../../module/messages";
 
 const useStyles = makeStyles((theme) => ({
   ChatList: {
@@ -88,8 +89,10 @@ const useStyles = makeStyles((theme) => ({
 export default function MessageList({ chat }) {
   const classes = useStyles();
   const messages = useSelector((state) => state.chats[chat].messages || []);
+  const dispatch = useDispatch();
 
   let chatEndRef = useRef();
+  let chatListRef = useRef();
 
   const scrollToBottom = useCallback(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -99,9 +102,22 @@ export default function MessageList({ chat }) {
     scrollToBottom();
   });
 
+  useEffect(() => {
+    let lock = false;
+    chatListRef.current?.addEventListener("scroll", () => {
+      if (!lock) {
+        lock = true;
+        setTimeout(() => {
+          dispatch(setMessagesRead({ chat }));
+          lock = false;
+        }, 1000);
+      }
+    });
+  }, [chat]);
+
   return (
     chat && (
-      <div className={classes.ChatList}>
+      <div className={classes.ChatList} ref={chatListRef}>
         {messages.map((message) => (
           <Message message={message} classes={classes}></Message>
         ))}
