@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, shallowEqual } from "react-redux";
+import chatRoomList from "../chatting/ChatRoomList";
 
 import { BsChat } from "react-icons/bs";
 import clsx from "clsx";
@@ -12,6 +13,7 @@ import UserList from "../users/UserList";
 import Loading from "../common/Loading";
 
 import { useImmer } from "use-immer";
+import ChatRoomList from "../chatting/ChatRoomList";
 
 const drawerWidth = 160;
 
@@ -169,6 +171,20 @@ const Users = () => {
   const [open, setOpen] = React.useState(true);
   const [selectedUser, setSelectedUser] = React.useState("");
 
+  const selectedUsersChats = useSelector(
+    (state) => (!selectedUser ? [] : state.users[selectedUser].chats || []),
+    shallowEqual
+  );
+
+  const selectedUserName = useSelector((state) =>
+    !selectedUser ? "" : state.users[selectedUser].nickname
+  );
+
+  const usersChats = useSelector(
+    (state) => state.users[state.auth.uid].chats || [],
+    shallowEqual
+  );
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -192,15 +208,21 @@ const Users = () => {
         </Grid>
         <Grid item xs={12} lg={4} className={classes.LongChatListContainer}>
           <Typography variant="h6" className={classes.ChatRoomListTitle}>
-            참여 중인 채팅방
+            내가 참여 중인 채팅방
           </Typography>
+          <ChatRoomList chats={usersChats} />
           <Grid item xs={12} className={classes.LongChatRoomList} />
         </Grid>
         <Grid item xs={12} lg={4} className={classes.LongChatListContainer}>
-          <Typography variant="h6" className={classes.ChatRoomListTitle}>
-            나와 함께 참여중인 채팅방
-          </Typography>
-          <Grid item xs={12} className={classes.LongChatRoomList} />
+          {selectedUser && (
+            <React.Fragment>
+              <Typography variant="h6" className={classes.ChatRoomListTitle}>
+                {selectedUserName}님이 참여중인 채팅방
+              </Typography>
+              <ChatRoomList chats={selectedUsersChats} />
+              <Grid item xs={12} className={classes.LongChatRoomList} />
+            </React.Fragment>
+          )}
         </Grid>
       </Grid>
       <Box pt={4}></Box>
