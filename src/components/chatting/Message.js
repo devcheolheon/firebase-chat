@@ -9,14 +9,16 @@
 */
 
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import Avatar from "@material-ui/core/Avatar";
 import { useSelector } from "react-redux";
+import { Timestamp } from "../common/Timestamp";
 
 export default function Message({ message: { id, created }, classes }) {
   const uid = useSelector((state) => state.auth.uid);
-  const { user, content } = useSelector((state) => state.messages[id]);
+  const { user, content, readUsers = [] } = useSelector(
+    (state) => state.messages[id]
+  );
   const { nickname: name = "" } = useSelector((state) => state.users[user]);
   const isMe = uid === user;
 
@@ -39,7 +41,10 @@ export default function Message({ message: { id, created }, classes }) {
         <p className={clsx(classes.chatBox, isMe && classes.myChatBox)}>
           {content} <br />
           <span className={classes.chatCreated}>
-            {new Date(created * 1000).toString()}
+            <Timestamp date={created} />
+          </span>
+          <span className={classes.chatReadCounts}>
+            ( {readUsers.length} 읽음 )
           </span>
         </p>
       </div>

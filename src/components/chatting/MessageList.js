@@ -51,6 +51,12 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "0.7rem",
   },
 
+  chatReadCounts: {
+    display: "inline-block",
+    paddingLeft: "10px",
+    fontSize: "0.9rem",
+  },
+
   chatBoxContainer: {
     display: "flex",
     flexDirection: "row-reverse",
