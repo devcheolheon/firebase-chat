@@ -86,9 +86,8 @@ export function* initLinkToChatMessagesSaga() {
   const myChats = yield select(
     (state) => (state.auth.uid && state.users[state.auth.uid].chats) || []
   );
-
   for (let i = 0; i < myChats.length; i++) {
-    yield linkToChatMessagesSaga(myChats[i]);
+    yield put(addLinkToChatMessages({ chat: myChats[i] }));
   }
 }
 
