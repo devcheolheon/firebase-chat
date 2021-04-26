@@ -35,7 +35,6 @@ async function authLogout() {
 
 async function linkToAuthState({ onLogin, onLogout }) {
   firebase.auth().onAuthStateChanged(function (user) {
-    console.log("???? - sync");
     if (user) {
       onLogin(user.uid);
     } else onLogout();

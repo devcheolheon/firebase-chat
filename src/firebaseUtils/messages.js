@@ -9,12 +9,13 @@ import { emitOnSnapshot } from "./common";
 
 // chat 객체를 생성
 
-function makeMessage({ content, chat, user }) {
+function makeMessage({ content, chat, user, targets }) {
   return {
     content,
     chat,
     user,
     readUsers: [user],
+    targets,
     created: firebase.firestore.Timestamp.now().seconds,
   };
 }
@@ -57,4 +58,22 @@ export function messagesSnapshotChannel(emitter, chatId) {
   const messageRef = db.collection("chats").doc(chatId).collection("messages");
   const unscribe = emitOnSnapshot(emitter, messageRef);
   return unscribe;
+}
+
+export async function setMessagesRead(payload) {
+  const messageRef = db
+    .collection("chats")
+    .doc(payload.chat)
+    .collection("messages");
+
+  const messagesQuery = await messageRef
+    .where("targets", "array-contains", payload.uid)
+    .get();
+
+  messagesQuery.forEach((doc) => {
+    let ref = doc.ref;
+    ref.update({
+      readUsers: firebase.firestore.FieldValue.arrayUnion(payload.uid),
+    });
+  });
 }

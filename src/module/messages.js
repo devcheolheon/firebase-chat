@@ -4,6 +4,7 @@ import { eventChannel } from "redux-saga/";
 import {
   sendMessage as sendMessageAPI,
   getMessages as getMessagesAPI,
+  setMessagesRead as setMessagesReadAPI,
   messagesSnapshotChannel,
 } from "../firebaseUtils/messages";
 
@@ -17,6 +18,7 @@ const SET_MESSAGES = "messages/SET_MESSAGES";
 
 const SEND_MESSAGE = "messages/SEND_MESSAGE";
 const SET_MESSAGE = "messages/SET_MESSAGE";
+const SET_MESSAGES_READ = "messages/SET_MESSAGES_READ";
 
 const ADD_LINK_TO_CHAT_MESSAGE = "messages/ADD_LINK_TO_CHAT_MESSAGE";
 const CLOSE_LINK_TO_CHAT_MESSAGE = "messages/CLOSE_LINK_TO_CHAT_MESSAGE";
@@ -41,6 +43,11 @@ export const setMessages = (payload) => ({
   payload,
 });
 
+export const setMessagesRead = (payload) => ({
+  type: SET_MESSAGES_READ,
+  payload,
+});
+
 export const addLinkToChatMessages = (payload) => ({
   type: ADD_LINK_TO_CHAT_MESSAGE,
   payload,
@@ -51,6 +58,11 @@ export const closeLinkToChatMessages = (payload) => ({
   payload,
 });
 
+export function* setMessagesReadSaga(action) {
+  const uid = yield select((state) => state.auth.uid);
+  yield call(setMessagesReadAPI, { ...action.payload, uid });
+}
+
 export function* getMessagesSaga(action) {
   let messages = yield call(getMessagesAPI, action.payload);
   yield put(setMessagesInChat({ messages, meta: action.payload.chat }));
@@ -60,7 +72,10 @@ export function* getMessagesSaga(action) {
 }
 
 function* sendMessageSaga(action) {
-  yield call(sendMessageAPI, action.payload);
+  const targets = yield select(
+    (state) => state.chats[action.payload.chat].users
+  );
+  yield call(sendMessageAPI, { ...action.payload, targets });
 }
 
 function* addLinkToChatMessagesSaga(action) {
@@ -103,7 +118,6 @@ function* setChangesToChannel(action) {
   switch (action.type) {
     case "added": {
       let exist = yield select((state) => state.messages[action.payload.id]);
-      console.log("exist : ", exist);
       if (exist) return;
       yield put(setMessage(action.payload));
       yield put(
@@ -121,6 +135,7 @@ export function* messagesSaga() {
   yield takeEvery(GET_MESSAGES, getMessagesSaga);
   yield takeEvery(SEND_MESSAGE, sendMessageSaga);
   yield takeEvery(ADD_LINK_TO_CHAT_MESSAGE, addLinkToChatMessagesSaga);
+  yield takeEvery(SET_MESSAGES_READ, setMessagesReadSaga);
 }
 
 const initialState = {};
