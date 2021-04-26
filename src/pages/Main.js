@@ -29,6 +29,7 @@ import useCheckLogin from "../hooks/useCheckLogin";
 import { logout } from "../module/auth";
 import { startInit } from "../module/init";
 import Loading from "../components/common/Loading";
+import Alarm from "../components/common/Alarm";
 
 const drawerWidth = 160;
 
@@ -177,6 +178,7 @@ const Main = () => {
   const classes = useStyles();
   const [menu, setMenu] = React.useState(MENU_CHATTING);
   const [open, setOpen] = React.useState(true);
+  const [alarmOpen, setAlarmOpen] = React.useState(false);
   const [login_loading, isLogin, uid, nickname] = useCheckLogin({
     logoutUrl: "/login",
   });
@@ -243,7 +245,7 @@ const Main = () => {
             {menu === MENU_USER && "사용자 정보 "}
           </Typography>
 
-          <IconButton color="inherit">
+          <IconButton color="inherit" onClick={() => setAlarmOpen("true")}>
             <Badge badgeContent={4} color="secondary">
               <NotificationsIcon />
             </Badge>
@@ -300,6 +302,7 @@ const Main = () => {
         {menu === MENU_CHATTING && <Chatting />}
         {menu === MENU_USER && <Users myId={uid} />}
       </main>
+      <Alarm open={alarmOpen} setOpen={setAlarmOpen}></Alarm>
     </div>
   );
 };
