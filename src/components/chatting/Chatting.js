@@ -15,7 +15,7 @@ import {
   unjoinChats,
   createChats as createChatAction,
 } from "../../module/chats";
-import { sendMessage } from "../../module/messages";
+import { sendMessage, setMessagesRead } from "../../module/messages";
 
 const useStyles = makeStyles((theme) => ({
   ChatRoomListTitle: {
@@ -91,6 +91,8 @@ const Chatting = () => {
       setSelectedChat(id);
       if (id == selectedChat) {
         setPopupOpen2(true);
+      } else {
+        dispatch(setMessagesRead({ chat: id }));
       }
     },
     [selectedChat]
