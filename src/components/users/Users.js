@@ -1,13 +1,15 @@
-import React, { useState } from "react";
-import { useSelector, shallowEqual } from "react-redux";
+import React, { useState, useCallback } from "react";
+import { useSelector, shallowEqual, useDispatch } from "react-redux";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
+import AlertDialog from "../common/Popup";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import UserList from "../users/UserList";
 
 import ChatRoomList from "../chatting/ChatRoomList";
+import { joinChats as joinChatsAction } from "../../module/chats";
 
 const useStyles = makeStyles((theme) => ({
   UserListTitle: {
@@ -62,10 +64,13 @@ const useStyles = makeStyles((theme) => ({
 const Users = () => {
   const classes = useStyles();
   const users = useSelector((state) => state.users.users);
-
+  const uid = useSelector((state) => state.auth.uid);
+  const dispatch = useDispatch();
   const [selectedUser, setSelectedUser] = useState("");
   const [selectedMyChat, setSelectedMyChat] = useState("");
   const [selectedYourChat, setSelectedYourChat] = useState("");
+
+  const [popupOpen, setPopupOpen] = useState(false);
 
   const selectedUsersChats = useSelector(
     (state) => (!selectedUser ? [] : state.users[selectedUser].chats || []),
@@ -86,6 +91,10 @@ const Users = () => {
     setSelectedYourChat(chatId);
   };
 
+  const joinChats = useCallback(() => {
+    dispatch(joinChatsAction({ uid, id: selectedYourChat }));
+  }, [uid, dispatch, selectedYourChat]);
+
   const onClickYourChat = (chatId) => {
     if (usersChats.indexOf(chatId) != -1) {
       setSelectedMyChat(chatId);
@@ -94,6 +103,7 @@ const Users = () => {
     } else {
       setSelectedYourChat(chatId);
       setSelectedMyChat("");
+      setPopupOpen(true);
     }
   };
 
@@ -138,6 +148,13 @@ const Users = () => {
         </Grid>
       </Grid>
       <Box pt={4}></Box>
+      <AlertDialog
+        open={popupOpen}
+        setOpen={setPopupOpen}
+        content="채팅에 참여하시겠습니까?"
+        title="잠시만요~"
+        handleAgree={joinChats}
+      ></AlertDialog>
     </React.Fragment>
   );
 };
