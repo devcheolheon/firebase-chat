@@ -58,6 +58,33 @@ export const closeLinkToChatMessages = (payload) => ({
   payload,
 });
 
+export const UnreadMessagesSelector = (state) => {
+  if (!state.init.init) return [];
+  const uid = state.auth.uid;
+  const chats = state.users[uid].chats || [];
+  const unReadMessages = chats.map((chat) => {
+    let result = {};
+    result.name = state.chats[chat].name;
+    result.message = state.chats[chat].recentMessage;
+    let messages = state.chats[chat].messages || [];
+
+    let targetMessages = messages.filter(
+      ({ id }) =>
+        state.messages[id].targets &&
+        state.messages[id].targets.indexOf(uid) != -1
+    );
+
+    result.count = targetMessages.filter(
+      ({ id }) => state.messages[id].readUsers.indexOf(uid) == -1
+    ).length;
+
+    return result;
+  });
+
+  console.log(unReadMessages);
+  return unReadMessages.filter(({ count }) => count != 0);
+};
+
 export function* setMessagesReadSaga(action) {
   const uid = yield select((state) => state.auth.uid);
   yield call(setMessagesReadAPI, { ...action.payload, uid });
@@ -79,7 +106,8 @@ function* sendMessageSaga(action) {
 }
 
 function* addLinkToChatMessagesSaga(action) {
-  yield linkToChatMessagesSaga(action.payload.chat);
+  const uid = yield select((state) => state.auth.uid);
+  yield linkToChatMessagesSaga(action.payload.chat, uid);
 }
 
 export function* initLinkToChatMessagesSaga() {
@@ -99,8 +127,8 @@ function makeCloseChannel(chatId, channel) {
   };
 }
 
-function* linkToChatMessagesSaga(chatId) {
-  const channel = createMessagesChannel(chatId);
+function* linkToChatMessagesSaga(chatId, uid) {
+  const channel = createMessagesChannel(chatId, uid);
   yield takeEvery(channel, setChangesToChannel);
   yield takeEvery(
     CLOSE_LINK_TO_CHAT_MESSAGE,
@@ -108,8 +136,10 @@ function* linkToChatMessagesSaga(chatId) {
   );
 }
 
-function createMessagesChannel(chatId) {
-  return eventChannel((emitter) => messagesSnapshotChannel(emitter, chatId));
+function createMessagesChannel(chatId, uid) {
+  return eventChannel((emitter) =>
+    messagesSnapshotChannel(emitter, chatId, uid)
+  );
 }
 
 function* setChangesToChannel(action) {
@@ -124,9 +154,9 @@ function* setChangesToChannel(action) {
       );
       return;
     }
-    //case "modified":
-    //yield put(setChat(action.payload));
-    //return;
+    case "modified": {
+      yield put(setMessage(action.payload));
+    }
   }
 }
 

@@ -29,8 +29,9 @@ export function* initDataSaga(action) {
   let chats = yield select(
     (state) => state.users[action.payload.uid].chats || []
   );
+  let uid = yield select((state) => state.auth.uid);
   for (let chatId of chats) {
-    yield getMessagesSaga(getMessages({ chat: chatId }));
+    yield getMessagesSaga(getMessages({ chat: chatId, uid }));
   }
   yield put(unsetloading());
   yield linkDataSaga();
@@ -51,7 +52,7 @@ export default function init(state = initialState, action) {
     case SET_LOADING:
       return { loading: true };
     case UNSET_LOADING:
-      return { loading: false };
+      return { loading: false, init: true };
     default:
       return state;
   }

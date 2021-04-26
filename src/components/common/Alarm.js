@@ -26,17 +26,7 @@ const useStyles = makeStyles({
   },
 });
 
-function createData(name, messages, total) {
-  return { name, messages, total };
-}
-
-const rows = [
-  createData("채팅방 1", "헬로우 ", 5),
-  createData("채팅방 2", "헬로우 ", 2),
-  createData("채팅방 3", "바이바이 ", 15),
-];
-
-export default function Alarm({ open, setOpen }) {
+export default function Alarm({ open, setOpen, unReadMessages }) {
   const classes = useStyles();
 
   const onClose = () => {
@@ -49,13 +39,13 @@ export default function Alarm({ open, setOpen }) {
         <TableContainer component={Paper} className={classes.tableContainer}>
           <Table className={classes.table} aria-label="simple table">
             <TableBody>
-              {rows.map((row) => (
+              {unReadMessages.map((row) => (
                 <TableRow key={row.name}>
                   <TableCell component="th" scope="row">
                     {row.name}
                   </TableCell>
-                  <TableCell align="right">{row.messages}</TableCell>
-                  <TableCell align="right">{row.total}</TableCell>
+                  <TableCell align="right">{row.message}</TableCell>
+                  <TableCell align="right">{row.count}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

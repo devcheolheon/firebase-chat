@@ -45,7 +45,9 @@ export async function sendMessage(payload) {
 
 export async function getMessages(payload) {
   let chatRef = db.collection("chats").doc(payload.chat);
-  let messageRef = chatRef.collection("messages");
+  let messageRef = chatRef
+    .collection("messages")
+    .where("targets", "array-contains", payload.uid);
   let messages = [];
   const messageSnapshot = await messageRef.get().catch(() => []);
   messageSnapshot.forEach((doc) => {
@@ -54,8 +56,12 @@ export async function getMessages(payload) {
   return messages;
 }
 
-export function messagesSnapshotChannel(emitter, chatId) {
-  const messageRef = db.collection("chats").doc(chatId).collection("messages");
+export function messagesSnapshotChannel(emitter, chatId, uid) {
+  const messageRef = db
+    .collection("chats")
+    .doc(chatId)
+    .collection("messages")
+    .where("targets", "array-contains", uid);
   const unscribe = emitOnSnapshot(emitter, messageRef);
   return unscribe;
 }

@@ -30,6 +30,7 @@ import { logout } from "../module/auth";
 import { startInit } from "../module/init";
 import Loading from "../components/common/Loading";
 import Alarm from "../components/common/Alarm";
+import { UnreadMessagesSelector } from "../module/messages";
 
 const drawerWidth = 160;
 
@@ -185,6 +186,9 @@ const Main = () => {
 
   const loading = useSelector((state) => state.init.loading);
 
+  const unReadMessages = useSelector(UnreadMessagesSelector);
+  const totalAlarms = unReadMessages.reduce((acc, v) => acc + v.count, 0);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -245,8 +249,13 @@ const Main = () => {
             {menu === MENU_USER && "사용자 정보 "}
           </Typography>
 
-          <IconButton color="inherit" onClick={() => setAlarmOpen("true")}>
-            <Badge badgeContent={4} color="secondary">
+          <IconButton
+            color="inherit"
+            onClick={() => {
+              if (totalAlarms > 0) setAlarmOpen("true");
+            }}
+          >
+            <Badge badgeContent={totalAlarms} color="secondary">
               <NotificationsIcon />
             </Badge>
           </IconButton>
@@ -302,7 +311,11 @@ const Main = () => {
         {menu === MENU_CHATTING && <Chatting />}
         {menu === MENU_USER && <Users myId={uid} />}
       </main>
-      <Alarm open={alarmOpen} setOpen={setAlarmOpen}></Alarm>
+      <Alarm
+        open={alarmOpen}
+        setOpen={setAlarmOpen}
+        unReadMessages={unReadMessages}
+      ></Alarm>
     </div>
   );
 };
