@@ -118,8 +118,11 @@ function* setChangesToChannel(action) {
       if (!messageId) return;
 
       let exist = yield select((state) => state.messages[messageId]);
+      let myChats = yield select(
+        (state) => state.users[state.auth.uid].chats || []
+      );
 
-      if (!exist) {
+      if (!exist && myChats.indexOf(action.payload.id) > -1) {
         yield put(
           getMessage({
             chat: action.payload.id,
