@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
+import { createSelector } from "reselect";
+
 import clsx from "clsx";
 
 import ListItem from "@material-ui/core/ListItem";
@@ -54,19 +56,56 @@ const Members = ({ member, classes }) => {
   );
 };
 
+function makeSelectChatRoomInfo() {
+  return createSelector(
+    (state, id) => state.chats[id],
+    (state, id) => state.users,
+    (state, id) => state.messages,
+    (state, id) => state.chats[id].recentMessage,
+    (chat, users, messages, recentMessage) => ({
+      ...chat,
+      users: chat.users.map((id) =>
+        users[id] ? users[id].nickname : "unknown"
+      ),
+      recentMessage: messages[recentMessage],
+    })
+  );
+}
+
 function ChatRoomLi({ chat: { id, selected }, classes }) {
+  const selectChatRoomInfo = useMemo(makeSelectChatRoomInfo, []);
+
   let {
     name = "",
     totalMessages = 0,
     recentMessage = null,
     users = [],
-  } = useSelector((state) => ({
-    ...state.chats[id],
-    users: state.chats[id].users.map((id) =>
-      state.users[id] ? state.users[id].nickname : "unknown"
-    ),
-    recentMessage: state.messages[state.chats[id].recentMessage],
-  }));
+  } = useSelector((state) => selectChatRoomInfo(state, id));
+
+  const [Primary, Secondary] = useMemo(
+    () => [
+      <React.Fragment>
+        <Typography variant="h5" component="h5" color="textPrimary">
+          {name}
+        </Typography>
+        <Members classes={classes} member={users}></Members>
+      </React.Fragment>,
+      <div className={classes.chatRoomLiBody}>
+        <div className={classes.totalTalks}> {totalMessages || 0} </div>
+        <div>
+          <Typography
+            component="span"
+            variant="body2"
+            className={classes.inline}
+            color="textPrimary"
+          >
+            {recentMessage && recentMessage.content}
+          </Typography>
+        </div>
+      </div>,
+    ],
+    [classes, name, users, recentMessage]
+  );
 
   return (
     <React.Fragment>
@@ -76,32 +115,7 @@ function ChatRoomLi({ chat: { id, selected }, classes }) {
         key={id}
         className={clsx(selected && classes.selectedChat)}
       >
-        <ListItemText
-          primary={
-            <React.Fragment>
-              <Typography variant="h5" component="h5" color="textPrimary">
-                {name}
-              </Typography>
-
-              <Members classes={classes} member={users}></Members>
-            </React.Fragment>
-          }
-          secondary={
-            <div className={classes.chatRoomLiBody}>
-              <div className={classes.totalTalks}> {totalMessages || 0} </div>
-              <div>
-                <Typography
-                  component="span"
-                  variant="body2"
-                  className={classes.inline}
-                  color="textPrimary"
-                >
-                  {recentMessage && recentMessage.content}
-                </Typography>
-              </div>
-            </div>
-          }
-        />
+        <ListItemText primary={Primary} secondary={Secondary} />
       </ListItem>
       <Divider component="li" />
     </React.Fragment>
