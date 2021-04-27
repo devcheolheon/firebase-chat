@@ -74,7 +74,9 @@ export const UnreadMessagesSelector = (state) => {
     let result = {};
     result.name = state.chats[chat].name;
     result.message = state.chats[chat].recentMessage;
+
     let messages = state.chats[chat].messages || [];
+    messages = messages.map(({ id }) => state.messages[id]).filter((v) => !!v);
 
     let targetMessages = messages.filter(
       ({ id }) =>
@@ -89,7 +91,6 @@ export const UnreadMessagesSelector = (state) => {
     return result;
   });
 
-  console.log(unReadMessages);
   return unReadMessages.filter(({ count }) => count != 0);
 };
 

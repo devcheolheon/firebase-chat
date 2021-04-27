@@ -1,4 +1,4 @@
-import { takeEvery, put, call } from "redux-saga/effects";
+import { takeEvery, put, call, select } from "redux-saga/effects";
 import {
   chatsSnapshotChannel,
   createChat,
@@ -38,7 +38,11 @@ const addChats = (payload) => ({ type: ADD_CHATS, payload });
 
 export const getChats = () => ({ type: GET_CHATS });
 
-const setChat = (payload) => ({ type: SET_CHAT, payload, meta: payload.id });
+const setChat = (payload) => ({
+  type: SET_CHAT,
+  payload: { ...payload, meta: payload.id },
+});
+
 const setChats = (payload) => ({ type: SET_CHATS, payload });
 
 export const joinChats = ({ id, uid }) => ({
@@ -109,11 +113,17 @@ function* setChangesToChannel(action) {
     }
     case "modified": {
       yield put(setChat(action.payload));
-      if (action.payload.recentMessage) {
+
+      let messageId = action.payload.recentMessage;
+      if (!messageId) return;
+
+      let exist = yield select((state) => state.messages[messageId]);
+
+      if (!exist) {
         yield put(
           getMessage({
             chat: action.payload.id,
-            message: action.payload.recentMessage,
+            message: messageId,
           })
         );
       }
@@ -153,11 +163,10 @@ export default function chat(state = initialState, action) {
 
   switch (action.type) {
     case SET_CHAT:
-      return produce(state, (draft) => {
-        draft[id] = action.payload;
-        draft.chats.push(id);
-        return draft;
-      });
+      return {
+        ...state,
+        [id]: { ...state[id], ...action.payload },
+      };
 
     case SET_CHATS: {
       return {
