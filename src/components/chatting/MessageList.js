@@ -88,7 +88,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function MessageList({ chat }) {
   const classes = useStyles();
-  const messages = useSelector((state) => state.chats[chat].messages || []);
+  let messages = useSelector((state) => state.chats[chat].messages || [])
+    .slice()
+    .sort((a, b) => a.created - b.created);
+
   const dispatch = useDispatch();
 
   let chatEndRef = useRef();
