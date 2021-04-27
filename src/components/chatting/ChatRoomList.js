@@ -65,6 +65,7 @@ function ChatRoomLi({ chat: { id, selected }, classes }) {
     users: state.chats[id].users.map((id) =>
       state.users[id] ? state.users[id].nickname : "unknown"
     ),
+    recentMessage: state.messages[state.chats[id].recentMessage],
   }));
 
   return (
@@ -94,7 +95,9 @@ function ChatRoomLi({ chat: { id, selected }, classes }) {
                   variant="body2"
                   className={classes.inline}
                   color="textPrimary"
-                />
+                >
+                  {recentMessage && recentMessage.content}
+                </Typography>
               </div>
             </div>
           }

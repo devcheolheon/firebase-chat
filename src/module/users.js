@@ -71,6 +71,7 @@ export const linkToUsers = () => ({
   type: LINK_TO_USERS,
 });
 
+
 export const getUsersSaga = function* () {
   const users = yield call(apiGetUsers);
   const payload = {};

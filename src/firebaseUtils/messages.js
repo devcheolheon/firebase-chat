@@ -56,6 +56,18 @@ export async function getMessages(payload) {
   return messages;
 }
 
+export async function getMessage(payload) {
+  let chatRef = db.collection("chats").doc(payload.chat);
+  let message = await chatRef
+    .collection("messages")
+    .doc(payload.message)
+    .get()
+    .catch(() => null);
+
+  if (!message) return message;
+  return { ...message.data(), id: message.id };
+}
+
 export function messagesSnapshotChannel(emitter, chatId, uid) {
   const messageRef = db
     .collection("chats")

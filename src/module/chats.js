@@ -7,7 +7,11 @@ import {
   unjoinChats as unjoinChatAPI,
 } from "../firebaseUtils/chats";
 import { userJoinChat, userUnjoinChat } from "./users";
-import { addLinkToChatMessages, closeLinkToChatMessages } from "./messages";
+import {
+  addLinkToChatMessages,
+  closeLinkToChatMessages,
+  getMessage,
+} from "./messages";
 import produce from "immer";
 import { eventChannel } from "@redux-saga/core";
 
@@ -18,6 +22,7 @@ const ADD_CHATS = "chats/ADD_CHATS";
 const UPDATE_CHAT = "chats/UPDATE_CHAT";
 
 const GET_CHATS = "chats/GET_CHATS";
+const SET_CHAT = "chats/SET_CHAT";
 const SET_CHATS = "chats/SET_CHATS";
 
 const JOIN_CHAT = "chats/JOIN_CHAT";
@@ -30,9 +35,10 @@ const LINK_TO_CHATS = "chats/LINK_TO_CHATS";
 
 export const createChats = (payload) => ({ type: CREATE_CHATS, payload });
 const addChats = (payload) => ({ type: ADD_CHATS, payload });
-// saga에서만 호출하는 action
 
 export const getChats = () => ({ type: GET_CHATS });
+
+const setChat = (payload) => ({ type: SET_CHAT, payload, meta: payload.id });
 const setChats = (payload) => ({ type: SET_CHATS, payload });
 
 export const joinChats = ({ id, uid }) => ({
@@ -101,9 +107,17 @@ function* setChangesToChannel(action) {
     case "added": {
       yield put(addChat(action.payload));
     }
-    //case "modified":
-    //yield put(setChat(action.payload));
-    //return;
+    case "modified": {
+      yield put(setChat(action.payload));
+      if (action.payload.recentMessage) {
+        yield put(
+          getMessage({
+            chat: action.payload.id,
+            message: action.payload.recentMessage,
+          })
+        );
+      }
+    }
   }
 }
 
@@ -138,6 +152,13 @@ export default function chat(state = initialState, action) {
   const id = action.payload && action.payload.meta;
 
   switch (action.type) {
+    case SET_CHAT:
+      return produce(state, (draft) => {
+        draft[id] = action.payload;
+        draft.chats.push(id);
+        return draft;
+      });
+
     case SET_CHATS: {
       return {
         ...state,

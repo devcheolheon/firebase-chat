@@ -4,6 +4,7 @@ import { eventChannel } from "redux-saga/";
 import {
   sendMessage as sendMessageAPI,
   getMessages as getMessagesAPI,
+  getMessage as getMessageAPI,
   setMessagesRead as setMessagesReadAPI,
   messagesSnapshotChannel,
 } from "../firebaseUtils/messages";
@@ -17,6 +18,8 @@ const GET_MESSAGES = "messages/GET_MESSAGES";
 const SET_MESSAGES = "messages/SET_MESSAGES";
 
 const SEND_MESSAGE = "messages/SEND_MESSAGE";
+
+const GET_MESSAGE = "messages/GET_MESSAGE";
 const SET_MESSAGE = "messages/SET_MESSAGE";
 const SET_MESSAGES_READ = "messages/SET_MESSAGES_READ";
 
@@ -28,9 +31,14 @@ export const sendMessage = (payload) => ({
   payload,
 });
 
-const setMessage = (payload) => ({
+export const setMessage = (payload) => ({
   type: SET_MESSAGE,
   payload: { message: payload, meta: payload.id },
+});
+
+export const getMessage = (payload) => ({
+  type: GET_MESSAGE,
+  payload,
 });
 
 export const getMessages = (payload) => ({
@@ -88,6 +96,14 @@ export const UnreadMessagesSelector = (state) => {
 export function* setMessagesReadSaga(action) {
   const uid = yield select((state) => state.auth.uid);
   yield call(setMessagesReadAPI, { ...action.payload, uid });
+}
+
+function* getMessageSaga(action) {
+  let message = yield call(getMessageAPI, action.payload);
+  yield put(
+    setMessagesInChat({ messages: [message], meta: action.payload.chat })
+  );
+  yield put(setMessages({ [message.id]: message }));
 }
 
 export function* getMessagesSaga(action) {
@@ -162,6 +178,7 @@ function* setChangesToChannel(action) {
 
 export function* messagesSaga() {
   yield takeEvery(GET_MESSAGES, getMessagesSaga);
+  yield takeEvery(GET_MESSAGE, getMessageSaga);
   yield takeEvery(SEND_MESSAGE, sendMessageSaga);
   yield takeEvery(ADD_LINK_TO_CHAT_MESSAGE, addLinkToChatMessagesSaga);
   yield takeLatest(SET_MESSAGES_READ, setMessagesReadSaga);
