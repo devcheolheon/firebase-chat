@@ -1,5 +1,7 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useMemo } from "react";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { createSelector } from "reselect";
+
 import { BsChat } from "react-icons/bs";
 import { FiUsers } from "react-icons/fi";
 import clsx from "clsx";
@@ -31,6 +33,7 @@ import { startInit } from "../module/init";
 import Loading from "../components/common/Loading";
 import Alarm from "../components/common/Alarm";
 import { UnreadMessagesSelector } from "../module/messages";
+import { SelectAllRounded } from "@material-ui/icons";
 
 const drawerWidth = 160;
 
@@ -175,6 +178,41 @@ const MENU_USER = "MENU_USER";
 const MENU_CHATTING = "MENU_CHATTING";
 
 let callInit = false;
+
+const makeUnreadMessageSelector = () => {
+  return createSelector(
+    (state) => state.init.init,
+    (state) => state.messages,
+    (state) =>
+      state.init.init
+        ? state.users[state.auth.uid].chats.map(
+            ({ messages = [], name, recentMessage }) => ({
+              name,
+              recentMessage,
+              messages: messages
+                .map(({ id }) => state.messages[id])
+                .filter(
+                  ({ targets, readUsers }) =>
+                    targets &&
+                    targets.indexOf(state.auth.uid) != -1 &&
+                    readUsers.indexOf(state.auth.uid) == -1
+                ),
+            })
+          )
+        : [],
+    (init, messages, newMessagesInChat) => {
+      if (!init) return [];
+      newMessagesInChat = newMessagesInChat.map((obj) => ({
+        name: obj.name,
+        message: messages[obj.recentMessage],
+        count: obj.messages.length,
+      }));
+      newMessagesInChat.sort((a, b) => b.count - a.count);
+      return newMessagesInChat;
+    }
+  );
+};
+
 const Main = () => {
   const classes = useStyles();
   const [menu, setMenu] = React.useState(MENU_CHATTING);
@@ -186,7 +224,8 @@ const Main = () => {
 
   const loading = useSelector((state) => state.init.loading);
 
-  const unReadMessages = useSelector(UnreadMessagesSelector);
+  const unReadMessagesSelector = useMemo(makeUnreadMessageSelector, []);
+  const unReadMessages = useSelector(unReadMessagesSelector, shallowEqual);
   const totalAlarms = unReadMessages.reduce((acc, v) => acc + v.count, 0);
 
   const dispatch = useDispatch();

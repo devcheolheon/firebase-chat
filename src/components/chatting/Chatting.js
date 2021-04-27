@@ -86,17 +86,14 @@ const Chatting = () => {
 
   const classes = useStyles();
 
-  const onClickChatRoomLi = useCallback(
-    (id) => {
-      setSelectedChat(id);
-      if (id == selectedChat) {
-        setPopupOpen2(true);
-      } else {
-        dispatch(setMessagesRead({ chat: id }));
-      }
-    },
-    [selectedChat]
-  );
+  const onClickChatRoomLi = useCallback((id, selectedChat) => {
+    setSelectedChat(id);
+    if (id == selectedChat) {
+      setPopupOpen2(true);
+    } else {
+      dispatch(setMessagesRead({ chat: id }));
+    }
+  }, []);
 
   const onClickNotMyChatRoomLi = useCallback((id) => {
     setSelectedChat(id);

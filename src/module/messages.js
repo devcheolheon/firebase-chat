@@ -66,34 +66,6 @@ export const closeLinkToChatMessages = (payload) => ({
   payload,
 });
 
-export const UnreadMessagesSelector = (state) => {
-  if (!state.init.init) return [];
-  const uid = state.auth.uid;
-  const chats = state.users[uid].chats || [];
-  const unReadMessages = chats.map((chat) => {
-    let result = {};
-    result.name = state.chats[chat].name;
-    result.message = state.chats[chat].recentMessage;
-
-    let messages = state.chats[chat].messages || [];
-    messages = messages.map(({ id }) => state.messages[id]).filter((v) => !!v);
-
-    let targetMessages = messages.filter(
-      ({ id }) =>
-        state.messages[id].targets &&
-        state.messages[id].targets.indexOf(uid) != -1
-    );
-
-    result.count = targetMessages.filter(
-      ({ id }) => state.messages[id].readUsers.indexOf(uid) == -1
-    ).length;
-
-    return result;
-  });
-
-  return unReadMessages.filter(({ count }) => count != 0);
-};
-
 export function* setMessagesReadSaga(action) {
   const uid = yield select((state) => state.auth.uid);
   yield call(setMessagesReadAPI, { ...action.payload, uid });

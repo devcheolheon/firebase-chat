@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useSelector, shallowEqual } from "react-redux";
 import { createSelector } from "reselect";
 
@@ -140,18 +140,21 @@ function ChatRoomLi({ chat: id, selected, classes }) {
   );
 }
 const MemoChatRoomLi = React.memo(ChatRoomLi);
+
 const ChatRoomList = ({ chats, onClickHandler, selectedChat }) => {
   const classes = useStyles();
+  const onClick = useCallback(
+    (e) => {
+      const li = e.target.closest("li");
+      if (!li) return;
+      const id = li.dataset.id;
+      onClickHandler(id, selectedChat);
+    },
+    [selectedChat]
+  );
 
   return (
-    <List
-      onClick={(e) => {
-        const li = e.target.closest("li");
-        if (!li) return;
-        const id = li.dataset.id;
-        onClickHandler(id);
-      }}
-    >
+    <List onClick={onClick}>
       {chats.map((chat) => (
         <MemoChatRoomLi
           key={chat}
