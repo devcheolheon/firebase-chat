@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, shallowEqual } from "react-redux";
 import { createSelector } from "reselect";
 
 import clsx from "clsx";
@@ -56,55 +56,66 @@ const Members = ({ member, classes }) => {
   );
 };
 
-function makeSelectChatRoomInfo() {
+function makeMemberSelector() {
   return createSelector(
-    (state, id) => state.chats[id],
     (state, id) => state.users,
-    (state, id) => state.messages,
-    (state, id) => state.chats[id].recentMessage,
-    (chat, users, messages, recentMessage) => ({
-      ...chat,
-      users: chat.users.map((id) =>
-        users[id] ? users[id].nickname : "unknown"
-      ),
-      recentMessage: messages[recentMessage],
-    })
+    (state, id) => state.chats[id].users,
+    (users, members) => members.map((mId) => users[mId].nickname)
   );
 }
 
-function ChatRoomLi({ chat: { id, selected }, classes }) {
-  const selectChatRoomInfo = useMemo(makeSelectChatRoomInfo, []);
+function makeMessageSelector() {
+  return createSelector(
+    (state, id) => state.messages,
+    (_, id) => id,
+    (messages, id) => messages[id]
+  );
+}
 
-  let {
-    name = "",
-    totalMessages = 0,
-    recentMessage = null,
-    users = [],
-  } = useSelector((state) => selectChatRoomInfo(state, id));
+function ChatRoomLiHeader({ name, classes, users }) {
+  return (
+    <React.Fragment>
+      <Typography variant="h5" component="h5" color="textPrimary">
+        {name}
+      </Typography>
+      <Members classes={classes} member={users}></Members>
+    </React.Fragment>
+  );
+}
+const MemoChatRoomLiHeader = React.memo(ChatRoomLiHeader);
 
-  const [Primary, Secondary] = useMemo(
-    () => [
-      <React.Fragment>
-        <Typography variant="h5" component="h5" color="textPrimary">
-          {name}
+function ChatRoomLiBody({ totalMessages, classes, recentMessage }) {
+  return (
+    <div className={classes.chatRoomLiBody}>
+      <div className={classes.totalTalks}> {totalMessages || 0} </div>
+      <div>
+        <Typography
+          component="span"
+          variant="body2"
+          className={classes.inline}
+          color="textPrimary"
+        >
+          {recentMessage && recentMessage.content}
         </Typography>
-        <Members classes={classes} member={users}></Members>
-      </React.Fragment>,
-      <div className={classes.chatRoomLiBody}>
-        <div className={classes.totalTalks}> {totalMessages || 0} </div>
-        <div>
-          <Typography
-            component="span"
-            variant="body2"
-            className={classes.inline}
-            color="textPrimary"
-          >
-            {recentMessage && recentMessage.content}
-          </Typography>
-        </div>
-      </div>,
-    ],
-    [classes, name, users, recentMessage]
+      </div>
+    </div>
+  );
+}
+
+const MemoChatRoomLiBody = React.memo(ChatRoomLiBody);
+
+function ChatRoomLi({ chat: id, selected, classes }) {
+  const memberSelector = useMemo(makeMemberSelector, []);
+  const messageSelector = useMemo(makeMessageSelector, []);
+
+  const { name = "", totalMessages = 0, recentMessage = null } = useSelector(
+    (state) => state.chats[id]
+  );
+
+  const users = useSelector((state) => memberSelector(state, id), shallowEqual);
+  const message = useSelector(
+    (state) => messageSelector(state, recentMessage),
+    shallowEqual
   );
 
   return (
@@ -115,19 +126,22 @@ function ChatRoomLi({ chat: { id, selected }, classes }) {
         key={id}
         className={clsx(selected && classes.selectedChat)}
       >
-        <ListItemText primary={Primary} secondary={Secondary} />
+        <ListItemText
+          primary={<MemoChatRoomLiHeader {...{ name, classes, users }} />}
+          secondary={
+            <MemoChatRoomLiBody
+              {...{ totalMessages, classes, recentMessage: message }}
+            />
+          }
+        />
       </ListItem>
       <Divider component="li" />
     </React.Fragment>
   );
 }
-
+const MemoChatRoomLi = React.memo(ChatRoomLi);
 const ChatRoomList = ({ chats, onClickHandler, selectedChat }) => {
   const classes = useStyles();
-  const checkedChats = chats.map((id) => {
-    if (id === selectedChat) return { id, selected: true };
-    return { id };
-  });
 
   return (
     <List
@@ -138,8 +152,13 @@ const ChatRoomList = ({ chats, onClickHandler, selectedChat }) => {
         onClickHandler(id);
       }}
     >
-      {checkedChats.map((chat) => (
-        <ChatRoomLi classes={classes} chat={chat}></ChatRoomLi>
+      {chats.map((chat) => (
+        <MemoChatRoomLi
+          key={chat}
+          classes={classes}
+          chat={chat}
+          selected={chat === selectedChat}
+        ></MemoChatRoomLi>
       ))}
     </List>
   );
