@@ -49,7 +49,6 @@ function* loginSaga(action) {
 }
 
 function* logoutSaga(action) {
-  yield put(unSetUser());
   try {
     yield call(authLogout);
   } catch (e) {}
@@ -84,6 +83,7 @@ export default function auth(state = initialState, action) {
     case SET_USER:
       return {
         isLogin: true,
+        loading: false,
         ...action.payload,
       };
     case UNSET_USER:
