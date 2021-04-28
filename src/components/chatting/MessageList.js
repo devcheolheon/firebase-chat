@@ -14,6 +14,7 @@ import { blue } from "@material-ui/core/colors";
 import Message from "./Message.js";
 import { useDispatch, useSelector } from "react-redux";
 import { setMessagesRead } from "../../module/messages";
+import Loading from "../common/Loading.js";
 
 const useStyles = makeStyles((theme) => ({
   ChatList: {
@@ -91,6 +92,7 @@ export default function MessageList({ chat }) {
   let messages = useSelector((state) => state.chats[chat].messages || [])
     .slice()
     .sort((a, b) => a.created - b.created);
+  let isLoading = useSelector((state) => state.chats[chat].isLoading);
 
   const dispatch = useDispatch();
 
@@ -119,13 +121,14 @@ export default function MessageList({ chat }) {
   }, [chat]);
 
   return (
-    chat && (
+    (isLoading && <Loading></Loading>) ||
+    (chat && (
       <div className={classes.ChatList} ref={chatListRef}>
         {messages.map((message) => (
           <Message message={message} classes={classes}></Message>
         ))}
         <div id="chatEnd" ref={chatEndRef}></div>
       </div>
-    )
+    ))
   );
 }

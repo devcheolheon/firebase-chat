@@ -11,6 +11,8 @@ import {
   addLinkToChatMessages,
   closeLinkToChatMessages,
   getMessage,
+  getMessages,
+  getMessagesSaga,
 } from "./messages";
 import produce from "immer";
 import { eventChannel } from "@redux-saga/core";
@@ -135,9 +137,14 @@ function* setChangesToChannel(action) {
 }
 
 function* joinChatSaga(action) {
+  yield put(setChat({ id: action.payload.meta, isLoading: true }));
+  yield getMessagesSaga(
+    getMessages({ chat: action.payload.meta, uid: action.payload.param })
+  );
   yield put(
     userJoinChat({ meta: action.payload.param, param: action.payload.meta })
   );
+  yield put(setChat({ id: action.payload.meta, isLoading: false }));
   yield put(addLinkToChatMessages({ chat: action.payload.meta }));
   yield call(joinChatAPI, action.payload);
 }

@@ -32,8 +32,6 @@ import { logout } from "../module/auth";
 import { startInit } from "../module/init";
 import Loading from "../components/common/Loading";
 import Alarm from "../components/common/Alarm";
-import { UnreadMessagesSelector } from "../module/messages";
-import { SelectAllRounded } from "@material-ui/icons";
 
 const drawerWidth = 160;
 
@@ -184,7 +182,7 @@ const makeUnreadMessageSelector = () => {
     (state) => state.init.init,
     (state) => state.messages,
     (state) =>
-      state.init.init
+      state.init.init && state.auth.isLogin && state.users[state.auth.uid].chat
         ? state.users[state.auth.uid].chats.map(
             ({ messages = [], name, recentMessage }) => ({
               name,

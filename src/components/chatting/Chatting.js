@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
-import { Card, Grid, Box, Typography } from "@material-ui/core";
+import { Card, Grid, Box, Typography, CardContent } from "@material-ui/core";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
 
 import ChatRoomList from "./ChatRoomList";
@@ -9,13 +9,17 @@ import MessageList from "./MessageList";
 import ChatInputText from "./ChatInputText";
 import AlertDialog from "../common/Popup";
 import CreateChatFormDialog from "./CreateChatFormDialog";
+import GraphChart from "./GraphChart";
 
 import {
   joinChats,
   unjoinChats,
   createChats as createChatAction,
 } from "../../module/chats";
+
 import { sendMessage, setMessagesRead } from "../../module/messages";
+
+import { usersStackedGraph } from "../../graphUtils/usersStackedGraph";
 
 const useStyles = makeStyles((theme) => ({
   ChatRoomListTitle: {
@@ -172,7 +176,11 @@ const Chatting = () => {
           )}
         </Grid>
         <Grid item xs={12} lg={4} className={classes.ChatCardContainer}>
-          <Card variant="outlined" className={classes.ChatCard} />
+          <Card variant="outlined" className={classes.ChatCard}>
+            <CardContent>
+              <GraphChart graphFunc={usersStackedGraph}></GraphChart>
+            </CardContent>
+          </Card>
           <Card variant="outlined" className={classes.ChatCard} />
         </Grid>
       </Grid>
