@@ -21,8 +21,11 @@ const useUserStackedData = () => {
       if (!id) return new Array(3).fill(null).map(() => [0, ""]);
       let u = chats[id].users
         .map((uid) => [
-          chats[id].messages.filter(({ id: mid }) => messages[mid].user == uid)
-            .length,
+          chats[id].messages
+            ? chats[id].messages.filter(
+                ({ id: mid }) => messages[mid].user == uid
+              ).length
+            : 0,
           users[uid].nickname,
         ])
         .filter(([length]) => length > 0);

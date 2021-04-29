@@ -4,7 +4,11 @@ const GraphChart = ({ graphFunc, data }) => {
 
   useEffect(() => {
     if (data) graphFunc(divRef.current, data);
-    return () => (divRef.current.innerHTML = "");
+    return () => {
+      if (divRef.current) {
+        divRef.current.innerHTML = "";
+      }
+    };
   }, [data]);
 
   console.log(data);
