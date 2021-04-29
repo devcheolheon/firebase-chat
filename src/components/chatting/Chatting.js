@@ -21,6 +21,7 @@ import { sendMessage, setMessagesRead } from "../../module/messages";
 
 import { usersStackedGraph } from "../../graphUtils/usersStackedGraph";
 import { usersRelationGraph } from "../../graphUtils/usersRelationGraph";
+import useUserRelationData from "../../hooks/useUsersRelationData";
 
 const useStyles = makeStyles((theme) => ({
   ChatRoomListTitle: {
@@ -77,6 +78,8 @@ const Chatting = () => {
   const [popupOpen2, setPopupOpen2] = useState(false);
   const [popupOpen3, setPopupOpen3] = useState(false);
 
+  const [userRelationData] = useUserRelationData();
+  console.log(userRelationData);
   const dispatch = useDispatch();
   const uid = useSelector((state) => state.auth.uid);
   const chats = useSelector((state) => state.chats.chats);
@@ -184,7 +187,10 @@ const Chatting = () => {
           </Card>
           <Card variant="outlined" className={classes.ChatCard}>
             <CardContent>
-              <GraphChart graphFunc={usersRelationGraph}></GraphChart>
+              <GraphChart
+                graphFunc={usersRelationGraph}
+                data={userRelationData}
+              ></GraphChart>
             </CardContent>
           </Card>
         </Grid>

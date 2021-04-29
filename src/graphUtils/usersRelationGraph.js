@@ -371,7 +371,8 @@ const drag = (simulation) => {
     .on("end", dragended);
 };
 
-export const usersRelationGraph = (target) => {
+export const usersRelationGraph = (target, data) => {
+  console.log(data);
   const links = data.links.map((d) => Object.create(d));
   const nodes = data.nodes.map((d) => Object.create(d));
 
@@ -395,7 +396,7 @@ export const usersRelationGraph = (target) => {
     .attr("fill", "white")
     .attr("x", (d) => d.x) // Flipped X
     .attr("y", (d) => d.y + 20) // Flipped Y
-    .text((d) => d.id)
+    .text((d) => d.name)
     .call(drag(simulation));
 
   const link = svg

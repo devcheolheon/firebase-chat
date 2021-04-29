@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from "react";
-const GraphChart = ({ graphFunc }) => {
+const GraphChart = ({ graphFunc, data }) => {
   const divRef = useRef();
 
   useEffect(() => {
-    graphFunc(divRef.current);
-  }, []);
+    if (data) graphFunc(divRef.current, data);
+    return () => (divRef.current.innerHTML = "");
+  }, [data]);
 
   return <div ref={divRef}></div>;
 };

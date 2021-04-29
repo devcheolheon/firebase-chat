@@ -1,4 +1,3 @@
-import { MarkunreadOutlined } from "@material-ui/icons";
 import * as d3 from "d3";
 
 const height = 300;
