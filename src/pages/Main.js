@@ -251,7 +251,7 @@ const Main = () => {
     setOpen(false);
   };
 
-  return loading ? (
+  return loading !== false ? (
     <div className={classes.root}>
       <Loading></Loading>
     </div>

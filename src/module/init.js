@@ -19,7 +19,7 @@ const unsetloading = () => ({ type: UNSET_LOADING });
 export const startInit = (payload) => ({ type: INIT, payload });
 
 const initialState = {
-  loading: false,
+  loading: true,
 };
 
 export function* initDataSaga(action) {
