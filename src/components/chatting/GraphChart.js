@@ -7,6 +7,7 @@ const GraphChart = ({ graphFunc, data }) => {
     return () => (divRef.current.innerHTML = "");
   }, [data]);
 
+  console.log(data);
   return <div ref={divRef}></div>;
 };
 

@@ -31,25 +31,27 @@ function bumps(m, index) {
   return values.map((v, i) => ["id" + index, v]);
 }
 
-export function usersStackedGraph(target) {
-  const n = 3;
-  const m = 5;
+export function usersStackedGraph(target, data) {
+  const n = data[0].length;
+  const m = data.length;
 
   const xz = d3.range(m);
-  const columns = ["A", "B", "C", "D", "E"];
-  const yz = d3.range(n).map((_, i) => bumps(m, i));
+  const columns = data.map((data) => data.name);
+  const yz = d3.transpose(data);
 
   const y01z = d3
     .stack()
     .keys(d3.range(n))
     .value((obj, key) => {
-      return obj[key][1];
-    })(d3.transpose(yz)) // stacked yz
+      return obj[key][0];
+    })(data) // stacked yz
     .map((data) => data.map(([y0, y1]) => [y0, y1]));
 
-  const y01c = d3
-    .range(n)
-    .map((v, i) => yz[i].map((v, j) => y01z[i][j].push(v[0])));
+  d3.range(m).forEach((i) => {
+    d3.range(n).forEach((j) => {
+      y01z[j][i].push(data[i][j][1]);
+    });
+  });
 
   const yMax = d3.max(yz, (y) => d3.max(y));
   const y1Max = d3.max(y01z, (y) => d3.max(y, (d) => d[1]));
@@ -93,6 +95,7 @@ export function usersStackedGraph(target) {
       .data((d) => d)
       .join("rect")
       .attr("class", "data")
+      .attr("data-index", (d, i) => i)
       .attr("x", (d, i) => x(columns[i]))
       .attr("y", height - margin.bottom)
       .attr("width", x.bandwidth())
@@ -110,8 +113,8 @@ export function usersStackedGraph(target) {
 
     svg.append("g").call(xAxis);
 
-    function makeIdFromD(d) {
-      return d[2] + Math.floor(d[0] * 100) + Math.floor(d[1] * 100);
+    function makeIdFromD(d, i) {
+      return "id" + i + d[2] + Math.floor(d[0] * 100) + Math.floor(d[1] * 100);
     }
 
     function textToOriginalState() {
@@ -126,9 +129,9 @@ export function usersStackedGraph(target) {
         });
     }
 
-    function hoverSelectedText(d) {
+    function hoverSelectedText(d, i) {
       svg
-        .selectAll("." + makeIdFromD(d))
+        .selectAll("." + makeIdFromD(d, i))
         .attr("font-size", "15px")
         .attr("fill", "yellow")
         .attr("x", function (d, i) {
@@ -153,6 +156,7 @@ export function usersStackedGraph(target) {
         .transition()
         .duration(500)
         .delay((d, i) => i * 20)
+        .attr("data-index", (d, i) => i)
         .attr("y", (d) => y(d[1]))
         .attr("height", (d) => y(d[0]) - y(d[1]))
         .transition()
@@ -161,16 +165,17 @@ export function usersStackedGraph(target) {
 
       rect
         .data((d) => d)
-        .on("mouseover", (event, d) => {
+        .on("mouseover", function (event, d) {
+          const i = d3.select(this).attr("data-index");
           textToOriginalState();
-          hoverSelectedText(d);
+          hoverSelectedText(d, i);
         });
 
       text
         .attr("x", (d, i) => x(columns[i]) + 5)
         .attr("ox", (d, i) => x(columns[i]) + 5)
         .attr("y", y(0))
-        .attr("class", (d) => makeIdFromD(d))
+        .attr("class", (d, i) => makeIdFromD(d, i))
         .attr("width", x.bandwidth())
         .attr("font-family", "sans-serif")
         .attr("font-size", "5px")

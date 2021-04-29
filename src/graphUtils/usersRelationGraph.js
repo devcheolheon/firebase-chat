@@ -372,7 +372,6 @@ const drag = (simulation) => {
 };
 
 export const usersRelationGraph = (target, data) => {
-  console.log(data);
   const links = data.links.map((d) => Object.create(d));
   const nodes = data.nodes.map((d) => Object.create(d));
 
