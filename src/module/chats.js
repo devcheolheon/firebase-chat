@@ -237,7 +237,9 @@ export default function chat(state = initialState, action) {
     case SET_MESSAGE:
       return produce(state, (draft) => {
         if (draft[id].messages) {
-          let message = draft[id].messages.find(({ id: cid }) => cid == id);
+          let message = draft[id].messages.find(
+            ({ id: cid }) => cid == action.payload.id
+          );
           if (message) return;
           draft[id].messages.push({
             id: action.payload.id,
@@ -254,7 +256,9 @@ export default function chat(state = initialState, action) {
       return produce(state, (draft) => {
         if (draft[id].messages) {
           action.payload.messages.forEach((message) => {
-            let exist = draft[id].messages.find(({ id: cid }) => cid == id);
+            let exist = draft[id].messages.find(
+              ({ id: cid }) => cid == message.id
+            );
             if (exist) return;
             draft[id].messages.push({
               id: message.id,
