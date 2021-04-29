@@ -20,6 +20,7 @@ import {
 import { sendMessage, setMessagesRead } from "../../module/messages";
 
 import { usersStackedGraph } from "../../graphUtils/usersStackedGraph";
+import { usersRelationGraph } from "../../graphUtils/usersRelationGraph";
 
 const useStyles = makeStyles((theme) => ({
   ChatRoomListTitle: {
@@ -181,7 +182,11 @@ const Chatting = () => {
               <GraphChart graphFunc={usersStackedGraph}></GraphChart>
             </CardContent>
           </Card>
-          <Card variant="outlined" className={classes.ChatCard} />
+          <Card variant="outlined" className={classes.ChatCard}>
+            <CardContent>
+              <GraphChart graphFunc={usersRelationGraph}></GraphChart>
+            </CardContent>
+          </Card>
         </Grid>
       </Grid>
       <Box pt={4}></Box>
