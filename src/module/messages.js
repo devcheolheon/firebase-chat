@@ -73,10 +73,12 @@ export function* setMessagesReadSaga(action) {
 
 function* getMessageSaga(action) {
   let message = yield call(getMessageAPI, action.payload);
+  yield put(setMessages({ [message.id]: message }));
+  /*
   yield put(
     setMessagesInChat({ messages: [message], meta: action.payload.chat })
   );
-  yield put(setMessages({ [message.id]: message }));
+  */
 }
 
 export function* getMessagesSaga(action) {
