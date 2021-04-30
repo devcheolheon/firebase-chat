@@ -78,7 +78,10 @@ export function usersStackedGraph(target, data) {
   const xAxis = (g, x) =>
     g
       .attr("transform", `translate(0,${height - margin.bottom - 30})`)
-      .call(d3.axisBottom(x));
+      .call(d3.axisBottom(x))
+      .call((g) =>
+        (g.selection ? g.selection() : g).select(".domain").remove()
+      );
 
   let bars = svg
     .selectAll("g.bars")
@@ -97,27 +100,29 @@ export function usersStackedGraph(target, data) {
     .selectAll("rect")
     .data(
       (d) => d,
-      (d) => d.id
+      (d) => d.id + d.toString()
     )
-    .join((enter) =>
-      enter
-        .append("rect")
-        .attr("class", "data")
-        .attr("data-index", (d, i) => i)
-        .attr("x", (d, i) => x(columns[i]))
-        .attr("y", height - margin.bottom - 30)
-        .attr("width", x.bandwidth())
-        .attr("height", 0)
-    );
+    .join("rect")
+    .attr("class", "data")
+    .attr("data-index", (d, i) => i)
+    .attr("x", (d, i) => x(columns[i]))
+    .attr("y", height - margin.bottom - 30)
+    .attr("width", x.bandwidth())
+    .attr("height", 0);
 
   let text = texts
     .selectAll("text")
-    .data((d) => d)
+    .data(
+      (d) => d,
+      (d) => d.id + d.toString()
+    )
     .join("text")
     .text((d) => d[2])
+    .attr("x", (d, i) => x(columns[i]) + 5)
+    .attr("y", height - margin.bottom + 30)
     .attr("font-family", "sans-serif")
     .attr("font-size", "5px")
-    .attr("fill", "white")
+    .attr("fill", "black")
     .attr("text-anchor", "middle");
 
   const gx = svg.append("g").call(xAxis, x);
@@ -162,19 +167,26 @@ export function usersStackedGraph(target, data) {
 
     bars = bars
       .data(y01z, (d) => d.id)
-      .join("g")
-      .attr("class", "bars");
+      .join(
+        (enter) => enter.append("g").attr("class", "bars"),
+        (update) => update,
+        (exit) => exit.remove()
+      );
 
     texts = texts
       .data(y01z, (d) => d.id)
-      .join((enter) => enter.append("g").attr("class", "captions"));
+      .join(
+        (enter) => enter.append("g").attr("class", "captions"),
+        (update) => update,
+        (exit) => exit.remove()
+      );
 
     rect = bars
       .attr("fill", (d, i) => z(i))
       .selectAll("rect")
       .data(
         (d) => d,
-        (d) => d.id
+        (d) => d.id + d.toString()
       )
       .join(
         (enter) =>
@@ -190,18 +202,26 @@ export function usersStackedGraph(target, data) {
         (exit) => exit.remove()
       );
 
-    text = texts.selectAll("text").join(
-      (enter) =>
-        enter
-          .append("text")
-          .text((d) => d[2])
-          .attr("font-family", "sans-serif")
-          .attr("font-size", "5px")
-          .attr("fill", "white")
-          .attr("text-anchor", "middle"),
-      (update) => update,
-      (exit) => exit.remove()
-    );
+    text = texts
+      .selectAll("text")
+      .data(
+        (d) => d,
+        (d) => d.id + d.toString()
+      )
+      .join(
+        (enter) =>
+          enter
+            .append("text")
+            .text((d) => d[2])
+            .attr("x", (d, i) => x(columns[i]) + 5)
+            .attr("y", height - margin.bottom + 30)
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "5px")
+            .attr("fill", "black")
+            .attr("text-anchor", "middle"),
+        (update) => update,
+        (exit) => exit.remove()
+      );
 
     rect
       .transition()
@@ -223,21 +243,16 @@ export function usersStackedGraph(target, data) {
       });
 
     text
-      .attr("x", (d, i) => x(columns[i]) + 5)
-      .attr("ox", (d, i) => x(columns[i]) + 5)
-      .attr("y", y(0))
-      .attr("class", (d, i) => makeIdFromD(d, i))
-      .attr("width", x.bandwidth())
-      .attr("font-family", "sans-serif")
-      .attr("font-size", "5px")
-      .attr("fill", "black")
-      .attr("text-anchor", "middle")
       .transition()
       .duration(500)
       .delay((d, i) => i * 20)
       .attr("y", (d) => y(d[0]) - y(d[1]) + y(d[1]) - 2)
       .attr("oy", (d) => y(d[0]) - y(d[1]) + y(d[1]) - 2)
-      .transition();
+      .transition()
+      .attr("x", (d, i) => x(columns[i]) + 5)
+      .attr("ox", (d, i) => x(columns[i]) + 5)
+      .attr("width", x.bandwidth())
+      .attr("class", (d, i) => makeIdFromD(d, i));
   };
 
   if (target.innerHTML) return update;
