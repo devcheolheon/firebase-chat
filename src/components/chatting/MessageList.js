@@ -113,7 +113,7 @@ export default function MessageList({ chat }) {
       if (!lock) {
         lock = true;
         setTimeout(() => {
-          dispatch(setMessagesRead({ chat }));
+          dispatch(setMessagesRead(chat));
           lock = false;
         }, 1000);
       }

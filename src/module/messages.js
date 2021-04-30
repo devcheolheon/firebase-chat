@@ -92,46 +92,42 @@ export function* initLinkToChatMessagesSaga() {
     (state) => (state.auth.uid && state.users[state.auth.uid].chats) || []
   );
   for (let i = 0; i < myChats.length; i++) {
-    yield put(addLinkToChatMessages({ chat: myChats[i] }));
+    yield put(addLinkToChatMessages(myChats[i]));
   }
 }
 
-export function* setMessagesReadSaga(action) {
+export function* setMessagesReadSaga({ payload: chat }) {
   const uid = yield select((state) => state.auth.uid);
-  yield call(setMessagesReadAPI, { ...action.payload, uid });
+  yield call(setMessagesReadAPI, { chat, uid });
 }
 
-function* getMessageSaga(action) {
-  let message = yield call(getMessageAPI, action.payload);
-  yield put(setMessages({ [message.id]: message }));
-  yield put(
-    setMessagesInChat({ messages: [message], meta: action.payload.chat })
-  );
+function* getMessageSaga({ payload: { chat, message } }) {
+  message = yield call(getMessageAPI, { chat, message });
+  yield put(setMessage(message));
+  yield put(setMessagesInChat({ messages: [message], chat }));
 }
 
-export function* getMessagesSaga(action) {
-  let messages = yield call(getMessagesAPI, action.payload);
+export function* getMessagesSaga({ payload: { chat, uid } }) {
+  let messages = yield call(getMessagesAPI, { chat, uid });
   let messagesDic = {};
   messages.forEach((message) => (messagesDic[message.id] = message));
   yield put(setMessages(messagesDic));
-  yield put(setMessagesInChat({ messages, meta: action.payload.chat }));
+  yield put(setMessagesInChat({ messages, chat }));
 }
 
-function* sendMessageSaga(action) {
-  const targets = yield select(
-    (state) => state.chats[action.payload.chat].users
-  );
-  yield call(sendMessageAPI, { ...action.payload, targets });
+function* sendMessageSaga({ payload: message }) {
+  const targets = yield select((state) => state.chats[message.chat].users);
+  yield call(sendMessageAPI, { ...message, targets });
 }
 
-function* addLinkToChatMessagesSaga(action) {
+function* addLinkToChatMessagesSaga({ payload: chat }) {
   const uid = yield select((state) => state.auth.uid);
-  yield linkToChatMessagesSaga(action.payload.chat, uid);
+  yield linkToChatMessagesSaga(chat, uid);
 }
 
 function makeCloseChannel(chatId, channel) {
-  return function* closeChannel(action) {
-    if (action.payload.chat == chatId) {
+  return function* closeChannel({ payload: chat }) {
+    if (chat == chatId) {
       channel.close();
     }
   };

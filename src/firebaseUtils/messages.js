@@ -20,11 +20,11 @@ function makeMessage({ content, chat, user, targets }) {
   };
 }
 
-export async function sendMessage(payload) {
-  let chatRef = await db.collection("chats").doc(payload.chat);
+export async function sendMessage(message) {
+  let chatRef = await db.collection("chats").doc(message.chat);
   let chat = await chatRef.get();
 
-  const message = makeMessage(payload);
+  message = makeMessage(message);
 
   let messageRef = await chatRef
     .collection("messages")
@@ -43,11 +43,11 @@ export async function sendMessage(payload) {
   return { ...message, id };
 }
 
-export async function getMessages(payload) {
-  let chatRef = db.collection("chats").doc(payload.chat);
+export async function getMessages({ chat, uid }) {
+  let chatRef = db.collection("chats").doc(chat);
   let messageRef = chatRef
     .collection("messages")
-    .where("targets", "array-contains", payload.uid);
+    .where("targets", "array-contains", uid);
   let messages = [];
   const messageSnapshot = await messageRef.get().catch(() => []);
   messageSnapshot.forEach((doc) => {
@@ -56,11 +56,11 @@ export async function getMessages(payload) {
   return messages;
 }
 
-export async function getMessage(payload) {
-  let chatRef = db.collection("chats").doc(payload.chat);
-  let message = await chatRef
+export async function getMessage({ chat, message }) {
+  let chatRef = db.collection("chats").doc(chat);
+  message = await chatRef
     .collection("messages")
-    .doc(payload.message)
+    .doc(message)
     .get()
     .catch(() => null);
 
@@ -78,20 +78,17 @@ export function messagesSnapshotChannel(emitter, chatId, uid) {
   return unscribe;
 }
 
-export async function setMessagesRead(payload) {
-  const messageRef = db
-    .collection("chats")
-    .doc(payload.chat)
-    .collection("messages");
+export async function setMessagesRead({ chat, uid }) {
+  const messageRef = db.collection("chats").doc(chat).collection("messages");
 
   const messagesQuery = await messageRef
-    .where("targets", "array-contains", payload.uid)
+    .where("targets", "array-contains", uid)
     .get();
 
   messagesQuery.forEach((doc) => {
     let ref = doc.ref;
     ref.update({
-      readUsers: firebase.firestore.FieldValue.arrayUnion(payload.uid),
+      readUsers: firebase.firestore.FieldValue.arrayUnion(uid),
     });
   });
 }

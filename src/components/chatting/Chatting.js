@@ -104,7 +104,7 @@ const Chatting = () => {
     if (id == selectedChat) {
       setPopupOpen2(true);
     } else {
-      dispatch(setMessagesRead({ chat: id }));
+      dispatch(setMessagesRead(id));
     }
   }, []);
 
