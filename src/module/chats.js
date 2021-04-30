@@ -51,6 +51,7 @@ const UNJOIN_CHAT = "chats/UNJOIN_CHAT";
 const SET_MESSAGE = "chats/SET_MESSAGE";
 // 1개의 메시지를 추가하는 액션
 //   ( 최근 메시지를 채팅 리스트에서 보여주기위해 사용됨 )
+
 const SET_MESSAGES = "chats/SET_MESSAGES";
 // 여러개의 메시지를 추가하는 액션
 //   ( 초기화 또는 채팅방 입장시 사용됨 )
