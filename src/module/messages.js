@@ -14,17 +14,33 @@ import {
   setMessages as setMessagesInChat,
 } from "../module/chats";
 
-const GET_MESSAGES = "messages/GET_MESSAGES";
-const SET_MESSAGES = "messages/SET_MESSAGES";
-
-const SEND_MESSAGE = "messages/SEND_MESSAGE";
+/////////
+// MESSAGE CRUD
+// 메시지를 받아오고 세팅함
+// 사가에서 메시지가 속한 chat에 세팅하는 action을 발생하도록 함
 
 const GET_MESSAGE = "messages/GET_MESSAGE";
+// 채팅방에 속하는 모든 메시지를 가져옴
 const SET_MESSAGE = "messages/SET_MESSAGE";
+
+const GET_MESSAGES = "messages/GET_MESSAGES";
+// message의 id를 통해 가져옴
+const SET_MESSAGES = "messages/SET_MESSAGES";
+
+/////////
+// MESSAGE 관련 작업들
+
 const SET_MESSAGES_READ = "messages/SET_MESSAGES_READ";
+// 채팅방내 모든 message들 각각에 읽은 사람 리스트에 사용자를 추가함
+
+const SEND_MESSAGE = "messages/SEND_MESSAGE";
+// message를 발송함
+// ** 현재 채팅방내 있는 user를 target으로 전달
 
 const ADD_LINK_TO_CHAT_MESSAGE = "messages/ADD_LINK_TO_CHAT_MESSAGE";
 const CLOSE_LINK_TO_CHAT_MESSAGE = "messages/CLOSE_LINK_TO_CHAT_MESSAGE";
+// join / unjoin ( chat 모듈 ) 하거나 최초 초기화시 발생하는 액션
+// 채팅내 message 컬렉션의 변경사항을 구독하거나 구독 취소함
 
 export const sendMessage = (payload) => ({
   type: SEND_MESSAGE,
@@ -66,6 +82,20 @@ export const closeLinkToChatMessages = (payload) => ({
   payload,
 });
 
+// initLinkToChatMessagesSaga
+
+// 초기화 작업시, 사용자가 참여하고 있는 채팅방 정보를 가져와
+// 미리 해당 chat의 메시지 콜렉션을 구독하도록 함
+
+export function* initLinkToChatMessagesSaga() {
+  const myChats = yield select(
+    (state) => (state.auth.uid && state.users[state.auth.uid].chats) || []
+  );
+  for (let i = 0; i < myChats.length; i++) {
+    yield put(addLinkToChatMessages({ chat: myChats[i] }));
+  }
+}
+
 export function* setMessagesReadSaga(action) {
   const uid = yield select((state) => state.auth.uid);
   yield call(setMessagesReadAPI, { ...action.payload, uid });
@@ -99,15 +129,6 @@ function* addLinkToChatMessagesSaga(action) {
   yield linkToChatMessagesSaga(action.payload.chat, uid);
 }
 
-export function* initLinkToChatMessagesSaga() {
-  const myChats = yield select(
-    (state) => (state.auth.uid && state.users[state.auth.uid].chats) || []
-  );
-  for (let i = 0; i < myChats.length; i++) {
-    yield put(addLinkToChatMessages({ chat: myChats[i] }));
-  }
-}
-
 function makeCloseChannel(chatId, channel) {
   return function* closeChannel(action) {
     if (action.payload.chat == chatId) {
@@ -132,7 +153,6 @@ function createMessagesChannel(chatId, uid) {
 }
 
 function* setChangesToChannel(action) {
-  console.log("message: ", action);
   switch (action.type) {
     case "added": {
       let exist = yield select((state) => state.messages[action.payload.id]);
