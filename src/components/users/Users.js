@@ -9,7 +9,7 @@ import Grid from "@material-ui/core/Grid";
 import UserList from "../users/UserList";
 
 import ChatRoomList from "../chatting/ChatRoomList";
-import { joinChats as joinChatsAction } from "../../module/chats";
+import { joinChat as joinChatAction } from "../../module/chats";
 
 const useStyles = makeStyles((theme) => ({
   UserListTitle: {
@@ -92,7 +92,7 @@ const Users = () => {
   };
 
   const joinChats = useCallback(() => {
-    dispatch(joinChatsAction({ uid, id: selectedYourChat }));
+    dispatch(joinChatAction({ uid, id: selectedYourChat }));
   }, [uid, dispatch, selectedYourChat]);
 
   const onClickYourChat = (chatId) => {

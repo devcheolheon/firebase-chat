@@ -12,9 +12,9 @@ import CreateChatFormDialog from "./CreateChatFormDialog";
 import GraphChart from "./GraphChart";
 
 import {
-  joinChats,
-  unjoinChats,
-  createChats as createChatAction,
+  joinChat as joinChatAction,
+  unjoinChat as unjoinChatAction,
+  createChat as createChatAction,
 } from "../../module/chats";
 
 import { sendMessage, setMessagesRead } from "../../module/messages";
@@ -115,12 +115,12 @@ const Chatting = () => {
 
   const joinChat = useCallback(() => {
     console.log(`${uid} 가 ${selectedChat}에 join!`);
-    dispatch(joinChats({ uid, id: selectedChat }));
+    dispatch(joinChatAction({ uid, id: selectedChat }));
   }, [selectedChat, dispatch]);
 
   const unJoinChat = useCallback(() => {
     console.log(`${uid} 가 ${selectedChat}에 unjoin!`);
-    dispatch(unjoinChats({ uid, id: selectedChat }));
+    dispatch(unjoinChatAction({ uid, id: selectedChat }));
   }, [selectedChat, dispatch]);
 
   const createChat = useCallback(

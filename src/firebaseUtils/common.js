@@ -3,7 +3,6 @@ export function emitOnSnapshot(emitter, ref) {
     snapshot.docChanges().forEach((change) => {
       const newDoc = change.doc.data();
       newDoc.id = change.doc.id;
-      newDoc.type = change.type;
       emitter({ payload: newDoc, type: change.type });
     });
   });
