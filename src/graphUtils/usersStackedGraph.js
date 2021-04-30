@@ -4,41 +4,47 @@ const height = 300;
 const width = 400;
 const margin = { top: 0, right: 20, bottom: 10, left: 20 };
 
-function bumps(m, index) {
-  const values = [];
+const svg = d3.create("svg").attr("viewBox", [0, 0, width, height]);
 
-  // Initialize with uniform random values in [0.1, 0.2).
-  for (let i = 0; i < m; ++i) {
-    values[i] = 0.1 + 0.1 * Math.random();
-  }
+function makeIdFromD(d, i) {
+  return "id" + i + d[2] + Math.floor(d[0] * 100) + Math.floor(d[1] * 100);
+}
 
-  // Add five random bumps.
-  for (let j = 0; j < 5; ++j) {
-    const x = 1 / (0.1 + Math.random());
-    const y = 2 * Math.random() - 0.5;
-    const z = 10 / (0.1 + Math.random());
-    for (let i = 0; i < m; i++) {
-      const w = (i / m - y) * z;
-      values[i] += x * Math.exp(-w * w);
-    }
-  }
+function textToOriginalState(text) {
+  text
+    .attr("font-size", "5px")
+    .attr("fill", "black")
+    .attr("x", function () {
+      return d3.select(this).attr("ox");
+    })
+    .attr("y", function () {
+      return d3.select(this).attr("oy");
+    });
+}
 
-  // Ensure all values are positive.
-  for (let i = 0; i < m; ++i) {
-    values[i] = Math.max(0, values[i]);
-  }
-
-  return values.map((v, i) => ["id" + index, v]);
+function hoverSelectedText(d, i) {
+  svg
+    .selectAll("." + makeIdFromD(d, i))
+    .attr("font-size", "15px")
+    .attr("fill", "yellow")
+    .attr("x", function (d, i) {
+      return +d3.select(this).attr("ox") + 30;
+    })
+    .attr("y", function (d, i) {
+      if (+d3.select(this).attr("oy") - 2 <= margin.bottom + 20) {
+        return +d3.select(this).attr("oy") + 20;
+      }
+      return +d3.select(this).attr("oy") - 2;
+    });
 }
 
 export function usersStackedGraph(target, data) {
   const n = data[0].length;
   const m = data.length;
+  const columns = data.map((data) => data.name);
 
   const xz = d3.range(m);
-  const columns = data.map((data) => data.name);
   const yz = d3.transpose(data);
-
   const y01z = d3
     .stack()
     .keys(d3.range(n))
@@ -50,11 +56,11 @@ export function usersStackedGraph(target, data) {
   d3.range(m).forEach((i) => {
     d3.range(n).forEach((j) => {
       y01z[j][i].push(data[i][j][1]);
+      y01z[j][i].id = data[i].id;
     });
   });
 
-  const yMax = d3.max(yz, (y) => d3.max(y));
-  const y1Max = d3.max(y01z, (y) => d3.max(y, (d) => d[1]));
+  let y1Max = d3.max(y01z, (y) => d3.max(y, (d) => d[1]));
 
   const x = d3
     .scaleBand()
@@ -69,133 +75,174 @@ export function usersStackedGraph(target, data) {
 
   const z = d3.scaleSequential(d3.interpolateBlues).domain([-0.5 * n, 1.5 * n]);
 
-  const xAxis = (svg) =>
-    svg
-      .append("g")
+  const xAxis = (g, x) =>
+    g
       .attr("transform", `translate(0,${height - margin.bottom - 30})`)
       .call(d3.axisBottom(x));
 
-  const chart = (() => {
-    const svg = d3.create("svg").attr("viewBox", [0, 0, width, height]);
+  let bars = svg
+    .selectAll("g.bars")
+    .data(y01z, (d) => d.id)
+    .join("g")
+    .attr("class", "bars");
 
-    const bars = svg
-      .selectAll("g.bars")
-      .data(y01z)
-      .join("g")
-      .attr("class", "bars");
-    const texts = svg
-      .selectAll("g.captions")
-      .data(y01z)
-      .join("g")
-      .attr("class", "captions");
+  let texts = svg
+    .selectAll("g.captions")
+    .data(y01z, (d) => d.id)
+    .join("g")
+    .attr("class", "captions");
 
-    const rect = bars
-      .attr("fill", (d, i) => z(i))
-      .selectAll("rect")
-      .data((d) => d)
-      .join("rect")
-      .attr("class", "data")
-      .attr("data-index", (d, i) => i)
-      .attr("x", (d, i) => x(columns[i]))
-      .attr("y", height - margin.bottom)
-      .attr("width", x.bandwidth())
-      .attr("height", 0);
+  let rect = bars
+    .attr("fill", (d, i) => z(i))
+    .selectAll("rect")
+    .data(
+      (d) => d,
+      (d) => d.id
+    )
+    .join((enter) =>
+      enter
+        .append("rect")
+        .attr("class", "data")
+        .attr("data-index", (d, i) => i)
+        .attr("x", (d, i) => x(columns[i]))
+        .attr("y", height - margin.bottom - 30)
+        .attr("width", x.bandwidth())
+        .attr("height", 0)
+    );
 
-    const text = texts
-      .selectAll("text")
-      .data((d) => d)
-      .join("text")
-      .text((d) => d[2])
-      .attr("font-family", "sans-serif")
-      .attr("font-size", "5px")
-      .attr("fill", "white")
-      .attr("text-anchor", "middle");
+  let text = texts
+    .selectAll("text")
+    .data((d) => d)
+    .join("text")
+    .text((d) => d[2])
+    .attr("font-family", "sans-serif")
+    .attr("font-size", "5px")
+    .attr("fill", "white")
+    .attr("text-anchor", "middle");
 
-    svg.append("g").call(xAxis);
+  const gx = svg.append("g").call(xAxis, x);
 
-    function makeIdFromD(d, i) {
-      return "id" + i + d[2] + Math.floor(d[0] * 100) + Math.floor(d[1] * 100);
-    }
+  svg.on("mouseleave", () => {
+    textToOriginalState(text);
+  });
 
-    function textToOriginalState() {
-      text
-        .attr("font-size", "5px")
-        .attr("fill", "black")
-        .attr("x", function () {
-          return d3.select(this).attr("ox");
-        })
-        .attr("y", function () {
-          return d3.select(this).attr("oy");
-        });
-    }
+  console.log("texts");
+  console.log(texts);
 
-    function hoverSelectedText(d, i) {
-      svg
-        .selectAll("." + makeIdFromD(d, i))
-        .attr("font-size", "15px")
-        .attr("fill", "yellow")
-        .attr("x", function (d, i) {
-          return +d3.select(this).attr("ox") + 30;
-        })
-        .attr("y", function (d, i) {
-          if (+d3.select(this).attr("oy") - 2 <= margin.bottom + 20) {
-            return +d3.select(this).attr("oy") + 20;
-          }
-          return +d3.select(this).attr("oy") - 2;
-        });
-    }
+  const update = (data) => {
+    console.log(data);
+    const n = data[0].length;
+    const m = data.length;
+    const columns = data.map((data) => data.name);
 
-    svg.on("mouseleave", () => {
-      textToOriginalState();
+    const xz = d3.range(m);
+    const yz = d3.transpose(data);
+    const y01z = d3
+      .stack()
+      .keys(d3.range(n))
+      .value((obj, key) => {
+        return obj[key][0];
+      })(data) // stacked yz
+      .map((data) => data.map(([y0, y1]) => [y0, y1]));
+
+    d3.range(m).forEach((i) => {
+      d3.range(n).forEach((j) => {
+        y01z[j][i].push(data[i][j][1]);
+        y01z[j][i].id = data[i].id;
+      });
     });
 
-    function transitionStacked() {
-      y.domain([0, y1Max]);
+    const t = svg.transition().duration(750);
 
-      rect
-        .transition()
-        .duration(500)
-        .delay((d, i) => i * 20)
-        .attr("data-index", (d, i) => i)
-        .attr("y", (d) => y(d[1]))
-        .attr("height", (d) => y(d[0]) - y(d[1]))
-        .transition()
-        .attr("x", (d, i) => x(columns[i]))
-        .attr("width", x.bandwidth());
+    gx.transition(t).call(xAxis, x.domain(columns));
 
-      rect
-        .data((d) => d)
-        .on("mouseover", function (event, d) {
-          const i = d3.select(this).attr("data-index");
-          textToOriginalState();
-          hoverSelectedText(d, i);
-        });
+    y1Max = d3.max(y01z, (y) => d3.max(y, (d) => d[1]));
 
-      text
-        .attr("x", (d, i) => x(columns[i]) + 5)
-        .attr("ox", (d, i) => x(columns[i]) + 5)
-        .attr("y", y(0))
-        .attr("class", (d, i) => makeIdFromD(d, i))
-        .attr("width", x.bandwidth())
-        .attr("font-family", "sans-serif")
-        .attr("font-size", "5px")
-        .attr("fill", "black")
-        .attr("text-anchor", "middle")
-        .transition()
-        .duration(500)
-        .delay((d, i) => i * 20)
-        .attr("y", (d) => y(d[0]) - y(d[1]) + y(d[1]) - 2)
-        .attr("oy", (d) => y(d[0]) - y(d[1]) + y(d[1]) - 2)
-        .transition();
-    }
+    y.domain([0, y1Max]);
 
-    function update(layout) {
-      transitionStacked();
-    }
+    bars = bars
+      .data(y01z, (d) => d.id)
+      .join("g")
+      .attr("class", "bars");
 
-    return Object.assign(svg.node(), { update });
-  })();
+    texts = texts
+      .data(y01z, (d) => d.id)
+      .join((enter) => enter.append("g").attr("class", "captions"));
 
-  target.appendChild(chart);
-  chart.update();
+    rect = bars
+      .attr("fill", (d, i) => z(i))
+      .selectAll("rect")
+      .data(
+        (d) => d,
+        (d) => d.id
+      )
+      .join(
+        (enter) =>
+          enter
+            .append("rect")
+            .attr("class", "data")
+            .attr("data-index", (d, i) => i)
+            .attr("x", (d, i) => x(columns[i]))
+            .attr("y", height - margin.bottom - 30)
+            .attr("width", x.bandwidth())
+            .attr("height", 0),
+        (update) => update,
+        (exit) => exit.remove()
+      );
+
+    text = texts.selectAll("text").join(
+      (enter) =>
+        enter
+          .append("text")
+          .text((d) => d[2])
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "5px")
+          .attr("fill", "white")
+          .attr("text-anchor", "middle"),
+      (update) => update,
+      (exit) => exit.remove()
+    );
+
+    rect
+      .transition()
+      .duration(500)
+      .delay((d, i) => i * 20)
+      .attr("data-index", (d, i) => i)
+      .attr("y", (d) => y(d[1]))
+      .attr("height", (d) => y(d[0]) - y(d[1]))
+      .transition()
+      .attr("x", (d, i) => x(columns[i]))
+      .attr("width", x.bandwidth());
+
+    rect
+      .data((d) => d)
+      .on("mouseover", function (event, d) {
+        const i = d3.select(this).attr("data-index");
+        textToOriginalState(text);
+        hoverSelectedText(d, i);
+      });
+
+    text
+      .attr("x", (d, i) => x(columns[i]) + 5)
+      .attr("ox", (d, i) => x(columns[i]) + 5)
+      .attr("y", y(0))
+      .attr("class", (d, i) => makeIdFromD(d, i))
+      .attr("width", x.bandwidth())
+      .attr("font-family", "sans-serif")
+      .attr("font-size", "5px")
+      .attr("fill", "black")
+      .attr("text-anchor", "middle")
+      .transition()
+      .duration(500)
+      .delay((d, i) => i * 20)
+      .attr("y", (d) => y(d[0]) - y(d[1]) + y(d[1]) - 2)
+      .attr("oy", (d) => y(d[0]) - y(d[1]) + y(d[1]) - 2)
+      .transition();
+  };
+
+  if (target.innerHTML) return update;
+  // invalidation.then(() => simulation.stop());
+
+  target.appendChild(svg.node());
+  return update;
 }

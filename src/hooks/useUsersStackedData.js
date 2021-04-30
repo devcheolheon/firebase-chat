@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import throttle from "../utils/throttle";
 
-const useUserStackedData = () => {
+const useUserStackedData = ({ timeDiff }) => {
   const users = useSelector((state) => state.users);
   const chats = useSelector((state) => state.chats);
   const messages = useSelector((state) => state.messages);
   const [data, setData] = useState([[]]);
+  const [loaded, setLoaded] = useState(false);
 
   const getData = () => {
     let data = chats.chats.map((id) => ({
@@ -20,30 +22,42 @@ const useUserStackedData = () => {
     data = data.map(({ id, total }) => {
       if (!id) return new Array(3).fill(null).map(() => [0, ""]);
       let u = chats[id].users
-        .map((uid) => [
-          chats[id].messages
-            ? chats[id].messages.filter(
-                ({ id: mid }) => messages[mid].user == uid
-              ).length
-            : 0,
-          users[uid].nickname,
-        ])
+        .map((uid) => {
+          let result = [
+            chats[id].messages
+              ? chats[id].messages.filter(
+                  ({ id: mid }) => messages[mid].user == uid
+                ).length
+              : 0,
+            users[uid].nickname,
+          ];
+          result.id = uid;
+          return result;
+        })
         .filter(([length]) => length > 0);
       u.sort((a, b) => b[0] - a[0]);
       u = u.concat(new Array(3).fill(null).map(() => [0, ""]));
       u = u.slice(0, 3);
       u.name = chats[id].name;
+      u.id = chats[id].id;
       return u;
     });
 
+    data.sort(
+      (a, b) =>
+        b.reduce((acc, v) => acc + v[0], 0) -
+        a.reduce((acc, v) => acc + v[0], 0)
+    );
+
     setData(data);
+    setLoaded(true);
   };
 
   useEffect(() => {
-    getData();
-  }, []);
+    throttle(getData, timeDiff)();
+  }, [users, chats]);
 
-  return [data];
+  return [data, loaded];
 };
 
 export default useUserStackedData;

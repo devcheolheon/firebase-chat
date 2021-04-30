@@ -79,8 +79,12 @@ const Chatting = () => {
   const [popupOpen2, setPopupOpen2] = useState(false);
   const [popupOpen3, setPopupOpen3] = useState(false);
 
-  const [userRelationData, loaded] = useUserRelationData({ timeDiff: 1000 });
-  const [userStackedData] = useUsersStackedData({ timeDiff: 1000 });
+  const [userRelationData, loadedUserRelationData] = useUserRelationData({
+    timeDiff: 1000,
+  });
+  const [userStackedData, loadedUserStackedData] = useUsersStackedData({
+    timeDiff: 1000,
+  });
   const dispatch = useDispatch();
   const uid = useSelector((state) => state.auth.uid);
   const chats = useSelector((state) => state.chats.chats);
@@ -183,17 +187,17 @@ const Chatting = () => {
         <Grid item xs={12} lg={4} className={classes.ChatCardContainer}>
           <Card variant="outlined" className={classes.ChatCard}>
             <CardContent>
-              {/*
+              {loadedUserStackedData && (
                 <GraphChart
-                graphFunc={usersStackedGraph}
-                data={userStackedData}
-              ></GraphChart>
-              */}
+                  graphFunc={usersStackedGraph}
+                  data={userStackedData}
+                ></GraphChart>
+              )}
             </CardContent>
           </Card>
           <Card variant="outlined" className={classes.ChatCard}>
             <CardContent>
-              {loaded && (
+              {loadedUserRelationData && (
                 <GraphChart
                   graphFunc={usersRelationGraph}
                   data={userRelationData}
