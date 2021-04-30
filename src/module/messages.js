@@ -115,9 +115,9 @@ export function* getMessagesSaga({ payload: { chat, uid } }) {
   yield put(setMessagesInChat({ messages, chat }));
 }
 
-function* sendMessageSaga({ payload: message }) {
-  const targets = yield select((state) => state.chats[message.chat].users);
-  yield call(sendMessageAPI, { ...message, targets });
+function* sendMessageSaga({ payload: messageObj }) {
+  const targets = yield select((state) => state.chats[messageObj.chat].users);
+  yield call(sendMessageAPI, { ...messageObj, targets });
 }
 
 function* addLinkToChatMessagesSaga({ payload: chat }) {

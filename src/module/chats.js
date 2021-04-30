@@ -169,10 +169,10 @@ function* setChangesToChannel(action) {
 // (추가 사항은 이 액션에서가 아니라 collection을
 //  observe 하던 사가에서 리덕스에서 적용)
 
-function* createChatSaga(action) {
-  const id = yield call(createChatAPI, action.payload);
+function* createChatSaga({ payload: chatObj }) {
+  const id = yield call(createChatAPI, chatObj);
   if (!id) return;
-  yield put(joinChat({ id, uid: action.payload.userId }));
+  yield put(joinChat({ chat: id, uid: chatObj.userId }));
 }
 
 // joinChatSaga
