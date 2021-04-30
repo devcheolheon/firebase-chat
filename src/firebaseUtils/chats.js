@@ -75,12 +75,12 @@ export async function getAllChats() {
   return result;
 }
 
-export async function joinChats({ meta: id, param: uid, join = true }) {
+export async function joinChats({ chat, uid, join = true }) {
   let targetFunc = join
     ? firebase.firestore.FieldValue.arrayUnion
     : firebase.firestore.FieldValue.arrayRemove;
 
-  let chatRef = await db.collection("chats").doc(id);
+  let chatRef = await db.collection("chats").doc(chat);
   let result = await chatRef
     .update({
       users: targetFunc(uid),
@@ -95,7 +95,7 @@ export async function joinChats({ meta: id, param: uid, join = true }) {
 
   result = await userRef
     .update({
-      chats: targetFunc(id),
+      chats: targetFunc(chat),
     })
     .catch((error) => false);
 

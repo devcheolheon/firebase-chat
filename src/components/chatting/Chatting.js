@@ -115,12 +115,12 @@ const Chatting = () => {
 
   const joinChat = useCallback(() => {
     console.log(`${uid} 가 ${selectedChat}에 join!`);
-    dispatch(joinChatAction({ uid, id: selectedChat }));
+    dispatch(joinChatAction({ uid, chat: selectedChat }));
   }, [selectedChat, dispatch]);
 
   const unJoinChat = useCallback(() => {
     console.log(`${uid} 가 ${selectedChat}에 unjoin!`);
-    dispatch(unjoinChatAction({ uid, id: selectedChat }));
+    dispatch(unjoinChatAction({ uid, chat: selectedChat }));
   }, [selectedChat, dispatch]);
 
   const createChat = useCallback(

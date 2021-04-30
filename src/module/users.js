@@ -57,20 +57,19 @@ export const setUsers = (payload) => ({
   payload,
 });
 
-export const userJoinChat = (payload) => ({
+export const userJoinChat = ({ uid, chat }) => ({
   type: USER_JOIN_CHAT,
-  payload,
+  payload: { meta: uid, param: chat },
 });
 
-export const userUnjoinChat = (payload) => ({
+export const userUnjoinChat = ({ uid, chat }) => ({
   type: USER_UNJOIN_CHAT,
-  payload,
+  payload: { meta: uid, param: chat },
 });
 
 export const linkToUsers = () => ({
   type: LINK_TO_USERS,
 });
-
 
 export const getUsersSaga = function* () {
   const users = yield call(apiGetUsers);
@@ -114,6 +113,7 @@ export function* usersSaga() {
 
 export default function users(state = initialState, action) {
   const id = action.payload && action.payload.meta;
+  const param = action.pyaload && action.payload.meta;
 
   switch (action.type) {
     case SET_USERS:
@@ -154,20 +154,17 @@ export default function users(state = initialState, action) {
 
     case USER_JOIN_CHAT:
       return produce(state, (draft) => {
-        if (
-          draft[id].chats &&
-          draft[id].chats.indexOf(action.payload.param) < 0
-        ) {
-          draft[id].chats.push(action.payload.param);
+        if (draft[id].chats && draft[id].chats.indexOf(param) < 0) {
+          draft[id].chats.push(param);
         } else {
-          draft[id].chats = [action.payload.param];
+          draft[id].chats = [param];
         }
       });
 
     case USER_UNJOIN_CHAT:
       return produce(state, (draft) => {
         if (draft[id].chats) {
-          let index = draft[id].chats.indexOf(action.payload.param);
+          let index = draft[id].chats.indexOf(param);
           if (index < 0) return;
           draft[id].chats.splice(index, 1);
         } else {

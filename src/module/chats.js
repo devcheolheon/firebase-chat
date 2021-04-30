@@ -74,14 +74,14 @@ export const addChat = (payload) => ({
 
 export const createChat = (payload) => ({ type: CREATE_CHAT, payload });
 
-export const joinChat = ({ id, uid }) => ({
+export const joinChat = ({ chat, uid }) => ({
   type: JOIN_CHAT,
-  payload: { meta: id, param: uid },
+  payload: { meta: chat, param: uid },
 });
 
-export const unjoinChat = ({ id, uid }) => ({
+export const unjoinChat = ({ chat, uid }) => ({
   type: UNJOIN_CHAT,
-  payload: { meta: id, param: uid },
+  payload: { meta: chat, param: uid },
 });
 
 export const setMessage = (payload) => ({
@@ -183,17 +183,13 @@ function* createChatSaga(action) {
 // chat 의 메시지 컬렉션의 변경사항을 듣는 채널을 발생시킨다 (messages 모듈)
 // 마지막으로 chat에 user에 사용자를 추가하는 api를 실행한다
 
-function* joinChatSaga(action) {
-  yield put(setChat({ id: action.payload.meta, isLoading: true }));
-  yield getMessagesSaga(
-    getMessages({ chat: action.payload.meta, uid: action.payload.param })
-  );
-  yield put(
-    userJoinChat({ meta: action.payload.param, param: action.payload.meta })
-  );
-  yield put(setChat({ id: action.payload.meta, isLoading: false }));
-  yield put(addLinkToChatMessages(action.payload.meta));
-  yield call(joinChatAPI, action.payload);
+function* joinChatSaga({ payload: { meta, param } }) {
+  yield put(setChat({ id: meta, isLoading: true }));
+  yield getMessagesSaga(getMessages({ chat: meta, uid: param }));
+  yield put(userJoinChat({ chat: meta, uid: param }));
+  yield put(setChat({ id: meta, isLoading: false }));
+  yield put(addLinkToChatMessages(meta));
+  yield call(joinChatAPI, { chat: meta, uid: param });
 }
 
 // JOIN_CHAT 액션이 발생하면
@@ -202,12 +198,10 @@ function* joinChatSaga(action) {
 // chat 의 메시지 컬렉션의 변경사항을 듣는 채널을 닫는다 (messages 모듈)
 // 마지막으로 chat내부 user에서 사용자를 빼는 api를 실행한다
 
-function* unJoinChatSaga(action) {
-  yield put(
-    userUnjoinChat({ meta: action.payload.param, param: action.payload.meta })
-  );
-  yield put(closeLinkToChatMessages(action.payload.meta));
-  yield call(unjoinChatAPI, action.payload);
+function* unJoinChatSaga({ payload: { meta, param } }) {
+  yield put(userUnjoinChat({ chat: meta, uid: param }));
+  yield put(closeLinkToChatMessages(meta));
+  yield call(unjoinChatAPI, { chat: meta, uid: param, join: false });
 }
 
 export function* chatsSaga() {
@@ -223,6 +217,7 @@ const initialState = {
 
 export default function chat(state = initialState, action) {
   const id = action.payload && action.payload.meta;
+  const param = action.payload && action.payload.param;
 
   switch (action.type) {
     case SET_CHAT:
@@ -256,20 +251,17 @@ export default function chat(state = initialState, action) {
 
     case JOIN_CHAT:
       return produce(state, (draft) => {
-        if (
-          draft[id].users &&
-          draft[id].users.indexOf(action.payload.param) < 0
-        ) {
-          draft[id].users.push(action.payload.param);
+        if (draft[id].users && draft[id].users.indexOf(param) < 0) {
+          draft[id].users.push(param);
         } else {
-          draft[id].users = [action.payload.param];
+          draft[id].users = [param];
         }
       });
 
     case UNJOIN_CHAT:
       return produce(state, (draft) => {
         if (draft[id].users) {
-          let index = draft[id].users.indexOf(action.payload.param);
+          let index = draft[id].users.indexOf(param);
           if (index < 0) return;
           draft[id].users.splice(index, 1);
         } else {
@@ -280,18 +272,14 @@ export default function chat(state = initialState, action) {
     case SET_MESSAGE:
       return produce(state, (draft) => {
         if (draft[id].messages) {
-          let message = draft[id].messages.find(
-            ({ id: cid }) => cid == action.payload.id
-          );
+          let message = draft[id].messages.find(({ id: cid }) => cid == id);
           if (message) return;
           draft[id].messages.push({
-            id: action.payload.id,
+            id: id,
             created: action.payload.created,
           });
         } else {
-          draft[id].messages = [
-            { id: action.payload.id, created: action.payload.created },
-          ];
+          draft[id].messages = [{ id, created: action.payload.created }];
         }
       });
 
