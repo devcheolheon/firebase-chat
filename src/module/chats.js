@@ -17,6 +17,8 @@ import {
 import produce from "immer";
 import { eventChannel } from "@redux-saga/core";
 
+const SET_CHATS = "chats/SET_CHATS";
+
 const CREATE_CHATS = "chats/CREATE_CHATS";
 const ADD_CHAT = "chats/ADD_CHAT";
 const ADD_CHATS = "chats/ADD_CHATS";
@@ -25,7 +27,6 @@ const UPDATE_CHAT = "chats/UPDATE_CHAT";
 
 const GET_CHATS = "chats/GET_CHATS";
 const SET_CHAT = "chats/SET_CHAT";
-const SET_CHATS = "chats/SET_CHATS";
 
 const JOIN_CHAT = "chats/JOIN_CHAT";
 const UNJOIN_CHAT = "chats/UNJOIN_CHAT";
@@ -35,6 +36,12 @@ const SET_MESSAGES = "chats/SET_MESSAGES";
 
 const LINK_TO_CHATS = "chats/LINK_TO_CHATS";
 
+// SET_CHATS
+// init 과정에서 사용되는 액션
+// chat과 관련된 스토어 데이터를 생성후
+// 리덕스 스토어에 바로 대입함  (비교 없이 엎어씌움 )
+const setChats = (payload) => ({ type: SET_CHATS, payload });
+
 export const createChats = (payload) => ({ type: CREATE_CHATS, payload });
 const addChats = (payload) => ({ type: ADD_CHATS, payload });
 
@@ -42,10 +49,8 @@ export const getChats = () => ({ type: GET_CHATS });
 
 const setChat = (payload) => ({
   type: SET_CHAT,
-  payload: { ...payload, meta: payload.id },
+  payload: { chat: payload, meta: payload.id },
 });
-
-const setChats = (payload) => ({ type: SET_CHATS, payload });
 
 export const joinChats = ({ id, uid }) => ({
   type: JOIN_CHAT,
@@ -81,22 +86,23 @@ export const addChat = (payload) => ({
   payload: { chat: payload, meta: payload.id },
 });
 
-// user reducer에서 처리
-
-function* createChatsSaga(action) {
-  const id = yield call(createChat, action.payload);
-  yield put(joinChats({ id, uid: action.payload.userId }));
-}
+// getChatsSaga
+// 초기화 과정에서 최초의 chat과 관련되 리덕스
+// 상태값을 생성하여 세팅하는 사가
+// SET_CHAT 액션을 발생시킨다.
 
 export function* getChatsSaga() {
   let chats = yield call(getAllChats);
-  console.log(chats);
   const payload = {};
   payload.chats = chats.map((chat) => chat.id);
   payload.chatsDic = {};
   chats.forEach((chat) => (payload.chatsDic[chat.id] = chat));
   yield put(setChats(payload));
 }
+
+// linkToChatsSaga
+// 초기화 과정에서 chats 컬렉션의 변경사항을 앱이
+// observe하도록 등록하는 사가
 
 function* linkToChatsSaga() {
   const chatsChannel = createChatsChannel();
@@ -106,6 +112,9 @@ function* linkToChatsSaga() {
 function createChatsChannel() {
   return eventChannel((emitter) => chatsSnapshotChannel(emitter));
 }
+
+// setChangesToChannel
+// chats 컬렉션에 변경사항에 따라 채팅앱의 상테를 업데이트함
 
 function* setChangesToChannel(action) {
   console.log(action);
@@ -134,6 +143,11 @@ function* setChangesToChannel(action) {
       }
     }
   }
+}
+
+function* createChatsSaga(action) {
+  const id = yield call(createChat, action.payload);
+  yield put(joinChats({ id, uid: action.payload.userId }));
 }
 
 function* joinChatSaga(action) {
@@ -175,7 +189,7 @@ export default function chat(state = initialState, action) {
     case SET_CHAT:
       return {
         ...state,
-        [id]: { ...state[id], ...action.payload },
+        [id]: { ...state[id], ...action.payload.chat },
       };
 
     case SET_CHATS: {
