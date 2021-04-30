@@ -91,7 +91,10 @@ export const setMessage = (payload) => ({
 
 export const setMessages = (payload) => ({
   type: SET_MESSAGES,
-  payload,
+  payload: {
+    ...payload,
+    meta: payload.chat,
+  },
 });
 
 // getChatsSaga
@@ -168,6 +171,7 @@ function* setChangesToChannel(action) {
 
 function* createChatSaga(action) {
   const id = yield call(createChatAPI, action.payload);
+  if (!id) return;
   yield put(joinChat({ id, uid: action.payload.userId }));
 }
 
@@ -188,7 +192,7 @@ function* joinChatSaga(action) {
     userJoinChat({ meta: action.payload.param, param: action.payload.meta })
   );
   yield put(setChat({ id: action.payload.meta, isLoading: false }));
-  yield put(addLinkToChatMessages({ chat: action.payload.meta }));
+  yield put(addLinkToChatMessages(action.payload.meta));
   yield call(joinChatAPI, action.payload);
 }
 
@@ -202,7 +206,7 @@ function* unJoinChatSaga(action) {
   yield put(
     userUnjoinChat({ meta: action.payload.param, param: action.payload.meta })
   );
-  yield put(closeLinkToChatMessages({ chat: action.payload.meta }));
+  yield put(closeLinkToChatMessages(action.payload.meta));
   yield call(unjoinChatAPI, action.payload);
 }
 
