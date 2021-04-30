@@ -1,19 +1,21 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import throttle from "../utils/throttle";
 
-const useUserRelationData = () => {
+const useUserRelationData = ({ timeDiff }) => {
   const users = useSelector((state) => state.users);
   const chats = useSelector((state) => state.chats);
+
   let nodes = [];
   let links = [];
   const [data, setData] = useState({ nodes, links });
+  const [loaded, setLoaded] = useState(false);
 
   const getData = () => {
     nodes = users.users.map((id) => ({
       name: users[id].nickname,
       id: users[id].uid,
     }));
-    console.log(nodes);
 
     const linkdic = {};
     nodes.forEach((node) => (linkdic[node.id] = {}));
@@ -36,14 +38,16 @@ const useUserRelationData = () => {
         links.push({ source, target, value: linkdic[source][target] });
       });
     });
+
+    setData({ nodes, links });
+    setLoaded(true);
   };
 
   useEffect(() => {
-    getData();
-    setData({ nodes, links });
-  }, []);
+    throttle(getData, timeDiff)();
+  }, [users, chats]);
 
-  return [data];
+  return [data, loaded];
 };
 
 export default useUserRelationData;

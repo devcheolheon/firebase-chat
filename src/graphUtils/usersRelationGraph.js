@@ -54,7 +54,6 @@ let text = svg
   .selectAll("text");
 
 let ticked = () => {
-  console.log(link, node, text);
   link
     .attr("x1", (d) => d.source.x)
     .attr("y1", (d) => d.source.y)
