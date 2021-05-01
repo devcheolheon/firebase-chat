@@ -6,9 +6,11 @@ import {
   getMessagesSaga,
   initLinkToChatMessagesSaga,
 } from "../module/messages";
+// 최초 어플리케이션 진입시 초기화 과정을 진행하고 그 상태를 표시하기 위한 모듈
 
 const SET_LOADING = "init/SET_LOADING";
 const UNSET_LOADING = "init/UNSET_LOADING";
+// 초기화 과정이 진행중이거나 끝났을떄 발생하는 액션
 
 const INIT = "init/INIT";
 const LINK = "init/LINK";
@@ -21,6 +23,7 @@ export const startInit = (payload) => ({ type: INIT, payload });
 const initialState = {
   loading: true,
 };
+// 최초 초기화 가 필요하므로..loading 값을 true로 준다
 
 export function* initDataSaga(action) {
   yield put(setloading());
@@ -36,6 +39,11 @@ export function* initDataSaga(action) {
   yield put(unsetloading());
   yield linkDataSaga();
 }
+
+// linkDataSaga
+
+// chats , users 컬렉션의 변경사항을 구독하도록 한다.
+// 입장한 채팅방이 있을 경우 해당 채팅방의 메시지 컬렉션들도 구독한다.
 
 export function* linkDataSaga() {
   yield put(linkToChats());
