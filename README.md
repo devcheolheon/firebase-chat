@@ -46,7 +46,83 @@
           그래프를 출력한다 ( 리덕스 스토어의 상태가 변경될때마다 데이터를 다시 가져온다)
 
 
-### 디렉터리   
+### 리덕스 스토어 구조 
+
+
+- 각 도큐먼트가 스토어 구조의 외곽에서 아이디를 key값으로 해서 저장되도록 했다.
+  ( 메시지의 경우 채팅 컬렉션 내부에 있지만 바깥의 message에 message id를 키값으로 저장된다 )
+
+```javascript
+{
+    // auth 인증 관련 
+    "auth": {
+      "isLogin": true,  // 로그인 여부 
+      "loading": false, // 로그인 상태 로딩  
+      "uid": "3JaHddfzVFTGlukPyvKaR72iR583", // 로그인한 사용자의 id
+      "nickname": "12234" // 로그인한 사용자의 nickname 
+    },  
+
+    // 유져 정보  
+    "users": {
+      "users": [ "VymBLk2oZQQY6f55fxgEFKgfktR2", ] ,  //  모든 유져들의 id 배열 
+      "lwc7wr2Xgth0ExGnfBQ2Lz6fiTg1": {  // [ 유져 아이디 ]
+        "chats": [ "5NeaeN0RiuJCnNfgD1fp", ] , // 유져가 참여한 채팅방 id 배열 
+        "nickname": "123456",   //  유져의 닉네임  
+        "created": 1619486564,  // 유져 정보가 생성된 시간
+        "email": "chickenmoo@gmail.com", // email 유져가 로그인할 때 쓰는 아이디 
+        "uid": "lwc7wr2Xgth0ExGnfBQ2Lz6fiTg1" // 유져 아이디 ( uid )
+      },
+
+    },
+
+    // 채팅방 정보
+    "chats": {
+      "chats": [  "5NeaeN0RiuJCnNfgD1fp", ] , // 모든 채팅방들의 id 배열 
+      "5NeaeN0RiuJCnNfgD1fp": { // [ 채팅방 아이디 ]
+        "name": "채팅방3",  // 채팅방 이름 
+        "totalMessages": 72, //  채팅방에 모든 메시지 수 
+        //( 유져입장에선 본인이 채팅방에 있을때 등록된 메시지만 볼수 있기 때문에 보이는 
+        //  메시지 수와 다를 수 있다. ) 
+        "users": [ "euB0APR1l4QgMd6E2kIV5fqmKy93", ] , // 채팅방에 입장한 유져들의 id 배열 
+        "recentMessage": "ZQs2lD703fTicQYLcM1C", // 채팅방의 가장 최근 메시지 id
+        "id": "5NeaeN0RiuJCnNfgD1fp", // 채팅방 아이디 
+        "messages": [  // 채팅방 내 메시지의 리스트
+          {
+            "id": "ZQs2lD703fTicQYLcM1C", // 해당 메시지의 id 
+            "created": 1619765586  // 해당 메시지가 생성된 시간 
+          }
+        ]
+      },
+    },
+
+    // 메시지 정보 
+    "messages": {
+      "ZQs2lD703fTicQYLcM1C": {  // [ 메시지 아이디 ]
+        "chat": "5NeaeN0RiuJCnNfgD1fp", // 메시지가 등록된 채팅방의 id 
+        "targets": [ // 메시지가 등록될때 채팅방에 있었던 user의 배열
+          "euB0APR1l4QgMd6E2kIV5fqmKy93",
+          "pVT4XR1z5bf0AhyLrOckLd9Pxfd2"
+        ],
+        "content": "asdfsdf", // 메시지의 내용 
+        "readUsers": [ // 메시지를 읽은 유져의 아이디 
+          "pVT4XR1z5bf0AhyLrOckLd9Pxfd2"
+        ],
+        "created": 1619765586, // 메시지가 생성된 시간 
+        "user": "pVT4XR1z5bf0AhyLrOckLd9Pxfd2", // 메시지를 등록한 user의 id
+        "id": "ZQs2lD703fTicQYLcM1C" // 메시지의 id
+      },
+    },
+
+    // 초기화 
+    "init": {
+      "loading": false, // 초기화 진행 중 여부 
+      "init": true // 초기화 완료 여부 
+    }
+  }
+
+```
+
+### 디렉터리  구조 
 
 
 ```
