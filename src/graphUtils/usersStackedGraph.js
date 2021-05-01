@@ -131,11 +131,7 @@ export function usersStackedGraph(target, data) {
     textToOriginalState(text);
   });
 
-  console.log("texts");
-  console.log(texts);
-
   const update = (data) => {
-    console.log(data);
     const n = data[0].length;
     const m = data.length;
     const columns = data.map((data) => data.name);

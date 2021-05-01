@@ -81,7 +81,6 @@ export async function getAllChats() {
     chat.id = doc.id;
     result.push(chat);
   });
-  console.log(result);
   return result;
 }
 
