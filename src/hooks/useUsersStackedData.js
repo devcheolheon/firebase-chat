@@ -16,7 +16,7 @@ const useUserStackedData = ({ timeDiff }) => {
     }));
 
     data.sort((a, b) => b.total - a.total);
-    data = data.concat(new Array(5).fill(null));
+    data = data.concat(new Array(5).fill(null).map(() => ({})));
     data = data.slice(0, 5);
 
     data = data.map(({ id, total }) => {
