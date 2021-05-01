@@ -182,7 +182,7 @@ const makeUnreadMessageSelector = () => {
     (state) => state.init.init,
     (state) => state.messages,
     (state) =>
-      state.init.init && state.auth.isLogin && state.users[state.auth.uid].chat
+      state.init.init && state.auth.isLogin && state.users[state.auth.uid].chats
         ? state.users[state.auth.uid].chats.map(
             ({ messages = [], name, recentMessage }) => ({
               name,
