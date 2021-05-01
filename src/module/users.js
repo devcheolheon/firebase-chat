@@ -113,7 +113,7 @@ export function* usersSaga() {
 
 export default function users(state = initialState, action) {
   const id = action.payload && action.payload.meta;
-  const param = action.pyaload && action.payload.meta;
+  const param = action.payload && action.payload.param;
 
   switch (action.type) {
     case SET_USERS:
