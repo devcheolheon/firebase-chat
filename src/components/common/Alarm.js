@@ -44,7 +44,9 @@ export default function Alarm({ open, setOpen, unReadMessages }) {
                   <TableCell component="th" scope="row">
                     {row.name}
                   </TableCell>
-                  <TableCell align="right">{row.message}</TableCell>
+                  <TableCell align="right">
+                    {row.message.content.slice(0, 20)}
+                  </TableCell>
                   <TableCell align="right">{row.count}</TableCell>
                 </TableRow>
               ))}

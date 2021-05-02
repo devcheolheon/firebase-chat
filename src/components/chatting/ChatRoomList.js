@@ -95,7 +95,7 @@ function ChatRoomLiBody({ totalMessages, classes, recentMessage }) {
           className={classes.inline}
           color="textPrimary"
         >
-          {recentMessage && recentMessage.content}
+          {recentMessage && recentMessage.content.slice(0, 14)}
         </Typography>
       </div>
     </div>
