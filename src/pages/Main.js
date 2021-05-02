@@ -181,10 +181,14 @@ const makeUnreadMessageSelector = () => {
   return createSelector(
     (state) => state.init.init,
     (state) => state.messages,
-    (state) =>
-      state.init.init && state.auth.isLogin && state.users[state.auth.uid].chats
-        ? state.users[state.auth.uid].chats.map(
-            ({ messages = [], name, recentMessage }) => ({
+    (state) => {
+      console.log(state);
+      return state.init.init &&
+        state.auth.isLogin &&
+        state.users[state.auth.uid].chats
+        ? state.users[state.auth.uid].chats
+            .map((chat) => state.chats[chat])
+            .map(({ messages = [], name, recentMessage }) => ({
               name,
               recentMessage,
               messages: messages
@@ -195,9 +199,9 @@ const makeUnreadMessageSelector = () => {
                     targets.indexOf(state.auth.uid) != -1 &&
                     readUsers.indexOf(state.auth.uid) == -1
                 ),
-            })
-          )
-        : [],
+            }))
+        : [];
+    },
     (init, messages, newMessagesInChat) => {
       if (!init) return [];
       newMessagesInChat = newMessagesInChat.map((obj) => ({
