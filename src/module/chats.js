@@ -275,11 +275,13 @@ export default function chat(state = initialState, action) {
           let message = draft[id].messages.find(({ id: cid }) => cid == id);
           if (message) return;
           draft[id].messages.push({
-            id: id,
+            id: action.payload.id,
             created: action.payload.created,
           });
         } else {
-          draft[id].messages = [{ id, created: action.payload.created }];
+          draft[id].messages = [
+            { id: action.payload.id, created: action.payload.created },
+          ];
         }
       });
 
