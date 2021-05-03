@@ -1,5 +1,5 @@
 
-### ReactJS Chat APP
+### Firebase Chat APP
 
 - [▶️데모]( https://first-firebase-47a29.web.app ) 
 
@@ -15,6 +15,12 @@
 - 주요 라이브러리
    
    react, redux ( + reselect), firebase, d3, material-ui 
+
+
+- 링글의 firebase chat app 스터디에서 출발한 프로젝트입니다. 
+
+( 스터디 모집 링크 ) 
+https://dev-recruiting.ringleplus.com/414762d8-a627-4ff6-ab6c-4422ab0c92bb
 
 ## 실행화면 
 
