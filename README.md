@@ -1,7 +1,16 @@
 
-### ReactJS Chat APP
+### Firebase Chat APP
 
-- [▶️데모]( https://first-firebase-47a29.web.app ) 
+- [▶️ 데모]( https://first-firebase-47a29.web.app ) 
+
+## 실행화면 
+
+<p align="center">
+<img width="400" alt="스크린샷 2021-05-03 오후 12 42 55" src="https://user-images.githubusercontent.com/60565660/116841985-def7bb00-ac15-11eb-8297-c921613bb944.png">
+
+<img width="400" alt="스크린샷 2021-05-03 오전 12 00 32" src="https://user-images.githubusercontent.com/60565660/116841989-e1f2ab80-ac15-11eb-8a1e-146ea7207c7a.png">
+</p>
+
 
 ## 개요 
 
@@ -16,7 +25,13 @@
    
    react, redux ( + reselect), firebase, d3, material-ui 
 
-## 실행화면 
+
+- 링글의 firebase chat app 스터디에서 출발한 프로젝트입니다. 
+
+( 스터디 모집 링크 ) 
+https://dev-recruiting.ringleplus.com/414762d8-a627-4ff6-ab6c-4422ab0c92bb
+
+
 
 ## 구조 
 
