@@ -1,6 +1,7 @@
 import { call, put, takeEvery } from "redux-saga/effects";
 import { authLogin, authLogout } from "../firebaseUtils/auth";
 import { getUserNameById } from "../firebaseUtils/users";
+import { startUnInit } from "./init";
 
 const INIT = "auth/INIT";
 // firebase 의 인증상태 변화를 구독하다가 로그인으로 상태가 변경되었을 떄 발생되는 액션
@@ -58,7 +59,9 @@ function* loginSaga(action) {
   }
 }
 
-function* logoutSaga(action) {
+function* logoutSaga() {
+  yield put(unSetUser());
+  yield put(startUnInit());
   try {
     yield call(authLogout);
   } catch (e) {}

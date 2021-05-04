@@ -27,6 +27,9 @@ const SET_CHATS = "chats/SET_CHATS";
 const LINK_TO_CHATS = "chats/LINK_TO_CHATS";
 // chat 컬렉션과 연결
 
+const CLOSE_ALL_LINK_TO_CHATS = "chats/CLOSE_ALL_LINK_TO_CHATS";
+// chat 컬렉션과 연결을 끊음
+
 /////////
 // CHAT CRUD
 
@@ -60,6 +63,10 @@ const setChats = (payload) => ({ type: SET_CHATS, payload });
 
 export const linkToChats = () => ({
   type: LINK_TO_CHATS,
+});
+
+export const closeAllLinkToChats = () => ({
+  type: CLOSE_ALL_LINK_TO_CHATS,
 });
 
 const setChat = (payload) => ({
@@ -116,9 +123,16 @@ export function* getChatsSaga() {
 // 초기화 과정에서 chats 컬렉션의 변경사항을 앱이
 // observe하도록 등록하는 사가
 
+function makeCloseChannel(channel) {
+  return function* closeChannel() {
+    channel.close();
+  };
+}
+
 function* linkToChatsSaga() {
   const chatsChannel = createChatsChannel();
   yield takeEvery(chatsChannel, setChangesToChannel);
+  yield takeEvery(CLOSE_ALL_LINK_TO_CHATS, makeCloseChannel(chatsChannel));
 }
 
 function createChatsChannel() {

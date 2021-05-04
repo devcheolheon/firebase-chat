@@ -42,6 +42,8 @@ const CLOSE_LINK_TO_CHAT_MESSAGE = "messages/CLOSE_LINK_TO_CHAT_MESSAGE";
 // join / unjoin ( chat 모듈 ) 하거나 최초 초기화시 발생하는 액션
 // 채팅내 message 컬렉션의 변경사항을 구독하거나 구독 취소함
 
+const CLOSE_LINK_TO_ALL_MESSAGE = "messages/CLOSE_LINK_TO_ALL_MESSAGE";
+
 export const sendMessage = (payload) => ({
   type: SEND_MESSAGE,
   payload,
@@ -80,6 +82,10 @@ export const addLinkToChatMessages = (payload) => ({
 export const closeLinkToChatMessages = (payload) => ({
   type: CLOSE_LINK_TO_CHAT_MESSAGE,
   payload,
+});
+
+export const closeLinkToAllChatMessages = (payload) => ({
+  type: CLOSE_LINK_TO_ALL_MESSAGE,
 });
 
 // initLinkToChatMessagesSaga
@@ -130,6 +136,9 @@ function makeCloseChannel(chatId, channel) {
     if (chat == chatId) {
       channel.close();
     }
+    if (chatId == "") {
+      channel.close();
+    }
   };
 }
 
@@ -140,6 +149,7 @@ function* linkToChatMessagesSaga(chatId, uid) {
     CLOSE_LINK_TO_CHAT_MESSAGE,
     makeCloseChannel(chatId, channel)
   );
+  yield takeEvery(CLOSE_LINK_TO_ALL_MESSAGE, makeCloseChannel("", channel));
 }
 
 function createMessagesChannel(chatId, uid) {

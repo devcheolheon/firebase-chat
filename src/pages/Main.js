@@ -175,8 +175,6 @@ const useStyles = makeStyles((theme) => ({
 const MENU_USER = "MENU_USER";
 const MENU_CHATTING = "MENU_CHATTING";
 
-let callInit = false;
-
 const makeUnreadMessageSelector = () => {
   return createSelector(
     (state) => state.init.init,
@@ -184,6 +182,7 @@ const makeUnreadMessageSelector = () => {
     (state) => {
       console.log(state);
       return state.init.init &&
+        !state.init.loading &&
         state.auth.isLogin &&
         state.users[state.auth.uid].chats
         ? state.users[state.auth.uid].chats
@@ -225,6 +224,7 @@ const Main = () => {
   });
 
   const loading = useSelector((state) => state.init.loading);
+  const isInit = useSelector((state) => state.init.init);
 
   const unReadMessagesSelector = useMemo(makeUnreadMessageSelector, []);
   const unReadMessages = useSelector(unReadMessagesSelector, shallowEqual);
@@ -233,11 +233,10 @@ const Main = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (uid && !callInit) {
+    if (uid && !loading && !isInit) {
       dispatch(startInit({ uid }));
-      callInit = true;
     }
-  }, [uid]);
+  }, [uid, isInit, loading]);
 
   const onLogout = () => {
     dispatch(logout());

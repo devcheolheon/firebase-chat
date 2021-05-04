@@ -17,14 +17,7 @@ const USER_JOIN_CHAT = "users/USER_JOIN_CHAT";
 const USER_UNJOIN_CHAT = "users/USER_UNJOIN_CHAT";
 
 const LINK_TO_USERS = "users/LINK_TO_USERS";
-/* 
-user {
-    id
-    nickname
-    email
-    chattings
-}
-*/
+const CLOSE_ALL_LINK_TO_USERS = "users/CLOSE_ALL_LINK_TO_USERS";
 
 const initialState = { users: [] };
 
@@ -71,6 +64,10 @@ export const linkToUsers = () => ({
   type: LINK_TO_USERS,
 });
 
+export const closeAllLinkToUsers = () => ({
+  type: CLOSE_ALL_LINK_TO_USERS,
+});
+
 export const getUsersSaga = function* () {
   const users = yield call(apiGetUsers);
   const payload = {};
@@ -80,9 +77,16 @@ export const getUsersSaga = function* () {
   yield put(setUsers(payload));
 };
 
+function makeCloseChannel(channel) {
+  return function* closeChannel() {
+    channel.close();
+  };
+}
+
 function* linkToUsersSaga() {
   const usersChannel = createUsersChannel();
   yield takeEvery(usersChannel, setChangesToUsers);
+  yield takeEvery(CLOSE_ALL_LINK_TO_USERS, makeCloseChannel(usersChannel));
 }
 
 function createUsersChannel() {

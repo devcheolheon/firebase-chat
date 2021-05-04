@@ -13,7 +13,7 @@ import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { login } from "../module/auth";
 
 const useStyles = makeStyles((theme) => ({
@@ -38,6 +38,8 @@ const Login = () => {
     loginUrl: "/main",
   });
 
+  const loading = useSelector((state) => state.init.loading);
+
   const dispatch = useDispatch();
   const onLogin = (email, password) => {
     dispatch(login(email, password));
@@ -54,7 +56,7 @@ const Login = () => {
   }, {});
 
   const classes = useStyles();
-  return login_loading ? (
+  return login_loading || loading ? (
     <Loading></Loading>
   ) : (
     <Grid

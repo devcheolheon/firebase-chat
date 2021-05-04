@@ -1,7 +1,16 @@
 import { takeEvery, put, select } from "redux-saga/effects";
-import { getChatsSaga, linkToChats } from "../module/chats";
-import { getUsersSaga, linkToUsers } from "../module/users";
 import {
+  closeAllLinkToChats,
+  getChatsSaga,
+  linkToChats,
+} from "../module/chats";
+import {
+  closeAllLinkToUsers,
+  getUsersSaga,
+  linkToUsers,
+} from "../module/users";
+import {
+  closeLinkToAllChatMessages,
   getMessages,
   getMessagesSaga,
   initLinkToChatMessagesSaga,
@@ -12,21 +21,30 @@ const SET_LOADING = "init/SET_LOADING";
 const UNSET_LOADING = "init/UNSET_LOADING";
 // 초기화 과정이 진행중이거나 끝났을떄 발생하는 액션
 
+const SET_INIT_FALSE = "init/SET_INIT_FALSE";
+const SET_INIT_TRUE = "init/SET_INIT_TRUE";
+// 로그아웃시 진행되어야할 과정이 끝났을때 발생하는 액션
+
 const INIT = "init/INIT";
+const UN_INIT = "init/UNINIT";
 const LINK = "init/LINK";
 
 const setloading = () => ({ type: SET_LOADING });
 const unsetloading = () => ({ type: UNSET_LOADING });
 
+const setInitFalse = () => ({ type: SET_INIT_FALSE });
+const setInitTrue = () => ({ type: SET_INIT_TRUE });
+
 export const startInit = (payload) => ({ type: INIT, payload });
+export const startUnInit = () => ({ type: UN_INIT });
 
 const initialState = {
-  loading: true,
+  loading: false,
 };
-// 최초 초기화 가 필요하므로..loading 값을 true로 준다
 
 export function* initDataSaga(action) {
   yield put(setloading());
+  yield put(setInitTrue());
   yield getChatsSaga();
   yield getUsersSaga();
   let chats = yield select(
@@ -38,6 +56,24 @@ export function* initDataSaga(action) {
   }
   yield put(unsetloading());
   yield linkDataSaga();
+}
+
+export function* unInitDataSaga() {
+  yield put(setloading());
+  yield unLinkDataSaga();
+  yield put(setInitFalse());
+  yield put(unsetloading());
+}
+
+// unLinkDataSaga
+
+// chats , users, messages 컬렉션을 구독하던 채널을 종료하는 액션을
+// 발생시킨다
+
+export function* unLinkDataSaga() {
+  yield put(closeAllLinkToUsers());
+  yield put(closeAllLinkToChats());
+  yield put(closeLinkToAllChatMessages());
 }
 
 // linkDataSaga
@@ -53,14 +89,19 @@ export function* linkDataSaga() {
 
 export function* initSaga() {
   yield takeEvery(INIT, initDataSaga);
+  yield takeEvery(UN_INIT, unInitDataSaga);
 }
 
 export default function init(state = initialState, action) {
   switch (action.type) {
     case SET_LOADING:
-      return { loading: true };
+      return { ...state, loading: true };
     case UNSET_LOADING:
-      return { loading: false, init: true };
+      return { ...state, loading: false };
+    case SET_INIT_FALSE:
+      return { ...state, init: false };
+    case SET_INIT_TRUE:
+      return { ...state, init: true };
     default:
       return state;
   }
