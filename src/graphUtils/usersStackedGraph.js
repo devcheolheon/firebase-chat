@@ -38,7 +38,11 @@ function hoverSelectedText(d, i) {
     });
 }
 
+let update = () => {};
 export function usersStackedGraph(target, data) {
+  if (target.innerHTML) return update;
+  // invalidation.then(() => simulation.stop());
+
   const n = data[0].length;
   const m = data.length;
   const columns = data.map((data) => data.name);
@@ -131,7 +135,7 @@ export function usersStackedGraph(target, data) {
     textToOriginalState(text);
   });
 
-  const update = (data) => {
+  update = (data) => {
     const n = data[0].length;
     const m = data.length;
     const columns = data.map((data) => data.name);
@@ -250,9 +254,6 @@ export function usersStackedGraph(target, data) {
       .attr("width", x.bandwidth())
       .attr("class", (d, i) => makeIdFromD(d, i));
   };
-
-  if (target.innerHTML) return update;
-  // invalidation.then(() => simulation.stop());
 
   target.appendChild(svg.node());
   return update;
